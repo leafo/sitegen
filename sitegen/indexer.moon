@@ -3,7 +3,22 @@ module "sitegen.indexer", package.seeall
 
 html = require "sitegen.html"
 
-export slugify, render_index, build_from_headers
+import insert, concat from table
+
+export slugify, render_index, build_from_html
+export IndexerPlugin
+
+class IndexerPlugin
+  tpl_helpers: { "index" }
+
+  new: (@tpl_scope) =>
+    @current_index = nil
+
+  index: =>
+    if not @current_index
+      body, @current_index = build_from_html @tpl_scope.body
+      coroutine.yield body
+    render_index @current_index
 
 slugify = (text) ->
   text = html.strip_tags text
@@ -31,7 +46,7 @@ render_index = (index) ->
   cosmo.f(tpl) index: -> yield_index index
 
 -- filter to build index for headers
-build_from_headers = (body, meta, opts={}) ->
+build_from_html = (body, meta, opts={}) ->
   headers = {}
 
   opts.min_depth = opts.min_depth or 1

@@ -7,6 +7,7 @@ discount = require "discount"
 util = require "moonscript.util"
 
 module "sitegen", package.seeall
+require "sitegen.indexer"
 
 import insert, concat, sort from table
 
@@ -203,6 +204,10 @@ class Site
       MarkdownRenderer!
     }
 
+    @plugins = {
+      indexer.IndexerPlugin
+    }
+
   init_from_fn: (fn) =>
     bound = bound_object @scope
     run_with_scope fn, bound, @user_vars
@@ -236,6 +241,18 @@ class Site
         return fn
     nil
 
+  -- get template helpers from plugins
+  template_helpers: (tpl_scope) =>
+    helpers = {}
+    for plugin in *@plugins
+      if plugin.tpl_helpers
+        p = plugin tpl_scope
+        for helper_name in *plugin.tpl_helpers
+          helpers[helper_name] = (...) ->
+            p[helper_name] p, ...
+
+    helpers
+
   -- write the entire website
   write: =>
     templates = Templates @config.template_dir
@@ -250,12 +267,25 @@ class Site
       if filter
         out = filter(meta, out) or out
 
-      tpl_scope = extend {
+      tpl_scope = {
         body: out
         generate_date: os.date!
-      }, meta, @user_vars
+      }
 
-      tpl_scope.body = cosmo.f(out) tpl_scope
+      helpers = @template_helpers tpl_scope
+      tpl_scope = extend tpl_scope, meta, @user_vars, helpers
+
+      while true
+        co = coroutine.create ->
+          tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
+          nil
+
+        pass, altered_body = coroutine.resume co
+        error altered_body if not pass
+        if altered_body
+          tpl_scope.body = altered_body
+        else
+          break
 
       tpl_name = meta.template == nil and "index" or meta.template
       if tpl_name
