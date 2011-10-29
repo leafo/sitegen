@@ -1,21 +1,16 @@
-
 require "moon"
 require "lfs"
 require "cosmo"
 require "yaml"
 discount = require "discount"
 
-util = require "moonscript.util"
-
 module "sitegen", package.seeall
-require "sitegen.indexer"
 
 import insert, concat, sort from table
-import extend, bind_methods, run_with_scope from moon
+import dump, extend, bind_methods, run_with_scope from moon
 
-export create_site, dump
-
-dump = util.dump
+export create_site
+export Plugin
 
 punct = "[%^$()%.%[%]*+%-?]"
 escape_patt = (str) ->
@@ -72,6 +67,9 @@ flatten_args = (...) ->
         table.insert accum, arg
   flatten {...}
   accum
+
+class Plugin
+  new: (@tpl_scope) =>
 
 class Renderer
   new: (@pattern) =>
@@ -170,6 +168,7 @@ class Site
     }
 
     @plugins = {
+      extra.AnalyticsPlugin
       indexer.IndexerPlugin
     }
 
@@ -281,4 +280,7 @@ create_site = (init_fn) ->
   site\init_from_fn init_fn
   site.scope\search "*md"
   site
+
+require "sitegen.indexer"
+require "sitegen.extra"
 
