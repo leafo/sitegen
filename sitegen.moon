@@ -1,4 +1,5 @@
 
+require "moon"
 require "lfs"
 require "cosmo"
 require "yaml"
@@ -10,6 +11,7 @@ module "sitegen", package.seeall
 require "sitegen.indexer"
 
 import insert, concat, sort from table
+import extend, bind_methods, run_with_scope from moon
 
 export create_site, dump
 
@@ -60,43 +62,6 @@ class OrderSet
       for item in *@list
         coroutine.yield item
 
-extend = (...) ->
-  tbls = {...}
-  return if #tbls < 2
-
-  for i = 1, #tbls - 1
-    a = tbls[i]
-    b = tbls[i + 1]
-
-    setmetatable a, __index: b
-
-  tbls[1]
-
-bound_object = (obj) ->
-  setmetatable {}, {
-    __index: (name) =>
-      val = obj[name]
-      if val and type(val) == "function"
-        bound = (...) -> val obj, ...
-        self[name] = bound
-        bound
-      else
-        val
-  }
-
-run_with_scope = (fn, scope, ...) ->
-  old_env = getfenv fn
-  env = setmetatable {}, {
-    __index: (name) =>
-      val = scope[name]
-      if val != nil
-        val
-      else
-        old_env[name]
-  }
-  setfenv fn, env
-  fn ...
-
 flatten_args = (...) ->
   accum = {}
   flatten = (tbl) ->
@@ -110,7 +75,7 @@ flatten_args = (...) ->
 
 class Renderer
   new: (@pattern) =>
-  render: -> error "provide me"
+  render: -> error "must provide render method"
   can_render: (fname) =>
     nil != fname\match @pattern
 
@@ -130,7 +95,7 @@ class MarkdownRenderer extends Renderer
 
   render: (text, site) =>
     text, header = @parse_header text
-    discount text
+    discount(text), header
 
 -- visible from init
 class SiteScope
@@ -209,7 +174,7 @@ class Site
     }
 
   init_from_fn: (fn) =>
-    bound = bound_object @scope
+    bound = bind_methods @scope
     run_with_scope fn, bound, @user_vars
 
   output_path_for: (path, ext) =>
