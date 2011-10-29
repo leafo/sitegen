@@ -168,6 +168,7 @@ class Site
     }
 
     @plugins = {
+      extra.DumpPlugin
       extra.AnalyticsPlugin
       indexer.IndexerPlugin
     }

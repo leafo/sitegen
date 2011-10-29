@@ -1,8 +1,14 @@
+require "moon"
 
 module "sitegen.extra", package.seeall
 sitegen = require "sitegen"
 
-export AnalyticsPlugin
+export AnalyticsPlugin, DumpPlugin
+
+class DumpPlugin extends sitegen.Plugin
+  tpl_helpers: { "dump" }
+  dump: (args) =>
+    moon.dump args
 
 class AnalyticsPlugin extends sitegen.Plugin
   tpl_helpers: { "analytics" }
