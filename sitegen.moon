@@ -9,25 +9,18 @@ util = require "moonscript.util"
 module "sitegen", package.seeall
 
 import insert, concat, sort from table
-export create_site, html_encode, html_decode, slugify
-export index_headers, render_index
 
-export dump
+export create_site, dump
+
 dump = util.dump
 
 punct = "[%^$()%.%[%]*+%-?]"
 escape_patt = (str) ->
   (str\gsub punct, (p) -> "%"..p)
 
-html_encode_entities = {
-  ['&']: '&amp;'
-  ['<']: '&lt;'
-  ['>']: '&gt;'
-  ['"']: '&quot;'
-  ["'"]: '&q#039;'
-}
-
 Path =
+  normalize: (path) ->
+    path\gsub "^%./", ""
   basepath: (path) ->
     path\match"^(.*)/[^/]*$" or "."
   mkdir: (path) ->
@@ -65,106 +58,6 @@ class OrderSet
     coroutine.wrap ->
       for item in *@list
         coroutine.yield item
-
-html_decode_entities = {}
-for key,value in pairs html_encode_entities
-  html_decode_entities[value] = key
-
-html_encode_string = "[" .. concat([escape_patt char for char in pairs html_encode_entities]) .. "]"
-html_encode = (text) ->
-  (text\gsub html_encode_string, html_encode_entities)
-
-html_decode = (text) ->
-  (text\gsub "(&[^&]-;)", (enc) ->
-    decoded = html_decode_entities[enc]
-    decoded if decoded else enc)
-
-strip_tags = (html) ->
-  html\gsub "<[^>]+>", ""
-
-render_index = (index) ->
-  yield_index = (index) ->
-    for item in *index
-      if item.depth
-        cosmo.yield _template: 2
-        yield_index item
-        cosmo.yield _template: 3
-      else
-        cosmo.yield name: item[1], target: item[2]
-
-  tpl = [==[
-		<ul>
-		$index[[
-			<li><a href="#$target">$name</a></li>
-		]], [[ <ul> ]] , [[ </ul> ]]
-		</ul>
-  ]==]
-
-  cosmo.f(tpl) index: -> yield_index index
-
--- filter to build index for headers
-index_headers = (body, meta, opts={}) ->
-  headers = {}
-
-  opts.min_depth = opts.min_depth or 1
-  opts.max_depth = opts.max_depth or 9
-
-  current = headers
-  fn = (body, i) ->
-    i = tonumber i
-
-    if i >= opts.min_depth and i <= opts.max_depth
-      if not current.depth
-        current.depth = i
-      else
-        if i > current.depth
-          current = parent: current, depth: i
-        else
-          while i < current.depth and current.parent
-            insert current.parent, current
-            current = current.parent
-
-          current.depth = i if i < current.depth
-
-    slug = slugify html_decode body
-    insert current, {body, slug}
-    concat {
-      '<h', i, '><a name="',slug,'"></a>', body, '</h', i, '>'
-    }
-
-  require "lpeg"
-  import P, R, Cmt, Cs, Cg, Cb, C from lpeg
-
-  nums = R("19")
-  open = P"<h" * Cg(nums, "num") * ">"
-
-  close = P"</h" * C(nums) * ">"
-  close_pair = Cmt close * Cb("num"), (s, i, a, b) -> a == b
-  tag = open * C((1 - close_pair)^0) * close
-
-  patt = Cs((tag / fn + 1)^0)
-  out = patt\match(body)
-
-  while current.parent
-    insert current.parent, current
-    current = current.parent
-
-  out, headers
-
-slugify = (text) ->
-  text = strip_tags text
-  text = text\gsub "[&+]", " and "
-  (text\lower!\gsub("%s+", "_")\gsub("[^%w_]", ""))
-
--- don't forget trailing /
-config =
-  template_dir: "template/"
-  out_dir: "www/"
-  page_pattern: "^(.*)%.md$"
-  write_gitignore: true
-
-default_meta =
-  template: "index"
 
 extend = (...) ->
   tbls = {...}
@@ -335,6 +228,14 @@ class Site
       \write concat relative, "\n"
       \close!
 
+  filter_for: (path) =>
+    path = Path.normalize path
+    for filter in *@scope.filters
+      patt, fn = unpack filter
+      if path\match patt
+        return fn
+    nil
+
   -- write the entire website
   write: =>
     templates = Templates @config.template_dir
@@ -345,10 +246,20 @@ class Site
       out, meta = renderer\render text
       meta = meta or {}
 
-      out = templates\fill "index", extend {
+      filter = @filter_for path
+      if filter
+        out = filter(meta, out) or out
+
+      tpl_scope = extend {
         body: out
         generate_date: os.date!
       }, meta, @user_vars
+
+      tpl_scope.body = cosmo.f(out) tpl_scope
+
+      tpl_name = meta.template == nil and "index" or meta.template
+      if tpl_name
+        out = templates\fill tpl_name, tpl_scope
 
       target = @output_path_for path, renderer.ext
       Path.mkdir Path.basepath target

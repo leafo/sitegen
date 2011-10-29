@@ -24,6 +24,8 @@ build = {
 	type = "builtin",
 	modules = {
 		["sitegen"] = "sitegen.lua",
+		["sitegen.html"] = "sitegen/html.lua",
+		["sitegen.indexer"] = "sitegen/indexer.lua",
 	},
 }
 
