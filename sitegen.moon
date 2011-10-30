@@ -77,11 +77,6 @@ class Renderer
   can_render: (fname) =>
     nil != fname\match @pattern
 
-class MarkdownRenderer extends Renderer
-  ext: "html"
-  new: =>
-    super convert_pattern "*.md"
-  
   parse_header: (text) =>
     header = {}
     s, e = text\find "%-%-\n"
@@ -90,6 +85,17 @@ class MarkdownRenderer extends Renderer
       text = text\sub e
 
     text, header
+
+  render: (text, site) =>
+    @parse_header text
+
+class HTMLRenderer extends Renderer
+  ext: "html"
+  pattern: convert_pattern "*.html"
+
+class MarkdownRenderer extends Renderer
+  ext: "html"
+  pattern: convert_pattern "*.md"
 
   render: (text, site) =>
     text, header = @parse_header text
@@ -164,7 +170,8 @@ class Site
     @user_vars = {}
 
     @renderers = {
-      MarkdownRenderer!
+      MarkdownRenderer
+      HTMLRenderer
     }
 
     @plugins = {

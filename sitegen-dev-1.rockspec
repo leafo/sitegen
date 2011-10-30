@@ -26,6 +26,7 @@ build = {
 		["sitegen"] = "sitegen.lua",
 		["sitegen.html"] = "sitegen/html.lua",
 		["sitegen.indexer"] = "sitegen/indexer.lua",
+		["sitegen.extra"] = "sitegen/extra.lua",
 	},
 }
 
