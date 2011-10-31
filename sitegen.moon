@@ -1,4 +1,6 @@
 require "moon"
+require "moonscript"
+
 require "lfs"
 require "cosmo"
 require "yaml"
@@ -141,6 +143,16 @@ class SiteScope
       print " * " .. path
 
 class Templates
+  base_helpers: {
+    each: (args) ->
+      list, name = unpack args
+      if list
+        list = flatten_args list
+        for item in *list
+          cosmo.yield { [(name)]: item }
+      nil
+  }
+
   new: (@dir) =>
     @template_cache = {}
 
@@ -152,6 +164,14 @@ class Templates
     if not @template_cache[name]
       file = io.open Path.join @dir, name .. ".html"
       error "could not find template: " .. name if not file
+      -- load template helpers
+      fn, err = moonscript.loadfile Path.join @dir, name .. ".moon"
+      if fn
+        scope = extend {}, getfenv fn
+        setfenv fn, scope
+        fn!
+        error "helpers don't work yet"
+
       @template_cache[name] = cosmo.f file\read "*a"
 
     @template_cache[name]
@@ -223,7 +243,7 @@ class Site
           helpers[helper_name] = (...) ->
             p[helper_name] p, ...
 
-    helpers
+    extend helpers, Templates.base_helpers
 
   -- write the entire website
   write: =>
