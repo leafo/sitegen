@@ -18,19 +18,7 @@ punct = "[%^$()%.%[%]*+%-?]"
 escape_patt = (str) ->
   (str\gsub punct, (p) -> "%"..p)
 
-Path =
-  normalize: (path) ->
-    path\gsub "^%./", ""
-  basepath: (path) ->
-    path\match"^(.*)/[^/]*$" or "."
-  mkdir: (path) ->
-    os.execute ("mkdir -p %s")\format path
-  copy: (src, dest) ->
-    os.execute ("cp %s %s")\format src, dest
-  join: (a, b) ->
-    a = a\match"^(.*)/$" or a
-    b = b\match"^/(.*)$" or b
-    a .. "/" .. b
+require "sitegen.common"
 
 convert_pattern = (patt) ->
   patt = patt\gsub "([.])", (item) ->
@@ -58,17 +46,6 @@ class OrderSet
     coroutine.wrap ->
       for item in *@list
         coroutine.yield item
-
-flatten_args = (...) ->
-  accum = {}
-  flatten = (tbl) ->
-    for arg in *tbl
-      if type(arg) == "table"
-        flatten(arg)
-      else
-        table.insert accum, arg
-  flatten {...}
-  accum
 
 class Plugin
   new: (@tpl_scope) =>
@@ -143,7 +120,12 @@ class SiteScope
       print " * " .. path
 
 class Templates
+  defaults: require "sitegen.default.templates"
   base_helpers: {
+    wrap: (args) ->
+      tpl_name = unpack args
+      error "missing template name", 2 if not tpl_name
+
     each: (args) ->
       list, name = unpack args
       if list
@@ -163,16 +145,20 @@ class Templates
   get_template: (name) =>
     if not @template_cache[name]
       file = io.open Path.join @dir, name .. ".html"
-      error "could not find template: " .. name if not file
-      -- load template helpers
-      fn, err = moonscript.loadfile Path.join @dir, name .. ".moon"
-      if fn
-        scope = extend {}, getfenv fn
-        setfenv fn, scope
-        fn!
-        error "helpers don't work yet"
+      @template_cache[name] = if file
+        -- load template helper if it exists
+        fn, err = moonscript.loadfile Path.join @dir, name .. ".moon"
+        if fn
+          scope = extend {}, getfenv fn
+          setfenv fn, scope
+          fn!
+          error "helpers don't work yet"
 
-      @template_cache[name] = cosmo.f file\read "*a"
+        cosmo.f file\read "*a"
+      elseif @defaults[name]
+        cosmo.f @defaults[name]
+      else
+        error "could not find template: " .. name if not file
 
     @template_cache[name]
 

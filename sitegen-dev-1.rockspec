@@ -27,6 +27,11 @@ build = {
 		["sitegen.html"] = "sitegen/html.lua",
 		["sitegen.indexer"] = "sitegen/indexer.lua",
 		["sitegen.extra"] = "sitegen/extra.lua",
+		["sitegen.common"] = "sitegen/common.lua",
+		["sitegen.default.templates"] = "sitegen/default/templates.lua",
+	},
+	install = {
+		bin = { "bin/sitegen" },
 	},
 }
 

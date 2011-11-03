@@ -1,11 +1,12 @@
 
 module "sitegen.indexer", package.seeall
+require "sitegen.common"
 
 html = require "sitegen.html"
 
 import insert, concat from table
 
-export slugify, render_index, build_from_html
+export render_index, build_from_html
 export IndexerPlugin
 
 class IndexerPlugin
@@ -19,11 +20,6 @@ class IndexerPlugin
       body, @current_index = build_from_html @tpl_scope.body
       coroutine.yield body
     render_index @current_index
-
-slugify = (text) ->
-  text = html.strip_tags text
-  text = text\gsub "[&+]", " and "
-  (text\lower!\gsub("%s+", "_")\gsub("[^%w_]", ""))
 
 render_index = (index) ->
   yield_index = (index) ->

@@ -1,0 +1,107 @@
+#!/usr/bin/env moon
+
+require "moonscript"
+require "moon"
+require "cosmo"
+require "sitegen.common"
+require "date"
+
+action = arg[1] or "build"
+
+default = {
+  sitefile: "site.moon"
+  files:
+    page: [==[
+    create_date: $eval{"date()"}
+    $if{"title"}[[title: $title]]
+--
+
+]==]
+    sitefile: [==[
+require "sitegen"
+site = sitegen.create_site =>
+  @title = $title
+site\write!
+]==]
+}
+
+scope = (t={}) ->
+  moon.extend t, {
+    eval: (arg) ->
+      code = "return -> " .. arg[1]
+      moonscript.loadstring(code)!!
+    if: (arg) ->
+      var_name = arg[1]
+      cosmo.yield t if t[var_name]
+      nil
+  }
+
+get_site = ->
+  if Path.exists default.sitefile
+    true
+  else
+    false
+
+tasks = {
+  new: ->
+    if get_site!
+      error "sitefile already exists: " .. default.sitefile
+
+    title = ("%q")\format arg[2] or "Hello World"
+
+    Path.mkdir"www"
+    Path.mkdir"templates"
+
+    site_moon = cosmo.f(default.files.sitefile) scope{:title}
+    Path.write_file default.sitefile, site_moon
+
+  page: ->
+    error "missing sitefile" if not get_site!
+    path, title = arg[2], arg[3]
+
+    if not title
+      title = path
+      path_part, title_part = title\match"^(.-)([^/]+)$"
+      print path_part, title_part
+      if path_part
+        title = title_part
+        path = path_part
+      else
+        path = '.'
+
+    Path.mkdir path
+
+    -- iterater for all potential file names
+    names = (fname, ext=".md") ->
+      i = 0
+      coroutine.wrap ->
+        while true
+          coroutine.yield if i == 0
+            fname .. ext
+          else
+            table.concat {fname, "_", i, ext }
+          i += 1
+
+    full_path = nil
+    for name in names slugify title
+      full_path = Path.join path, name
+      if not Path.exists full_path
+        break
+
+    Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
+    print "wrote", full_path
+
+  build: ->
+    file = io.open default.sitefile
+    error "missing site file: " .. default.sitefile if not file
+    file\close!
+    moonscript.loadfile(default.sitefile)!
+}
+
+-- potential commands:
+-- plugins: sitegen blog:post "Hello World"
+
+if not tasks[action]
+  error "unknown task: " .. action
+
+tasks[action]!
