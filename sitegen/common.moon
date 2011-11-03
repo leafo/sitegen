@@ -39,5 +39,7 @@ Path =
   join: (a, b) ->
     a = a\match"^(.*)/$" or a
     b = b\match"^/(.*)$" or b
+    return b if a == ""
+    return a if b == ""
     a .. "/" .. b
 

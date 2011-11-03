@@ -3,8 +3,10 @@
 require "moonscript"
 require "moon"
 require "cosmo"
-require "sitegen.common"
 require "date"
+
+require "sitegen.common"
+require "sitegen.deploy"
 
 action = arg[1] or "build"
 
@@ -25,6 +27,9 @@ site\write!
 ]==]
 }
 
+log = (...) ->
+  print "->", ...
+
 scope = (t={}) ->
   moon.extend t, {
     eval: (arg) ->
@@ -41,6 +46,27 @@ get_site = ->
     true
   else
     false
+
+annotate = (obj, verbs) ->
+  setmetatable {}, {
+    __newindex: (name, value) =>
+      obj[name] = value
+    __index: (name) =>
+      fn =  obj[name]
+      return fn if not type(fn) == "function"
+      if verbs[name]
+        (...) ->
+          fn ...
+          first = ...
+          log verbs[name], first
+      else
+        fn
+  }
+
+Path = annotate Path, {
+  mkdir: "made directory"
+  write_file: "wrote"
+}
 
 tasks = {
   new: ->
@@ -62,14 +88,13 @@ tasks = {
     if not title
       title = path
       path_part, title_part = title\match"^(.-)([^/]+)$"
-      print path_part, title_part
       if path_part
         title = title_part
         path = path_part
       else
         path = '.'
 
-    Path.mkdir path
+    Path.mkdir path if Path.normalize(path) != ""
 
     -- iterater for all potential file names
     names = (fname, ext=".md") ->
@@ -89,7 +114,6 @@ tasks = {
         break
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
-    print "wrote", full_path
 
   build: ->
     file = io.open default.sitefile
