@@ -3,6 +3,9 @@ html = require "sitegen.html"
 
 export *
 
+bound_fn = (cls, fn_name) ->
+  (...) -> cls[fn_name] cls, ...
+
 punct = "[%^$()%.%[%]*+%-?]"
 escape_patt = (str) ->
   (str\gsub punct, (p) -> "%"..p)

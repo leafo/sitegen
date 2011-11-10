@@ -5,7 +5,10 @@ require "moon"
 require "cosmo"
 require "date"
 
+require "sitegen"
 require "sitegen.common"
+
+import run_with_scope, extend from moon
 
 action = arg[1] or "build"
 
@@ -42,7 +45,17 @@ scope = (t={}) ->
 
 get_site = ->
   if Path.exists default.sitefile
-    true
+    fn = moonscript.loadfile(default.sitefile)
+    site = nil
+    run_with_scope fn, {
+      sitegen: extend {
+        create_site: (...) ->
+          site = sitegen.create_site ...
+          site.write = -> -- don't write it
+          site
+      }, sitegen
+    }
+    site
   else
     false
 
@@ -83,6 +96,8 @@ columnize = (rows, indent=2, padding=4) ->
   table.concat formatted, "\n"
 
 tasks = {
+  dump: ->
+    print moon.dump get_site!
   new: ->
     if get_site!
       error "sitefile already exists: " .. default.sitefile
@@ -96,7 +111,7 @@ tasks = {
     Path.write_file default.sitefile, site_moon
 
   page: ->
-    error "missing sitefile" if not get_site!
+    get_site! or error "missing sitefile"
     path, title = arg[2], arg[3]
 
     if not title
@@ -130,14 +145,14 @@ tasks = {
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
   deploy: ->
-    get_site! or error "no site"
-    host, path = arg[2], arg[3]
+    get_site! or error "missing sitefile"
+    deploy = require "sitegen.deploy"
+    host, path = arg[2] or deploy.DeployPlugin.host, arg[3] or deploy.DeployPlugin.path
+
     error "need host" if not host
     error "need path" if not path
 
-    deploy = require "sitegen.deploy"
-
-    log "uploading..."
+    log "uploading to:", host, path
     with deploy.Sync host, path
       \upload!
 

@@ -174,13 +174,14 @@ class Site
       HTMLRenderer
     }
 
-    @plugins = plugins
+    @plugins = OrderSet plugins
 
   plugin_scope: =>
     scope = {}
-    for plugin in *@plugins
+    for plugin in @plugins\each!
       if plugin.mixin_funcs
-        plugin\mixin_funcs scope
+        for fn_name in *plugin.mixin_funcs
+          scope[fn_name] = bound_fn plugin, fn_name
 
     scope
 
@@ -221,7 +222,7 @@ class Site
   -- get template helpers from plugins
   template_helpers: (tpl_scope) =>
     helpers = {}
-    for plugin in *@plugins
+    for plugin in @plugins\each!
       if plugin.tpl_helpers
         p = plugin tpl_scope
         for helper_name in *plugin.tpl_helpers
