@@ -1,5 +1,5 @@
 
 install:
-	moonc .
+	moonc sitegen.moon sitegen
 	sudo luarocks make
 
