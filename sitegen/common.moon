@@ -3,6 +3,16 @@ html = require "sitegen.html"
 
 export *
 
+punct = "[%^$()%.%[%]*+%-?]"
+escape_patt = (str) ->
+  (str\gsub punct, (p) -> "%"..p)
+
+convert_pattern = (patt) ->
+  patt = patt\gsub "([.])", (item) ->
+    "%" .. item
+
+  patt\gsub "[*]", ".*"
+
 slugify = (text) ->
   text = html.strip_tags text
   text = text\gsub "[&+]", " and "

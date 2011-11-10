@@ -6,7 +6,6 @@ require "cosmo"
 require "date"
 
 require "sitegen.common"
-require "sitegen.deploy"
 
 action = arg[1] or "build"
 
@@ -68,6 +67,21 @@ Path = annotate Path, {
   write_file: "wrote"
 }
 
+columnize = (rows, indent=2, padding=4) ->
+  max = 0
+  max = math.max max, #row[1] for row in *rows
+
+  formatted = for row in *rows
+    padd = (max - #row[1]) + padding
+    table.concat {
+      (" ")\rep indent
+      row[1]
+      (" ")\rep padd
+      row[2]
+    }
+
+  table.concat formatted, "\n"
+
 tasks = {
   new: ->
     if get_site!
@@ -115,11 +129,38 @@ tasks = {
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
+  deploy: ->
+    get_site! or error "no site"
+    host, path = arg[2], arg[3]
+    error "need host" if not host
+    error "need path" if not path
+
+    deploy = require "sitegen.deploy"
+
+    log "uploading..."
+    with deploy.Sync host, path
+      \upload!
+
   build: ->
     file = io.open default.sitefile
     error "missing site file: " .. default.sitefile if not file
     file\close!
     moonscript.loadfile(default.sitefile)!
+
+  help: ->
+    print "Sitegen"
+    print "usage: sitegen <action> [args]"
+    print!
+    print "Available actions:"
+
+    print!
+    print columnize {
+      {"new", "Create a new site in the current directory"}
+      {"build", "Build (or rebuild) all pages"}
+      {"page <path> [title]", "Create a new markdown page at path"}
+      {"deploy <host> <path>", "Deploy site to host over ssy (rsync)"}
+    }
+    print!
 }
 
 -- potential commands:

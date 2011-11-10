@@ -27,3 +27,7 @@ class AnalyticsPlugin extends sitegen.Plugin
   })();
 </script>]]
 
+
+sitegen.register_plugin DumpPlugin
+sitegen.register_plugin AnalyticsPlugin
+

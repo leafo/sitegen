@@ -11,20 +11,14 @@ module "sitegen", package.seeall
 import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from moon
 
-export create_site
+export create_site, register_plugin
 export Plugin
 
-punct = "[%^$()%.%[%]*+%-?]"
-escape_patt = (str) ->
-  (str\gsub punct, (p) -> "%"..p)
+plugins = {}
+register_plugin = (plugin) ->
+  table.insert plugins, plugin
 
 require "sitegen.common"
-
-convert_pattern = (patt) ->
-  patt = patt\gsub "([.])", (item) ->
-    "%" .. item
-
-  patt\gsub "[*]", ".*"
 
 class OrderSet
   new: (items) =>
@@ -180,14 +174,19 @@ class Site
       HTMLRenderer
     }
 
-    @plugins = {
-      extra.DumpPlugin
-      extra.AnalyticsPlugin
-      indexer.IndexerPlugin
-    }
+    @plugins = plugins
+
+  plugin_scope: =>
+    scope = {}
+    for plugin in *@plugins
+      if plugin.mixin_funcs
+        plugin\mixin_funcs scope
+
+    scope
 
   init_from_fn: (fn) =>
     bound = bind_methods @scope
+    bound = extend @plugin_scope!, bound
     run_with_scope fn, bound, @user_vars
 
   output_path_for: (path, ext) =>
@@ -295,6 +294,8 @@ create_site = (init_fn) ->
   site.scope\search "*md"
   site
 
+-- plugin providers
+require "sitegen.deploy"
 require "sitegen.indexer"
 require "sitegen.extra"
 

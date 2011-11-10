@@ -21,6 +21,8 @@ class IndexerPlugin
       coroutine.yield body
     render_index @current_index
 
+sitegen.register_plugin IndexerPlugin
+
 render_index = (index) ->
   yield_index = (index) ->
     for item in *index
