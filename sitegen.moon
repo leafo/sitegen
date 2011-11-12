@@ -20,28 +20,7 @@ register_plugin = (plugin) ->
 
 require "sitegen.common"
 
-class OrderSet
-  new: (items) =>
-    @list = {}
-    @set = {}
-    if items
-      for item in *items
-        @add item
-
-  add: (item) =>
-    if @list[item] == nil
-      table.insert @list, item
-      @set[item] = #@list
-
-  has: (item) =>
-    @set[item] != nil
-
-  each: =>
-    coroutine.wrap ->
-      for item in *@list
-        coroutine.yield item
-
-class Plugin
+class Plugin -- uhh
   new: (@tpl_scope) =>
 
 class Renderer
@@ -168,6 +147,7 @@ class Site
   new: =>
     @scope = SiteScope self
     @user_vars = {}
+    @written_files = {}
 
     @renderers = {
       MarkdownRenderer
@@ -175,6 +155,11 @@ class Site
     }
 
     @plugins = OrderSet plugins
+    @aggregators = {}
+    for plugin in @plugins\each!
+      if plugin.type_name
+        for name in *make_list plugin.type_name
+          @aggregators[name] = plugin
 
   plugin_scope: =>
     scope = {}
@@ -203,7 +188,20 @@ class Site
         return renderer
 
     error "Don't know how to render:", path
+
+  -- TODO: refactor to use this?
+  write_file: (fname, content) =>
+    full_path = Path.join @config.out_dir, fname
+    Path.mkdir Path.basepath full_path
+
+    print content
+    with io.open full_path, "w"
+      \write content
+      \close!
+
+    table.insert @written_files, full_path
   
+  -- strips the out_dir from the file paths
   write_gitignore: (written_files) =>
     with io.open @config.out_dir .. ".gitignore", "w"
       patt = "^" .. escape_patt(@config.out_dir) .. "(.+)$"
@@ -269,6 +267,13 @@ class Site
       if tpl_name
         out = templates\fill tpl_name, tpl_scope
 
+      if tpl_scope.is_a
+        types = make_list tpl_scope.is_a
+        for t in *types
+          plugin = @aggregators[t]
+          if plugin
+            plugin\on_aggregate tpl_scope
+
       target = @output_path_for path, renderer.ext
       Path.mkdir Path.basepath target
 
@@ -286,7 +291,13 @@ class Site
       table.insert written_files, target
       Path.copy path, target
 
+    -- write plugins
+    for plugin in @plugins\each!
+      plugin\write self if plugin.write
+
     if @config.write_gitignore
+      -- add other written files
+      table.insert written_files, file for file in *@written_files
       @write_gitignore written_files
 
 create_site = (init_fn) ->
@@ -299,4 +310,5 @@ create_site = (init_fn) ->
 require "sitegen.deploy"
 require "sitegen.indexer"
 require "sitegen.extra"
+require "sitegen.blog"
 

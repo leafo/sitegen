@@ -1,7 +1,32 @@
 
 html = require "sitegen.html"
+require "moon"
 
 export *
+
+get_local = (name, level=4) ->
+  locals = {}
+  names = {}
+  i = 1
+  info = debug.getinfo level
+  print "capturing scope for ", info.name or info.short_src
+
+  while true
+    lname, value = debug.getlocal(level, i)
+    break if not lname
+    print "->", lname, value
+    table.insert names, lname
+    locals[lname] = value
+    i += 1
+
+  print "locals:", table.concat names, ", "
+  locals[name] if name
+
+dumps = (...) ->
+  print moon.dump ...
+
+make_list = (item) ->
+  type(item) == "table" and item or {item}
 
 bound_fn = (cls, fn_name) ->
   (...) -> cls[fn_name] cls, ...
@@ -31,6 +56,27 @@ flatten_args = (...) ->
         table.insert accum, arg
   flatten {...}
   accum
+
+class OrderSet
+  new: (items) =>
+    @list = {}
+    @set = {}
+    if items
+      for item in *items
+        @add item
+
+  add: (item) =>
+    if @list[item] == nil
+      table.insert @list, item
+      @set[item] = #@list
+
+  has: (item) =>
+    @set[item] != nil
+
+  each: =>
+    coroutine.wrap ->
+      for item in *@list
+        coroutine.yield item
 
 Path =
   exists: (path) ->
