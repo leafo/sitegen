@@ -266,12 +266,13 @@ class Site
       if tpl_name
         out = templates\fill tpl_name, tpl_scope
 
+      dont_write = false -- TODO: respect this
       if tpl_scope.is_a
         types = make_list tpl_scope.is_a
         for t in *types
           plugin = @aggregators[t]
           if plugin
-            plugin\on_aggregate tpl_scope
+            dont_write = dont_write or  plugin\on_aggregate tpl_scope
 
       target = @output_path_for path, renderer.ext
       Path.mkdir Path.basepath target

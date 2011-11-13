@@ -16,7 +16,7 @@ default = {
   sitefile: "site.moon"
   files:
     page: [==[
-    create_date: $eval{"date()"}
+    date: $eval{"date()"}
     $if{"title"}[[title: $title]]
 --
 

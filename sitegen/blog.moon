@@ -2,6 +2,10 @@
 module "sitegen.blog", package.seeall
 html = require "sitegen.html"
 require "cosmo"
+require "moon"
+require "date"
+
+import copy from moon
 
 escaped = (data) ->
   setmetatable {}, {
@@ -49,16 +53,42 @@ render_rss = (site, posts, limit=0) ->
     site: escaped site.user_vars
   }
 
+cmp = {
+  date: (dir="desc") ->
+    (a, b) ->
+      if dir == "asc"
+        date(a) < date(b)
+      else
+        date(a) > date(b)
+}
+
 class BlogPlugin
-  pages: {}
+  posts: {}
+  write_pages: true
   type_name: "blog_post"
 
   on_aggregate: (page) =>
-    table.insert @pages, page
+    table.insert @posts, page
+    return true if not @write_pages
 
   write: (site) =>
-    print "blog posts:", #@pages
-    site\write_file "feed.xml", render_rss site, @pages
+    print "blog posts:", #@posts
+    site\write_file "feed.xml", render_rss site, @posts
+
+    posts = @query!
+    for post in *posts
+      print "*", post.title, post.date
+
+  query: (filter={}) =>
+    filter.sort = {"date", cmp.date! }
+    posts = copy @posts
+
+    if filter.sort
+      col, cmp = unpack filter.sort
+      table.sort posts, (a, b) ->
+        cmp a[col], b[col]
+
+    posts
 
 sitegen.register_plugin BlogPlugin
 
