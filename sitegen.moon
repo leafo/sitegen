@@ -194,7 +194,6 @@ class Site
     full_path = Path.join @config.out_dir, fname
     Path.mkdir Path.basepath full_path
 
-    print content
     with io.open full_path, "w"
       \write content
       \close!
