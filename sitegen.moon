@@ -141,11 +141,25 @@ class Templates
 -- an individual page
 class Page
   new: (@site, @source) =>
-    @user_vars = {} -- not used atm
     @renderer = @site\renderer_for @source
     @target = @site\output_path_for @source, @renderer.ext
 
-  -- write the file
+    -- extract metadata
+    @raw_text, @meta = @renderer\render @read!
+
+    filter = @site\filter_for @source
+    if filter
+      @raw_text = filter(@meta, @raw_text) or @raw_text
+
+  -- read the source
+  read: =>
+    text = nil
+    with io.open @source
+      text = \read"*a"
+      \close!
+    text
+
+  -- write the file, return path to written file
   write: =>
     content = @render!
     Path.mkdir Path.basepath @target
@@ -156,17 +170,8 @@ class Page
     @target
 
   render: =>
-    renderer = @site\renderer_for @source
-    text = io.open(@source)\read "*a"
-    out, meta = renderer\render text
-    @meta = meta or {}
-
-    filter = @site\filter_for @source
-    if filter
-      out = filter(@meta, out) or out
-
     tpl_scope = {
-      body: out
+      body: @raw_text
       generate_date: os.date!
     }
 
@@ -188,18 +193,16 @@ class Page
       else
         break
 
-    -- now we have the final content, we are ready to render in template
-    tpl_name = if meta.template == nil
+    -- find the wrapping template
+    tpl_name = if @meta.template == nil
       @site.config.default_template
     else
-      meta.template
+      @meta.template
 
-    -- renders the entire thing
     if tpl_name
       @site.templates\fill tpl_name, tpl_scope
     else
       tpl_scope.body
-
 
 -- a webpage
 class Site
@@ -286,6 +289,7 @@ class Site
     nil
 
   -- get template helpers from plugins
+  -- template plugins instances with tpl_scope
   template_helpers: (tpl_scope) =>
     helpers = {}
     for plugin in @plugins\each!
