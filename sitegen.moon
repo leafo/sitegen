@@ -20,6 +20,9 @@ register_plugin = (plugin) ->
 
 require "sitegen.common"
 
+log = (...) ->
+  print ...
+
 class Plugin -- uhh
   new: (@tpl_scope) =>
 
@@ -135,6 +138,69 @@ class Templates
 
     @template_cache[name]
 
+-- an individual page
+class Page
+  new: (@site, @source) =>
+    @user_vars = {} -- not used atm
+    @renderer = @site\renderer_for @source
+    @target = @site\output_path_for @source, @renderer.ext
+
+  -- write the file
+  write: =>
+    content = @render!
+    Path.mkdir Path.basepath @target
+    with io.open @target, "w"
+      \write content
+      \close!
+    log "rendered", @source, "->", @target
+    @target
+
+  render: =>
+    renderer = @site\renderer_for @source
+    text = io.open(@source)\read "*a"
+    out, meta = renderer\render text
+    @meta = meta or {}
+
+    filter = @site\filter_for @source
+    if filter
+      out = filter(@meta, out) or out
+
+    tpl_scope = {
+      body: out
+      generate_date: os.date!
+    }
+
+    helpers = @site\template_helpers tpl_scope
+    tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
+
+    -- we run the page as a cosmo template until it normalizes
+    -- this is because some plugins might need to read/change
+    -- the content of the body (see indexer)
+    while true
+      co = coroutine.create ->
+        tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
+        nil
+
+      pass, altered_body = coroutine.resume co
+      error altered_body if not pass
+      if altered_body
+        tpl_scope.body = altered_body
+      else
+        break
+
+    -- now we have the final content, we are ready to render in template
+    tpl_name = if meta.template == nil
+      @site.config.default_template
+    else
+      meta.template
+
+    -- renders the entire thing
+    if tpl_name
+      @site.templates\fill tpl_name, tpl_scope
+    else
+      tpl_scope.body
+
+
 -- a webpage
 class Site
   config: {
@@ -145,7 +211,9 @@ class Site
   }
 
   new: =>
+    @templates = Templates @config.template_dir
     @scope = SiteScope self
+
     @user_vars = {}
     @written_files = {}
 
@@ -155,6 +223,7 @@ class Site
     }
 
     @plugins = OrderSet plugins
+    -- extract aggregators from plugins
     @aggregators = {}
     for plugin in @plugins\each!
       if plugin.type_name
@@ -230,61 +299,13 @@ class Site
 
   -- write the entire website
   write: =>
-    templates = Templates @config.template_dir
+    pages = for path in @scope.files\each!
+      Page self, path
 
-    written_files = for path in @scope.files\each!
-      renderer = @renderer_for path
-      text = io.open(path)\read "*a"
-      out, meta = renderer\render text
-      meta = meta or {}
+    written_files = for page in *pages
+      page\write!
 
-      filter = @filter_for path
-      if filter
-        out = filter(meta, out) or out
-
-      tpl_scope = {
-        body: out
-        generate_date: os.date!
-      }
-
-      helpers = @template_helpers tpl_scope
-      tpl_scope = extend tpl_scope, meta, @user_vars, helpers
-
-      while true
-        co = coroutine.create ->
-          tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
-          nil
-
-        pass, altered_body = coroutine.resume co
-        error altered_body if not pass
-        if altered_body
-          tpl_scope.body = altered_body
-        else
-          break
-
-      tpl_name = meta.template == nil and "index" or meta.template
-      if tpl_name
-        out = templates\fill tpl_name, tpl_scope
-
-      dont_write = false -- TODO: respect this
-      if tpl_scope.is_a
-        types = make_list tpl_scope.is_a
-        for t in *types
-          plugin = @aggregators[t]
-          if plugin
-            dont_write = dont_write or  plugin\on_aggregate tpl_scope
-
-      target = @output_path_for path, renderer.ext
-      Path.mkdir Path.basepath target
-
-      print "rendered", path, "->", target
-
-      with io.open target, "w"
-        \write out
-        \close!
-
-      target
-
+    -- copy files
     for path in @scope.copy_files\each!
       target = Path.join @config.out_dir, path
       print "copied", target
@@ -295,16 +316,31 @@ class Site
     for plugin in @plugins\each!
       plugin\write self if plugin.write
 
+    -- gitignore
     if @config.write_gitignore
       -- add other written files
       table.insert written_files, file for file in *@written_files
       @write_gitignore written_files
 
+    -- ** STEPSTOBUILD **
+    -- filter?
+    -- aggregate?
+
+    -- render content
+    -- wrap in template
+  
+    -- dont_write = false -- TODO: respect this
+    -- if tpl_scope.is_a
+    --   types = make_list tpl_scope.is_a
+    --   for t in *types
+    --     plugin = @aggregators[t]
+    --     if plugin
+    --       dont_write = dont_write or  plugin\on_aggregate tpl_scope
+
 create_site = (init_fn) ->
-  site = Site! -- fix with bug!
-  site\init_from_fn init_fn
-  site.scope\search "*md"
-  site
+  with Site!
+    \init_from_fn init_fn
+    .scope\search "*md"
 
 -- plugin providers
 require "sitegen.deploy"
