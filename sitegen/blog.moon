@@ -5,7 +5,7 @@ require "cosmo"
 require "moon"
 require "date"
 
-import copy from moon
+import copy, bind_methods from moon
 
 escaped = (data) ->
   setmetatable {}, {
@@ -64,12 +64,22 @@ cmp = {
 
 class BlogPlugin
   posts: {}
-  write_pages: true
+  consumes_pages: false
   type_name: "blog_post"
 
+  on_site: (site) =>
+    -- register template scope
+    site.templates.plugin_helpers.blog = {
+      query: (arg) ->
+        -- print moon.dump arg
+        for page in *@query!
+          cosmo.yield bind_methods page
+    }
+
+  -- return true if it consumes page
   on_aggregate: (page) =>
     table.insert @posts, page
-    return true if not @write_pages
+    @consumes_pages
 
   write: (site) =>
     print "blog posts:", #@posts
@@ -84,9 +94,9 @@ class BlogPlugin
     posts = copy @posts
 
     if filter.sort
-      col, cmp = unpack filter.sort
+      col, c = unpack filter.sort
       table.sort posts, (a, b) ->
-        cmp a[col], b[col]
+        c a[col], b[col]
 
     posts
 

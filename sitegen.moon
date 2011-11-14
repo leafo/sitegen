@@ -94,6 +94,10 @@ class SiteScope
     print "added files:"
     for path in @files\each!
       print " * " .. path
+    print!
+    print "copy files:"
+    for path in @copy_files\each!
+      print " * " .. path
 
 class Templates
   defaults: require "sitegen.default.templates"
@@ -113,6 +117,8 @@ class Templates
 
   new: (@dir) =>
     @template_cache = {}
+    @plugin_helpers = {}
+    @base_helpers = extend @plugin_helpers, @base_helpers
 
   fill: (name, context) =>
     tpl = @get_template name
@@ -128,7 +134,8 @@ class Templates
           scope = extend {}, getfenv fn
           setfenv fn, scope
           fn!
-          error "helpers don't work yet"
+          -- TODO
+          error "template alongside helpers don't work yet"
 
         cosmo.f file\read "*a"
       elseif @defaults[name]
@@ -145,23 +152,24 @@ class Page
     @target = @site\output_path_for @source, @renderer.ext
 
     -- extract metadata
-    @raw_text, @meta = @renderer\render @read!
+    @raw_text, @meta = @renderer\render @_read!
 
     filter = @site\filter_for @source
     if filter
       @raw_text = filter(@meta, @raw_text) or @raw_text
 
-  -- read the source
-  read: =>
-    text = nil
-    with io.open @source
-      text = \read"*a"
-      \close!
-    text
+    -- expose meta in self
+    cls = getmetatable self
+    extend self, (key) => cls[key] or @meta[key]
+
+  link_to: =>
+    front = "^"..escape_patt @site.config.out_dir
+    html.build ->
+      a { @title, href: @target\gsub front, "" }
 
   -- write the file, return path to written file
   write: =>
-    content = @render!
+    content = @_render!
     Path.mkdir Path.basepath @target
     with io.open @target, "w"
       \write content
@@ -169,7 +177,15 @@ class Page
     log "rendered", @source, "->", @target
     @target
 
-  render: =>
+  -- read the source
+  _read: =>
+    text = nil
+    with io.open @source
+      text = \read"*a"
+      \close!
+    text
+
+  _render: =>
     tpl_scope = {
       body: @raw_text
       generate_date: os.date!
@@ -232,6 +248,9 @@ class Site
       if plugin.type_name
         for name in *make_list plugin.type_name
           @aggregators[name] = plugin
+
+      if plugin.on_site
+        plugin\on_site self
 
   plugin_scope: =>
     scope = {}
@@ -299,12 +318,18 @@ class Site
           helpers[helper_name] = (...) ->
             p[helper_name] p, ...
 
-    extend helpers, Templates.base_helpers
+    extend helpers, @templates.base_helpers
 
   -- write the entire website
   write: =>
     pages = for path in @scope.files\each!
-      Page self, path
+      page = Page self, path
+      -- TODO: check dont_write
+      for t in *make_list page.meta.is_a
+        plugin = @aggregators[t]
+        error "unknown `is_a` type: " .. t if not plugin
+        plugin\on_aggregate page
+      page
 
     written_files = for page in *pages
       page\write!
