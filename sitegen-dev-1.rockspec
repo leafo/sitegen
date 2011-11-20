@@ -30,6 +30,7 @@ build = {
 		["sitegen.common"] = "sitegen/common.lua",
 		["sitegen.default.templates"] = "sitegen/default/templates.lua",
 		["sitegen.deploy"] = "sitegen/deploy.lua",
+		["sitegen.blog"] = "sitegen/blog.lua",
 	},
 	install = {
 		bin = { "bin/sitegen" },
