@@ -8,6 +8,8 @@ discount = require "discount"
 
 module "sitegen", package.seeall
 
+require "sitegen.html"
+
 import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from moon
 
@@ -124,24 +126,41 @@ class Templates
     tpl = @get_template name
     tpl context
 
+  -- load an html (cosmo) template
+  load_html: (name) =>
+    file = io.open Path.join @dir, name .. ".html"
+    return if not file
+    cosmo.f file\read "*a"
+
+  -- load a moonscript template
+  load_moon: (name) =>
+    fn = moonscript.loadfile Path.join @dir, name .. ".moon"
+    return if not fn
+
+    (scope) ->
+      tpl_fn = loadstring string.dump fn -- copy function
+      source_env = getfenv tpl_fn
+
+      setfenv tpl_fn, { :scope }
+
+      html.build tpl_fn
+
   get_template: (name) =>
     if not @template_cache[name]
-      file = io.open Path.join @dir, name .. ".html"
-      @template_cache[name] = if file
-        -- load template helper if it exists
-        fn, err = moonscript.loadfile Path.join @dir, name .. ".moon"
-        if fn
-          scope = extend {}, getfenv fn
-          setfenv fn, scope
-          fn!
-          -- TODO
-          error "template alongside helpers don't work yet"
+      found = false
+      for kind in *{"html", "moon"}
+        tpl = self["load_"..kind] self, name
+        if tpl
+          @template_cache[name] = tpl
+          found = true
+          break
 
-        cosmo.f file\read "*a"
-      elseif @defaults[name]
-        cosmo.f @defaults[name]
-      else
-        error "could not find template: " .. name if not file
+      -- still don't have it? load default
+      if not found
+        @template_cache[name] = if @defaults[name]
+          cosmo.f @defaults[name]
+        else
+          error "could not find template: " .. name if not file
 
     @template_cache[name]
 

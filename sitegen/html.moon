@@ -2,7 +2,7 @@
 module "sitegen.html", package.seeall
 require "moon"
 
-export encode, decode, strip_tags, build
+export encode, decode, strip_tags, build, builders
 
 import concat from table
 import run_with_scope, defaultbl from moon
