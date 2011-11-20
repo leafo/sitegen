@@ -104,11 +104,11 @@ class SiteScope
 class Templates
   defaults: require "sitegen.default.templates"
   base_helpers: {
-    wrap: (args) ->
+    wrap: (args) =>
       tpl_name = unpack args
       error "missing template name", 2 if not tpl_name
 
-    each: (args) ->
+    each: (args) =>
       list, name = unpack args
       if list
         list = flatten_args list
@@ -166,6 +166,8 @@ class Templates
 
 -- an individual page
 class Page
+  __tostring: => table.concat { "<Page '",@source,">" }
+
   new: (@site, @source) =>
     @renderer = @site\renderer_for @source
     @target = @site\output_path_for @source, @renderer.ext
@@ -180,6 +182,7 @@ class Page
     -- expose meta in self
     cls = getmetatable self
     extend self, (key) => cls[key] or @meta[key]
+    getmetatable(self).__tostring = Page.__tostring
 
   link_to: =>
     front = "^"..escape_patt @site.config.out_dir
@@ -210,7 +213,7 @@ class Page
       generate_date: os.date!
     }
 
-    helpers = @site\template_helpers tpl_scope
+    helpers = @site\template_helpers tpl_scope, self
 
     base = Path.basepath @target
     parts = for i = 1, #split(base, "/") - 1 do ".."
@@ -248,6 +251,8 @@ class Page
 
 -- a webpage
 class Site
+  __tostring: => "<Site>"
+
   config: {
     template_dir: "templates/"
     default_template: "index"
@@ -335,7 +340,7 @@ class Site
 
   -- get template helpers from plugins
   -- template plugins instances with tpl_scope
-  template_helpers: (tpl_scope) =>
+  template_helpers: (tpl_scope, page) =>
     helpers = {}
     for plugin in @plugins\each!
       if plugin.tpl_helpers
@@ -344,7 +349,17 @@ class Site
           helpers[helper_name] = (...) ->
             p[helper_name] p, ...
 
-    extend helpers, @templates.base_helpers
+    -- give the page to base helpers as first arg
+    base = setmetatable {}, {
+      __index: (_, name) ->
+        fn = @templates.base_helpers[name]
+        if type(fn) != "function"
+          fn
+        else
+          (...) -> fn page, ...
+    }
+
+    extend helpers, base
 
   -- write the entire website
   write: =>
