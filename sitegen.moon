@@ -192,6 +192,13 @@ class Page
     }
 
     helpers = @site\template_helpers tpl_scope
+
+    base = Path.basepath @target
+    parts = for i = 1, #split(base, "/") - 1 do ".."
+    root = table.concat parts, "/"
+    root = "." if root == ""
+    helpers.root = root
+
     tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
 
     -- we run the page as a cosmo template until it normalizes
@@ -350,21 +357,6 @@ class Site
       -- add other written files
       table.insert written_files, file for file in *@written_files
       @write_gitignore written_files
-
-    -- ** STEPSTOBUILD **
-    -- filter?
-    -- aggregate?
-
-    -- render content
-    -- wrap in template
-  
-    -- dont_write = false -- TODO: respect this
-    -- if tpl_scope.is_a
-    --   types = make_list tpl_scope.is_a
-    --   for t in *types
-    --     plugin = @aggregators[t]
-    --     if plugin
-    --       dont_write = dont_write or  plugin\on_aggregate tpl_scope
 
 create_site = (init_fn) ->
   with Site!

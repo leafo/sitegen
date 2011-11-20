@@ -57,6 +57,10 @@ flatten_args = (...) ->
   flatten {...}
   accum
 
+split = (str, delim using nil) ->
+  str ..= delim
+  [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
+
 class OrderSet
   new: (items) =>
     @list = {}
