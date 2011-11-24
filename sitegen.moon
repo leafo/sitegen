@@ -110,6 +110,10 @@ class SiteScope
 class Templates
   defaults: require "sitegen.default.templates"
   base_helpers: {
+    render: (args) => -- render another page in current scope
+      name = unpack args
+      Templates"."\fill name, @tpl_scope
+
     wrap: (args) =>
       tpl_name = unpack args
       error "missing template name", 2 if not tpl_name
@@ -231,6 +235,7 @@ class Page
     helpers.root = root
 
     tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
+    @tpl_scope = tpl_scope
 
     -- we run the page as a cosmo template until it normalizes
     -- this is because some plugins might need to read/change
