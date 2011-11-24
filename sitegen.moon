@@ -26,6 +26,34 @@ require "sitegen.common"
 log = (...) ->
   print ...
 
+require "lpeg"
+
+fill_ignoring_pre = (text, context) ->
+  import P, R, S, V, Ct, C from lpeg
+
+  open, close = P"<pre>", P"</pre>"
+
+  Pre = V"Pre"
+  pre = P{
+    Pre
+    Pre: open * (Pre + (1 - close))^0 * close
+  }
+
+  pre = pre / (text) -> {"pre", text}
+
+  other = (1 - pre)^1 / (text) ->
+    {"text", text}
+
+  document = Ct((pre + other)^0)
+  -- parse to parts to avoid metamethod/c-call boundary
+  parts = document\match text
+  filled = for part in *parts
+    t, body = unpack part
+    body = cosmo.f(body) context if t == "text"
+    body
+
+  table.concat filled
+
 class Plugin -- uhh
   new: (@tpl_scope) =>
 
@@ -242,7 +270,8 @@ class Page
     -- the content of the body (see indexer)
     while true
       co = coroutine.create ->
-        tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
+        -- tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
+        tpl_scope.body = fill_ignoring_pre tpl_scope.body, tpl_scope
         nil
 
       pass, altered_body = coroutine.resume co
