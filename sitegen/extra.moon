@@ -56,13 +56,13 @@ class PygmentsPlugin
     nl = P"\n"
 
     body = (P(1) - (nl * delim * (nl + -1)))^0 * nl
-    code = delim * C(R("az", "AZ")^1) * nl * C(body) * delim
+    code_block = delim * C(R("az", "AZ")^1) * nl * C(body) * delim
 
-    code = code / (lang, body) ->
-      code = @highlight_code lang, body
-      html.build -> pre { class: "lang_"..lang, raw code }
+    code_block = code_block / (lang, body) ->
+      code_text = @highlight_code lang, body
+      html.build -> code { class: "lang_"..lang, pre { raw code_text } }
 
-    document = Cs((code + 1)^0)
+    document = Cs((code_block + 1)^0)
 
     assert document\match text
 

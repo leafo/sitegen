@@ -31,20 +31,27 @@ require "lpeg"
 fill_ignoring_pre = (text, context) ->
   import P, R, S, V, Ct, C from lpeg
 
-  open, close = P"<pre>", P"</pre>"
+  string_patt = (delim) ->
+    delim = P(delim)
+    delim * (1 - delim)^0 * delim
 
-  Pre = V"Pre"
-  pre = P{
-    Pre
-    Pre: open * (Pre + (1 - close))^0 * close
+  strings = string_patt"'" + string_patt'"'
+
+  open = P"<code" * (strings + (1 - P">"))^0 * ">"
+  close = P"</code>"
+
+  Code = V"Code"
+  code = P{
+    Code
+    Code: open * (Code + (1 - close))^0 * close
   }
 
-  pre = pre / (text) -> {"pre", text}
+  code = code / (text) -> {"code", text}
 
-  other = (1 - pre)^1 / (text) ->
+  other = (1 - code)^1 / (text) ->
     {"text", text}
 
-  document = Ct((pre + other)^0)
+  document = Ct((code + other)^0)
   -- parse to parts to avoid metamethod/c-call boundary
   parts = document\match text
   filled = for part in *parts
