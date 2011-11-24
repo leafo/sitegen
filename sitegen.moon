@@ -14,10 +14,11 @@ import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from moon
 
 export create_site, register_plugin
-export Plugin
+export Plugin, HTMLRenderer, MarkdownRenderer
 
 plugins = {}
 register_plugin = (plugin) ->
+  plugin\on_register!  if plugin.on_register
   table.insert plugins, plugin
 
 require "sitegen.common"
@@ -53,9 +54,14 @@ class HTMLRenderer extends Renderer
 class MarkdownRenderer extends Renderer
   ext: "html"
   pattern: convert_pattern "*.md"
+  pre_render: {}
 
   render: (text, site) =>
     text, header = @parse_header text
+
+    for filter in *@pre_render
+      text = filter text, site
+
     discount(text), header
 
 -- visible from init
@@ -202,6 +208,9 @@ class Page
   -- read the source
   _read: =>
     text = nil
+    if not Path.exists @source
+      error "can not open page source: " .. @source
+
     with io.open @source
       text = \read"*a"
       \close!

@@ -101,6 +101,8 @@ builders = defaultbl {
   text: -> (str) -> Text str
 }, -> Tag
 
+builders.raw = builders.text
+
 build = (fn) ->
   source_env = getfenv fn
   result = run_with_scope fn, setmetatable {}, {
