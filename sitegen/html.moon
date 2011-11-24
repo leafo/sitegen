@@ -53,8 +53,9 @@ render_list = (list, delim) ->
 render_tag = (name, inner="", attributes={}) ->
   formatted_attributes = {}
   for attr_name, attr_value in pairs attributes
-    table.insert formatted_attributes,
-      ('%s="%s"')\format attr_name, encode attr_value
+    if not attr_name\match"^__"
+      table.insert formatted_attributes,
+        ('%s="%s"')\format attr_name, encode attr_value
 
   if is_list inner
     inner = render_list inner, "\n"
@@ -72,6 +73,7 @@ render_tag = (name, inner="", attributes={}) ->
   }
 
   close = table.concat { "</", name, ">"}
+  close = "\n" .. close if attributes.__breakclose
   open .. inner .. close
 
 class Text

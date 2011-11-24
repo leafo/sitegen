@@ -45,7 +45,10 @@ class PygmentsPlugin
       \close!
 
     p = io.popen ("pygmentize -f html -l %s %s")\format lang, fname
-    p\read"*a"
+    out = p\read"*a"
+
+    -- get rid of the div and pre inserted by pygments
+    assert out\match '^<div class="highlight"><pre>(.-)</pre></div>'
 
   filter: (text, site) =>
     lpeg = require "lpeg"
@@ -60,7 +63,11 @@ class PygmentsPlugin
 
     code_block = code_block / (lang, body) ->
       code_text = @highlight_code lang, body
-      html.build -> code { class: "lang_"..lang, pre { raw code_text } }
+      html.build -> pre {
+        __breakclose: true
+        class: "highlight lang_"..lang
+        code { raw code_text }
+      }
 
     document = Cs((code_block + 1)^0)
 
