@@ -61,6 +61,24 @@ fill_ignoring_pre = (text, context) ->
 
   table.concat filled
 
+-- template_helpers can yield if they decide to change the
+-- entire body. This triggers the render to happen again
+-- with the updated tpl_scope.
+-- see indexer
+render_until_complete = (tpl_scope, render_fn) ->
+  out = nil
+  while true
+    co = coroutine.create ->
+      out = render_fn!
+      nil
+
+    pass, altered_body = assert coroutine.resume co
+    if altered_body
+      tpl_scope.body = altered_body
+    else
+      break
+  out
+
 class Plugin -- uhh
   new: (@tpl_scope) =>
 
@@ -272,21 +290,8 @@ class Page
     tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
     @tpl_scope = tpl_scope
 
-    -- we run the page as a cosmo template until it normalizes
-    -- this is because some plugins might need to read/change
-    -- the content of the body (see indexer)
-    while true
-      co = coroutine.create ->
-        -- tpl_scope.body = cosmo.f(tpl_scope.body) tpl_scope
-        tpl_scope.body = fill_ignoring_pre tpl_scope.body, tpl_scope
-        nil
-
-      pass, altered_body = coroutine.resume co
-      error altered_body if not pass
-      if altered_body
-        tpl_scope.body = altered_body
-      else
-        break
+    tpl_scope.body = render_until_complete tpl_scope, ->
+      fill_ignoring_pre tpl_scope.body, tpl_scope
 
     -- find the wrapping template
     tpl_name = if @meta.template == nil
@@ -295,7 +300,8 @@ class Page
       @meta.template
 
     if tpl_name
-      @site.templates\fill tpl_name, tpl_scope
+      render_until_complete tpl_scope, ->
+        @site.templates\fill tpl_name, tpl_scope
     else
       tpl_scope.body
 
