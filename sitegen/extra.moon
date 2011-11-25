@@ -4,8 +4,6 @@ module "sitegen.extra", package.seeall
 sitegen = require "sitegen"
 html = require "sitegen.html"
 
-export AnalyticsPlugin, DumpPlugin
-
 class DumpPlugin extends sitegen.Plugin
   tpl_helpers: { "dump" }
   dump: (args) =>
@@ -76,7 +74,24 @@ class PygmentsPlugin
   on_register: =>
     table.insert sitegen.MarkdownRenderer.pre_render, self\filter
 
+-- embed compiled coffeescript directly into the page
+class CoffeeScriptPlugin
+  tpl_helpers: { "render_coffee" }
+
+  compile_coffee: (fname) =>
+    p = io.popen ("coffee -c -p %s")\format fname
+    p\read"*a"
+
+  render_coffee: (arg) =>
+    fname = unpack arg
+    html.build ->
+      script {
+        type: "text/javascript"
+        @compile_coffee fname
+      }
+
 sitegen.register_plugin DumpPlugin
 sitegen.register_plugin AnalyticsPlugin
 sitegen.register_plugin PygmentsPlugin
+sitegen.register_plugin CoffeeScriptPlugin
 
