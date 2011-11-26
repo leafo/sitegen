@@ -307,7 +307,12 @@ class Page
 
     while #@template_stack > 0
       tpl_name = @template_stack\pop!
+      stack_height = #@template_stack
       tpl_scope.body = render_until_complete tpl_scope, ->
+        -- unroll any templates pushed from previous render attempt
+        while #@template_stack > stack_height
+          @template_stack\pop!
+
         @site.templates\fill tpl_name, tpl_scope
 
     tpl_scope.body
