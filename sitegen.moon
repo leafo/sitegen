@@ -169,7 +169,9 @@ class Templates
 
     wrap: (args) =>
       tpl_name = unpack args
-      error "missing template name", 2 if not tpl_name
+      error "missing template name" if not tpl_name
+      @template_stack\push tpl_name
+      ""
 
     each: (args) =>
       list, name = unpack args
@@ -247,6 +249,7 @@ class Page
     extend self, (key) => cls[key] or @meta[key]
     getmetatable(self).__tostring = Page.__tostring
 
+
   link_to: =>
     front = "^"..escape_patt @site.config.out_dir
     html.build ->
@@ -293,17 +296,21 @@ class Page
     tpl_scope.body = render_until_complete tpl_scope, ->
       fill_ignoring_pre tpl_scope.body, tpl_scope
 
+    -- templates
+    @template_stack = Stack!
+
     -- find the wrapping template
-    tpl_name = if @meta.template == nil
+    @template_stack\push if @meta.template == nil
       @site.config.default_template
     else
       @meta.template
 
-    if tpl_name
-      render_until_complete tpl_scope, ->
+    while #@template_stack > 0
+      tpl_name = @template_stack\pop!
+      tpl_scope.body = render_until_complete tpl_scope, ->
         @site.templates\fill tpl_name, tpl_scope
-    else
-      tpl_scope.body
+
+    tpl_scope.body
 
 -- a webpage
 class Site

@@ -82,6 +82,15 @@ class OrderSet
       for item in *@list
         coroutine.yield item
 
+class Stack
+  push: (item) =>
+    self[#self + 1] = item
+
+  pop: (item) =>
+    len = #self
+    with self[len]
+      self[len] = nil
+
 Path =
   exists: (path) ->
     file = io.open path
