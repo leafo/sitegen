@@ -470,4 +470,5 @@ require "sitegen.deploy"
 require "sitegen.indexer"
 require "sitegen.extra"
 require "sitegen.blog"
+require "sitegen.feed"
 

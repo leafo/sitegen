@@ -40,7 +40,6 @@ strip_tags = (html) ->
 is_list = (t) ->
   type(t) == "table" and t.type != "tag"
 
-
 render_list = (list, delim) ->
   escaped = for item in *list
     if type(item) == "string"
@@ -77,8 +76,13 @@ render_tag = (name, inner="", attributes={}) ->
   open .. inner .. close
 
 class Text
-  new: (@text) =>
+  new: (@text) => @type = "tag"
   __tostring: => @text
+
+class CData
+  new: (@text) => @type = "tag"
+  __tostring: =>
+    "<![CDATA[" .. @text .. "]]>"
 
 class Tag
   new: (@name, @inner, @attributes) => @type = "tag"
@@ -101,6 +105,7 @@ class Tag
 
 builders = defaultbl {
   text: -> (str) -> Text str
+  cdata: -> (str) -> CData str
 }, -> Tag
 
 builders.raw = builders.text

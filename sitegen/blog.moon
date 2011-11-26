@@ -83,7 +83,8 @@ class BlogPlugin
 
   write: (site) =>
     print "blog posts:", #@posts
-    site\write_file "feed.xml", render_rss site, @posts
+    if #@posts > 0
+      site\write_file "feed.xml", render_rss site, @posts
 
     posts = @query!
     for post in *posts
