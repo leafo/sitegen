@@ -118,7 +118,7 @@ tool](http://pygments.org/docs/cmdline/) is installed.
 
 ### CoffeeScript
 
-Provies a template helper, `render_coffeescript` that lets you embed compiled
+Provies a template helper, `render_coffee` that lets you embed compiled
 CoffeeScript into the page from an external file. CoffeeScript must be
 installed on the system for this plugin to work.
 
