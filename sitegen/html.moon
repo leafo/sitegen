@@ -3,6 +3,7 @@ module "sitegen.html", package.seeall
 require "moon"
 
 export encode, decode, strip_tags, build, builders
+export escape, unescape
 
 import concat from table
 import run_with_scope, defaultbl from moon
@@ -28,10 +29,14 @@ html_encode_pattern = "[" .. concat([escape_patt char for char in pairs html_enc
 encode = (text) ->
   (text\gsub html_encode_pattern, html_encode_entities)
 
+escape = encode
+
 decode = (text) ->
   (text\gsub "(&[^&]-;)", (enc) ->
     decoded = html_decode_entities[enc]
     decoded if decoded else enc)
+
+unescape = decode
 
 strip_tags = (html) ->
   html\gsub "<[^>]+>", ""

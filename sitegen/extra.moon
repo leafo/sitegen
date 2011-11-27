@@ -41,7 +41,7 @@ class PygmentsPlugin
   custom_highlighters: {}
   disable_indent_detect: false
 
-  highlight_code: (lang, code) =>
+  highlight: (lang, code) =>
     fname = os.tmpname!
     with io.open fname, "w"
       \write code
@@ -52,6 +52,13 @@ class PygmentsPlugin
 
     -- get rid of the div and pre inserted by pygments
     assert out\match '^<div class="highlight"><pre>(.-)</pre></div>'
+
+  pre_tag: (html_code, lang="text") =>
+    html.build -> pre {
+      __breakclose: true
+      class: "highlight lang_"..lang
+      code { raw html_code }
+    }
 
   filter: (text, site) =>
     lpeg = require "lpeg"
@@ -77,12 +84,8 @@ class PygmentsPlugin
         out = @custom_highlighters[lang] self, body
         return out if out
 
-      code_text = @highlight_code lang, body
-      html.build -> pre {
-        __breakclose: true
-        class: "highlight lang_"..lang
-        code { raw code_text }
-      }
+      code_text = @highlight lang, body
+      @pre_tag code_text, lang
 
     document = Cs((nl * code_block + 1)^0)
 
