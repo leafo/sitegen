@@ -210,18 +210,32 @@ class Templates
 
       html.build tpl_fn
 
+  -- load a markdown template
+  load_md: (name) =>
+    file = io.open Path.join @dir, name .. ".md"
+    return if not file
+    html = MarkdownRenderer\render file\read"*a"
+    (scope) ->
+      fill_ignoring_pre html, scope
+
   get_template: (name) =>
     if not @template_cache[name]
-      found = false
-      for kind in *{"html", "moon"}
-        tpl = self["load_"..kind] self, name
-        if tpl
-          @template_cache[name] = tpl
-          found = true
+      tpl = nil
+      -- look up exact file name
+      base, ext = name\match "^(.-)%.([^/]*)$"
+      if ext
+        fn = self["load_"..ext]
+        tpl = fn and fn self, base
+
+      if not tpl
+        for kind in *{"html", "moon"}
+          tpl = self["load_"..kind] self, name
           break
 
-      -- still don't have it? load default
-      if not found
+      if tpl
+        @template_cache[name] = tpl
+      else
+        -- still don't have it? load default
         @template_cache[name] = if @defaults[name]
           cosmo.f @defaults[name]
         else
