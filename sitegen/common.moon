@@ -22,6 +22,20 @@ get_local = (name, level=4) ->
   print "locals:", table.concat names, ", "
   locals[name] if name
 
+trim_leading_white = (str, leading) ->
+  lines = split str, "\n"
+  if #lines > 0
+    first = lines[1]
+    leading = leading or first\match"^(%s*)"
+
+    for i, line in ipairs lines
+      lines[i] = line\match("^"..leading.."(.*)$") or line
+
+    if lines[#lines]\match "^%s*$"
+      lines[#lines] = nil
+
+  table.concat lines, "\n"
+
 dumps = (...) ->
   print moon.dump ...
 

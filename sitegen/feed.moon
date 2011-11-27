@@ -15,20 +15,6 @@ import extend from moon
 
 export render_feed
 
-trim_leading_white = (str) ->
-  lines = split str, "\n"
-  if #lines > 0
-    first = lines[1]
-    leading = first\match"^(%s*)"
-
-    for i, line in ipairs lines
-      lines[i] = line\match("^"..leading.."(.*)$") or line
-
-    if lines[#lines]\match "%s+"
-      lines[#lines] = nil
-
-  table.concat lines, "\n"
-
 render_feed = (root) ->
   concat = (list) ->
     html.builders.raw! html.build -> list

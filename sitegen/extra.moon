@@ -4,6 +4,8 @@ module "sitegen.extra", package.seeall
 sitegen = require "sitegen"
 html = require "sitegen.html"
 
+export ^
+
 class DumpPlugin extends sitegen.Plugin
   tpl_helpers: { "dump" }
   dump: (args) =>
@@ -36,6 +38,9 @@ class AnalyticsPlugin extends sitegen.Plugin
 -- ```
 --
 class PygmentsPlugin
+  custom_highlighters: {}
+  disable_indent_detect: false
+
   highlight_code: (lang, code) =>
     fname = os.tmpname!
     with io.open fname, "w"
@@ -50,16 +55,28 @@ class PygmentsPlugin
 
   filter: (text, site) =>
     lpeg = require "lpeg"
-    import P, R, S, Cs, C from lpeg
+    import P, R, S, Cs, Cmt, C, Cg, Cb from lpeg
 
     delim = P"```"
     white = S" \t"^0
     nl = P"\n"
 
-    body = (P(1) - (nl * delim * (nl + -1)))^0 * nl
-    code_block = delim * C(R("az", "AZ")^1) * nl * C(body) * delim
+    check_indent = Cmt C(white) * Cb"indent", (body, pos, white, prev) ->
+      return false if prev != "" and @disable_indent_detect
+      white == prev
 
-    code_block = code_block / (lang, body) ->
+    start_line = Cg(white, "indent") * delim * C(R("az", "AZ")^1) * nl
+    end_line = check_indent * delim * (#nl + -1)
+
+    code_block = start_line * C((1 - end_line)^0) * end_line
+    code_block = code_block * Cb"indent" / (lang, body, indent) ->
+      if indent != ""
+        body = trim_leading_white body, indent
+
+      if @custom_highlighters[lang]
+        out = @custom_highlighters[lang] self, body
+        return out if out
+
       code_text = @highlight_code lang, body
       html.build -> pre {
         __breakclose: true
@@ -67,7 +84,7 @@ class PygmentsPlugin
         code { raw code_text }
       }
 
-    document = Cs((code_block + 1)^0)
+    document = Cs((nl * code_block + 1)^0)
 
     assert document\match text
 
