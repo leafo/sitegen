@@ -4,6 +4,7 @@ require "moon"
 
 export encode, decode, strip_tags, build, builders
 export escape, unescape
+export tag
 
 import concat from table
 import run_with_scope, defaultbl from moon
@@ -17,7 +18,7 @@ html_encode_entities = {
   ['<']: '&lt;'
   ['>']: '&gt;'
   ['"']: '&quot;'
-  ["'"]: '&q#039;'
+  ["'"]: '&#039;'
 }
 
 html_decode_entities = {}
@@ -108,17 +109,24 @@ class Tag
 
     Tag @name, inner, attributes
 
+tag = nil
 builders = defaultbl {
   text: -> (str) -> Text str
   cdata: -> (str) -> CData str
+  tag: -> tag
 }, -> Tag
 
 builders.raw = builders.text
+
+tag = setmetatable {}, {
+  __index: (name) => builders[name] name
+}
 
 build = (fn) ->
   source_env = getfenv fn
   result = run_with_scope fn, setmetatable {}, {
     __index: (name) =>
+      return tag if name == "tag"
       return source_env[name] if source_env[name] != nil
       builders[name] name
   }

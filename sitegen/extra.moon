@@ -51,7 +51,7 @@ class PygmentsPlugin
     out = p\read"*a"
 
     -- get rid of the div and pre inserted by pygments
-    assert out\match '^<div class="highlight"><pre>(.-)</pre></div>'
+    assert out\match '^<div class="highlight"><pre>(.-)\n?</pre></div>'
 
   pre_tag: (html_code, lang="text") =>
     html.build -> pre {
