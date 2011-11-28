@@ -173,6 +173,11 @@ class Templates
       @template_stack\push tpl_name
       ""
 
+    if: (args) =>
+      if @tpl_scope[args[1]]
+        cosmo.yield {}
+      nil
+
     each: (args) =>
       list, name = unpack args
       if list
