@@ -107,7 +107,7 @@ class CoffeeScriptPlugin
     html.build ->
       script {
         type: "text/javascript"
-        @compile_coffee fname
+        raw @compile_coffee fname
       }
 
 sitegen.register_plugin DumpPlugin
