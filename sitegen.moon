@@ -147,6 +147,9 @@ class SiteScope
           if enter_dirs and "directory" == lfs.attributes full_path, "mode"
             search full_path
           elseif fname\match pattern
+            if full_path\match"^%./"
+              full_path = full_path\sub 3
+
             @files\add full_path
 
     search dir
@@ -173,9 +176,14 @@ class Templates
       @template_stack\push tpl_name
       ""
 
+    neq: (args) =>
+      if args[1] != args[2]
+        cosmo.yield {}
+      else
+        cosmo.yield _template: 2
+      nil
+
     eq: (args) =>
-      require "moon"
-      moon.p args
       if args[1] == args[2]
         cosmo.yield {}
       else
@@ -462,35 +470,37 @@ class Site
     extend helpers, base
 
   -- write the entire website
-  write: =>
+  write: (filter_files=false) =>
     pages = for path in @scope.files\each!
-      page = Page self, path
-      -- TODO: check dont_write
-      for t in *make_list page.meta.is_a
-        plugin = @aggregators[t]
-        error "unknown `is_a` type: " .. t if not plugin
-        plugin\on_aggregate page
-      page
+      if not filter_files or filter_files[path]
+        page = Page self, path
+        -- TODO: check dont_write
+        for t in *make_list page.meta.is_a
+          plugin = @aggregators[t]
+          error "unknown `is_a` type: " .. t if not plugin
+          plugin\on_aggregate page
+        page
 
     written_files = for page in *pages
       page\write!
 
-    -- copy files
-    for path in @scope.copy_files\each!
-      target = Path.join @config.out_dir, path
-      print "copied", target
-      table.insert written_files, target
-      Path.copy path, target
+    if not filter_files
+      -- copy files
+      for path in @scope.copy_files\each!
+        target = Path.join @config.out_dir, path
+        print "copied", target
+        table.insert written_files, target
+        Path.copy path, target
 
-    -- write plugins
-    for plugin in @plugins\each!
-      plugin\write self if plugin.write
+      -- write plugins
+      for plugin in @plugins\each!
+        plugin\write self if plugin.write
 
-    -- gitignore
-    if @config.write_gitignore
-      -- add other written files
-      table.insert written_files, file for file in *@written_files
-      @write_gitignore written_files
+      -- gitignore
+      if @config.write_gitignore
+        -- add other written files
+        table.insert written_files, file for file in *@written_files
+        @write_gitignore written_files
 
 create_site = (init_fn) ->
   with Site!

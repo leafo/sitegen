@@ -7,7 +7,7 @@ source = {
 
 description = {
 	summary = "A tool for assembling static webpages with markdown",
-	homepage = "http://leafo.net/sitegen",
+	homepage = "http://leafo.net/sitegen/",
 	maintainer = "Leaf Corcoran <leafot@gmail.com>",
 	license = "MIT"
 }

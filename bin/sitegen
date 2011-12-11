@@ -46,7 +46,7 @@ scope = (t={}) ->
 get_site = ->
   if Path.exists default.sitefile
     fn = moonscript.loadfile(default.sitefile)
-    site = nil
+    site, old_write = nil
     run_with_scope fn, {
       sitegen: extend {
         create_site: (...) ->
@@ -55,6 +55,7 @@ get_site = ->
           site
       }, sitegen
     }
+    site.write = old_write
     site
   else
     false
@@ -160,7 +161,12 @@ tasks = {
     file = io.open default.sitefile
     error "missing site file: " .. default.sitefile if not file
     file\close!
-    moonscript.loadfile(default.sitefile)!
+
+    if #arg > 1
+      files = {a, true for i, a in ipairs arg when i > 1}
+      get_site!\write files
+    else
+      moonscript.loadfile(default.sitefile)!
 
   help: ->
     print "Sitegen"
@@ -171,9 +177,9 @@ tasks = {
     print!
     print columnize {
       {"new", "Create a new site in the current directory"}
-      {"build", "Build (or rebuild) all pages"}
+      {"build [files]", "Build (or rebuild) all pages, or only files"}
       {"page <path> [title]", "Create a new markdown page at path"}
-      {"deploy <host> <path>", "Deploy site to host over ssy (rsync)"}
+      {"deploy [host] [path]", "Deploy site to host over ssh (rsync)"}
     }
     print!
 }
