@@ -60,7 +60,7 @@ class PygmentsPlugin
       code { raw html_code }
     }
 
-  filter: (text, site) =>
+  filter: (text, page) =>
     lpeg = require "lpeg"
     import P, R, S, Cs, Cmt, C, Cg, Cb from lpeg
 
@@ -81,7 +81,7 @@ class PygmentsPlugin
         body = trim_leading_white body, indent
 
       if @custom_highlighters[lang]
-        out = @custom_highlighters[lang] self, body
+        out = @custom_highlighters[lang] self, body, page
         return out if out
 
       code_text = @highlight lang, body

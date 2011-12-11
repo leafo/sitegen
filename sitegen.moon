@@ -109,11 +109,11 @@ class MarkdownRenderer extends Renderer
   pattern: convert_pattern "*.md"
   pre_render: {}
 
-  render: (text, site) =>
+  render: (text, page) =>
     text, header = @parse_header text
 
     for filter in *@pre_render
-      text = filter text, site
+      text = filter text, page
 
     discount(text), header
 
@@ -172,6 +172,15 @@ class Templates
       error "missing template name" if not tpl_name
       @template_stack\push tpl_name
       ""
+
+    eq: (args) =>
+      require "moon"
+      moon.p args
+      if args[1] == args[2]
+        cosmo.yield {}
+      else
+        cosmo.yield _template: 2
+      nil
 
     if: (args) =>
       if @tpl_scope[args[1]]
@@ -254,10 +263,14 @@ class Page
 
   new: (@site, @source) =>
     @renderer = @site\renderer_for @source
-    @target = @site\output_path_for @source, @renderer.ext
 
     -- extract metadata
-    @raw_text, @meta = @renderer\render @_read!
+    @raw_text, @meta = @renderer\render @_read!, self
+
+    @target = if @meta.target
+      Path.join @site.config.out_dir, @meta.target .. "." .. @renderer.ext
+    else
+      @site\output_path_for @source, @renderer.ext
 
     filter = @site\filter_for @source
     if filter
