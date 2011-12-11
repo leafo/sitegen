@@ -1,4 +1,6 @@
-
+    target: doc/plugins
+    title: Sitegen - Plugins
+--
 $index
 
 ## Method Types
@@ -26,10 +28,13 @@ Provides a site helper called `feed` that triggers a feed to be written from a
 MoonScript file when the site is written. First argument is source, second is
 destination.
 
+    ```moon
     feed "my_feed.moon", "feeds/feed.xml"
+    ```
 
 The feed file must return a table of feed entires:
 
+    ```moon
     -- my_feed.moon
     require "date"
     return {
@@ -47,6 +52,7 @@ The feed file must return a table of feed entires:
         ]]
       }
     }
+    ```
 
 
 When rendering each entry, if a key is missing the entry, it will be searched
@@ -63,7 +69,9 @@ Provides site helper `deploy_to` and a command line helper `deploy`.
 two arguments, a host and a path. This can be done in the initialization
 function:
 
+    ```moon
     deploy_to "leaf@leafo.net", "www/mysite"
+    ```
 
 Deploying is done over ssh with rsync. It uses the command `rsync -arvuz www/
 $host:$path`.
@@ -71,7 +79,9 @@ $host:$path`.
 Assuming everything is configured correctly, the site can be deployed from the
 command line:
 
-    $> sitegen deploy
+    ```bash
+    $ sitegen deploy
+    ```
 
 The deploy command line helper will only deploy, it will not build. Make sure
 you build the site first.
@@ -101,7 +111,7 @@ code block that should be highlighted according to a specified language.
 
 For example, to highlight Lua code in a page:
 
-    ```lua
+    ```lua   
     local test = function(...) 
       print("hello world", ...)
     end
