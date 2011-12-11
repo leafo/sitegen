@@ -6,10 +6,10 @@ index = [==[<!DOCTYPE HTML>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>something: $something</title>
-  $each{javascripts, "url"}[[<script type="text/javascript" src="$url"></script>
-]]
+  <title>$title</title>
   $each{stylesheets, "url"}[[<link rel="stylesheet" href="$url" />
+]]
+  $each{javascripts, "url"}[[<script type="text/javascript" src="$url"></script>
 ]]
 </head>
 <body>
