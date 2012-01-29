@@ -22,6 +22,7 @@ register_plugin = (plugin) ->
   table.insert plugins, plugin
 
 require "sitegen.common"
+import Cache from require "sitegen.cache"
 
 log = (...) ->
   print ...
@@ -371,6 +372,7 @@ class Site
   new: =>
     @templates = Templates @config.template_dir
     @scope = SiteScope self
+    @cache = Cache!
 
     @user_vars = {}
     @written_files = {}
@@ -501,6 +503,8 @@ class Site
         -- add other written files
         table.insert written_files, file for file in *@written_files
         @write_gitignore written_files
+
+    @cache\write!
 
 create_site = (init_fn) ->
   with Site!
