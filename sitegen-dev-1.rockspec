@@ -32,6 +32,7 @@ build = {
 		["sitegen.deploy"] = "sitegen/deploy.lua",
 		["sitegen.blog"] = "sitegen/blog.lua",
 		["sitegen.feed"] = "sitegen/feed.lua",
+		["sitegen.cache"] = "sitegen/cache.lua",
 	},
 	install = {
 		bin = { "bin/sitegen" },
