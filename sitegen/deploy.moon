@@ -9,7 +9,7 @@ class Sync
   new: (@host, @path) =>
   upload: =>
     os.execute table.concat {
-      'rsync -arvuz www/ ', @host ,':', @path
+      'rsync -rvuzL www/ ', @host ,':', @path
     }
 
 class DeployPlugin
