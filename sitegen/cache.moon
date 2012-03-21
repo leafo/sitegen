@@ -4,10 +4,10 @@ module "sitegen.cache", package.seeall
 import concat from table
 export Cache, CacheTable
 
-require "cjson"
+json = require "cjson"
 
-serialize = (obj) -> cjson.encode obj
-unserialize = (text) -> cjson.decode text
+serialize = (obj) -> json.encode obj
+unserialize = (text) -> json.decode text
 
 class CacheTable
   __tostring: => "<CacheTable>"

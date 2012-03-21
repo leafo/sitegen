@@ -17,7 +17,9 @@ dependencies = {
 	"cosmo",
 	"luasocket",
 	"lua-discount",
-	"luafilesystem >= 1.5"
+	"luafilesystem >= 1.5",
+	"lua-cjson",
+	"luayaml"
 }
 
 build = {
