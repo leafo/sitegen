@@ -130,6 +130,9 @@ class SiteScope
   set: (name, value) => self[name] = value
   get: (name) => self[name]
 
+  disable: (thing) =>
+    @site[thing .. "_disabled"] = true
+
   add: (...) =>
     files = flatten_args ...
     @files\add fname for fname in *files
@@ -512,7 +515,7 @@ class Site
 create_site = (init_fn) ->
   with Site!
     \init_from_fn init_fn
-    .scope\search "*md"
+    .scope\search "*md" unless .autoadd_disabled
 
 -- plugin providers
 require "sitegen.deploy"
