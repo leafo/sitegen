@@ -4,6 +4,16 @@ require "moon"
 
 export *
 
+colors = {
+  reset: 0
+  bright: 1
+  red: 31
+}
+colors = { name, string.char(27) .. "[" .. tostring(key) .. "m" for name, key in pairs colors }
+
+bright_red = (str) ->
+  colors.bright .. colors.red .. tostring(str) .. colors.reset
+
 throw_error = (...) ->
   if coroutine.running()
     coroutine.yield { "error", ... }
@@ -20,7 +30,7 @@ catch_error = (fn) ->
 
   -- something thrown
   if res
-    print "Error:",  res[2]
+    print bright_red"Error:",  res[2]
     true
   else
     false
