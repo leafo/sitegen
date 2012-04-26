@@ -190,4 +190,5 @@ tasks = {
 if not tasks[action]
   error "unknown task: " .. action
 
-tasks[action]!
+catch_error ->
+  tasks[action]!

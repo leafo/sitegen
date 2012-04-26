@@ -29,6 +29,8 @@ log = (...) ->
 
 require "lpeg"
 
+-- replace all template vars in text not contained in a
+-- code block
 fill_ignoring_pre = (text, context) ->
   import P, R, S, V, Ct, C from lpeg
 
@@ -173,7 +175,7 @@ class Templates
 
     wrap: (args) =>
       tpl_name = unpack args
-      error "missing template name" if not tpl_name
+      throw_error "missing template name" if not tpl_name
       @template_stack\push tpl_name
       ""
 
@@ -262,7 +264,7 @@ class Templates
         @template_cache[name] = if @defaults[name]
           cosmo.f @defaults[name]
         else
-          error "could not find template: " .. name if not file
+          throw_error "Could not find template: " .. name if not file
 
     @template_cache[name]
 
@@ -310,7 +312,7 @@ class Page
   _read: =>
     text = nil
     if not Path.exists @source
-      error "can not open page source: " .. @source
+      throw_error "Can not open page source: " .. @source
 
     with io.open @source
       text = \read"*a"
@@ -380,6 +382,7 @@ class Site
     @renderers = {
       MarkdownRenderer
       HTMLRenderer
+      -- MoonRenderer
     }
 
     @plugins = OrderSet plugins
@@ -419,7 +422,7 @@ class Site
       if renderer\can_render path
         return renderer
 
-    error "Don't know how to render:", path
+    throw_error "Don't know how to render: " .. path
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>
@@ -431,7 +434,7 @@ class Site
       \close!
 
     table.insert @written_files, full_path
-  
+
   -- strips the out_dir from the file paths
   write_gitignore: (written_files) =>
     with io.open @config.out_dir .. ".gitignore", "w"
@@ -479,7 +482,7 @@ class Site
         -- TODO: check dont_write
         for t in *make_list page.meta.is_a
           plugin = @aggregators[t]
-          error "unknown `is_a` type: " .. t if not plugin
+          throw_error "Unknown `is_a` type: " .. t if not plugin
           plugin\on_aggregate page
         page
 

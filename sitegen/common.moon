@@ -4,6 +4,20 @@ require "moon"
 
 export *
 
+throw_error = (...) ->
+  if coroutine.running()
+    coroutine.yield { "error", ... }
+  else
+    error ...
+
+catch_error = (fn) ->
+  fn = coroutine.wrap fn
+  res = fn!
+  if res
+    print "Error:",  res[2]
+    true
+  false
+
 get_local = (name, level=4) ->
   locals = {}
   names = {}
