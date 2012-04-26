@@ -11,12 +11,19 @@ throw_error = (...) ->
     error ...
 
 catch_error = (fn) ->
-  fn = coroutine.wrap fn
-  res = fn!
+  co = coroutine.create fn
+
+  status, res = coroutine.resume co
+
+  -- real error
+  error debug.traceback co, res if not status
+
+  -- something thrown
   if res
     print "Error:",  res[2]
     true
-  false
+  else
+    false
 
 get_local = (name, level=4) ->
   locals = {}
