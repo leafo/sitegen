@@ -120,6 +120,41 @@ class MarkdownRenderer extends Renderer
 
     discount(text), header
 
+class MoonRenderer extends Renderer
+  ext: "html"
+  pattern: convert_pattern "*.moon"
+
+  -- this does some crazy chaining
+  render: (text, page) =>
+    scopes = {}
+
+    context = setmetatable {}, {
+      __index: (key) =>
+        for i=#scopes,1,-1
+          val = scopes[i][key]
+          return val if val
+    }
+
+    base_scope = setmetatable {
+      _context: -> context
+      -- appends a scope to __index of the context
+      format: (name) ->
+        formatter = if type(name) == "string"
+          require name
+        else
+          name
+
+        insert scopes, formatter.make_context page
+    }, __index: _G
+
+    insert scopes, base_scope
+    context.format "sitegen.formatters.default"
+
+    fn = moonscript.loadstring text
+    setfenv fn, context
+    fn!
+    context.render!
+
 -- visible from init
 class SiteScope
   new: (@site) =>
@@ -280,6 +315,7 @@ class Page
 
     -- extract metadata
     @raw_text, @meta = @renderer\render @_read!, self
+    @meta = @meta or {}
 
     @target = if @meta.target
       Path.join @site.config.out_dir, @meta.target .. "." .. @renderer.ext
@@ -385,7 +421,7 @@ class Site
     @renderers = {
       MarkdownRenderer
       HTMLRenderer
-      -- MoonRenderer
+      MoonRenderer
     }
 
     @plugins = OrderSet plugins
