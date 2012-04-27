@@ -144,7 +144,7 @@ class MoonRenderer extends Renderer
         else
           name
 
-        insert scopes, formatter.make_context page
+        insert scopes, formatter.make_context page, context
     }, __index: _G
 
     insert scopes, base_scope

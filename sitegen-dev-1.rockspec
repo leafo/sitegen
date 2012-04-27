@@ -30,7 +30,9 @@ build = {
 		["sitegen.indexer"] = "sitegen/indexer.lua",
 		["sitegen.extra"] = "sitegen/extra.lua",
 		["sitegen.common"] = "sitegen/common.lua",
+		-- TODO rename one of these
 		["sitegen.default.templates"] = "sitegen/default/templates.lua",
+		["sitegen.formatters.default"] = "sitegen/formatters/default.lua",
 		["sitegen.deploy"] = "sitegen/deploy.lua",
 		["sitegen.blog"] = "sitegen/blog.lua",
 		["sitegen.feed"] = "sitegen/feed.lua",
