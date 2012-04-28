@@ -35,9 +35,9 @@ catch_error = (fn) ->
   -- something thrown
   if res
     print bright_red"Error:",  res[2]
-    true
-  else
-    false
+    os.exit 1
+
+  false
 
 get_local = (name, level=4) ->
   locals = {}

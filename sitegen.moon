@@ -604,6 +604,9 @@ class Site
           plugin\on_aggregate page
         page
 
+    if filter_files and #pages == 0
+      throw_error "no pages found for rendering"
+
     written_files = for page in *pages
       page\write!
 
