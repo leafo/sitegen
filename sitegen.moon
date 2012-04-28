@@ -106,9 +106,10 @@ class SiteFile
     @io = {
       -- load a file relative to the sitepath
       open: (fname, ...) ->
-        path = Path.join(@rel_path, fname)
-        print bright_yellow"+ opening: " .. path
-        io.open path, ...
+        io.open @io.real_path(fname), ...
+
+      real_path: (fname) ->
+        Path.join(@rel_path, fname)
     }
 
   get_site: =>
@@ -356,7 +357,7 @@ class Templates
         @template_cache[name] = if @defaults[name]
           cosmo.f @defaults[name]
         else
-          throw_error "Could not find template: " .. name if not file
+          throw_error "can't find template: " .. name if not file
 
     @template_cache[name]
 
@@ -398,7 +399,14 @@ class Page
     with @site.io.open @target, "w"
       \write content
       \close!
-    log "rendered", @source, "->", @target
+
+    real_path = @site.io.real_path
+    source, target = if real_path
+      real_path(@source), real_path(@target)
+    else
+      @source, @target
+
+    log "rendered", source, "->", target
     @target
 
   -- read the source
@@ -406,7 +414,7 @@ class Page
     text = nil
     file = @site.io.open @source
 
-    throw_error "Can not open page source: " .. @source if not file
+    throw_error "can't open page source: " .. @source if not file
 
     with file\read"*a"
       file\close!
@@ -519,7 +527,7 @@ class Site
       if renderer\can_render path
         return renderer
 
-    throw_error "Don't know how to render: " .. path
+    throw_error "don't know how to render: " .. path
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>
@@ -579,7 +587,7 @@ class Site
         -- TODO: check dont_write
         for t in *make_list page.meta.is_a
           plugin = @aggregators[t]
-          throw_error "Unknown `is_a` type: " .. t if not plugin
+          throw_error "unknown `is_a` type: " .. t if not plugin
           plugin\on_aggregate page
         page
 
