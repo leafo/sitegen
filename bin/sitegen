@@ -177,7 +177,7 @@ tasks = {
     print!
     print columnize {
       {"new", "Create a new site in the current directory"}
-      {"build [files]", "Build (or rebuild) all pages, or only files"}
+      {"build [input-files]", "Build (or rebuild) all pages, or only files"}
       {"page <path> [title]", "Create a new markdown page at path"}
       {"deploy [host] [path]", "Deploy site to host over ssh (rsync)"}
     }
@@ -185,10 +185,10 @@ tasks = {
 }
 
 -- potential commands:
--- plugins: sitegen blog:post "Hello World"
-
-if not tasks[action]
-  error "unknown task: " .. action
+-- plugins: sitegen blog:post "Hello World" -- did I already do this?
 
 catch_error ->
+  if not tasks[action]
+    throw_error "unknown task: " .. action
+
   tasks[action]!

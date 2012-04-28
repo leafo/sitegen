@@ -21,7 +21,7 @@ throw_error = (...) ->
     error ...
 
 catch_error = (fn) ->
-  co = coroutine.create fn
+  co = coroutine.create -> fn! and nil
 
   status, res = coroutine.resume co
 
