@@ -160,6 +160,10 @@ Path = (io) -> {
       path\gsub "^%./", ""
     basepath: (path) ->
       path\match"^(.*)/[^/]*$" or "."
+
+    filename: (path) ->
+      path\match"^([^/]*)$"
+
     mkdir: (path) ->
       os.execute ("mkdir -p %s")\format path
     copy: (src, dest) ->

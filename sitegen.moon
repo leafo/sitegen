@@ -416,7 +416,11 @@ class Page
   -- write the file, return path to written file
   write: =>
     content = @_render!
-    Path.mkdir Path.basepath @target
+    target_dir = Path.basepath @target
+    target_dir = @site.io.real_path target_dir if @site.io.real_path
+
+    Path.mkdir target_dir
+
     with @site.io.open @target, "w"
       \write content
       \close!
@@ -521,6 +525,7 @@ class Site
         plugin\on_site self
 
   Templates: (path) => Templates path, @io
+  Page: (...) => Page self, ...
 
   plugin_scope: =>
     scope = {}
@@ -604,7 +609,7 @@ class Site
   write: (filter_files=false) =>
     pages = for path in @scope.files\each!
       if not filter_files or filter_files[path]
-        page = Page self, path
+        page = @Page path
         -- TODO: check dont_write
         for t in *make_list page.meta.is_a
           plugin = @aggregators[t]

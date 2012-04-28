@@ -33,7 +33,9 @@ build = {
 		-- TODO rename one of these
 		["sitegen.default.templates"] = "sitegen/default/templates.lua",
 		["sitegen.formatters.default"] = "sitegen/formatters/default.lua",
+
 		["sitegen.deploy"] = "sitegen/deploy.lua",
+		["sitegen.watch"] = "sitegen/watch.lua",
 		["sitegen.blog"] = "sitegen/blog.lua",
 		["sitegen.feed"] = "sitegen/feed.lua",
 		["sitegen.cache"] = "sitegen/cache.lua",

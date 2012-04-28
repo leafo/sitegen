@@ -181,6 +181,13 @@ tasks = {
 
     site\write filter
 
+  watch: ->
+    site = get_site!
+    w = require "sitegen.watch"
+
+    with w.Watcher site
+      \loop!
+
   help: ->
     print "Sitegen"
     print "usage: sitegen <action> [args]"
