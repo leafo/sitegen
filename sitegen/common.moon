@@ -154,11 +154,6 @@ Path = (io) -> {
       file = io.open path
       file\close! and true if file
 
-    write_file: (path, content) ->
-      with io.open path, "w"
-        \write content
-        \close!
-
     normalize: (path) ->
       path\gsub "^%./", ""
     basepath: (path) ->

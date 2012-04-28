@@ -404,13 +404,12 @@ class Page
   -- read the source
   _read: =>
     text = nil
-    if not Path.exists @source
-      throw_error "Can not open page source: " .. @source
+    file = @site.io.open @source
 
-    with @site.io.open @source
-      text = \read"*a"
-      \close!
-    text
+    throw_error "Can not open page source: " .. @source if not file
+
+    with file\read"*a"
+      file\close!
 
   _render: =>
     tpl_scope = {
@@ -470,7 +469,7 @@ class Site
     @templates = @Templates @config.template_dir
 
     @scope = SiteScope self
-    @cache = Cache!
+    @cache = Cache self
 
     @user_vars = {}
     @written_files = {}

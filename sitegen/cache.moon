@@ -36,11 +36,11 @@ class Cache
     c = Cache nil, true
     c\clear!
 
-  new: (@fname=".sitegen_cache", skip_load=false) =>
+  new: (@site, @fname=".sitegen_cache", skip_load=false) =>
     @finalize = {}
     @cache = {}
     if not skip_load
-      f = io.open @fname
+      f = @site.io.open @fname
       if f
         @cache, err = unserialize f\read"*a"
         if not @cache
@@ -58,7 +58,7 @@ class Cache
     fn self for fn in *@finalize
     text = serialize @cache
     error "Failed to serialize cache" if not text
-    with io.open @fname, "w"
+    with @site.io.open @fname, "w"
       \write text
       \close!
 
