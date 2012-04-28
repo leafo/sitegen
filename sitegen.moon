@@ -101,6 +101,19 @@ class SiteFile
 
     throw_error "failed to find sitefile: " .. name
 
+  -- convert from shell relative to sitefile relative
+  relativeize: (path) =>
+    exec = (cmd) ->
+      p = io.popen cmd
+      with trim p\read "*a"
+        p\close!
+
+    rel_path = if @rel_path == "" then "." else @rel_path
+
+    @prefix = @prefix or exec("realpath " .. rel_path) .. "/"
+    realpath = exec "realpath " .. path
+    realpath\gsub "^" .. escape_patt(@prefix), ""
+
   make_io: =>
     -- performs operations relative to sitefile
     @io = {

@@ -147,8 +147,12 @@ tasks = {
   build: ->
     site = get_site!
 
-    filter = if #arg > 1
-      {a, true for i, a in ipairs arg when i > 1}
+    filter = nil
+    if #arg > 1
+      filter = {}
+      for i, fname in ipairs arg
+        if i > 1
+          filter[site.sitefile\relativeize fname] = true
 
     site\write filter
 

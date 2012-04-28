@@ -110,6 +110,8 @@ split = (str, delim using nil) ->
   str ..= delim
   [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
 
+trim = (str) -> str\match "^%s*(.-)%s*$"
+
 class OrderSet
   new: (items) =>
     @list = {}
