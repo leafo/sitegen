@@ -140,34 +140,40 @@ class Stack
     with self[len]
       self[len] = nil
 
-Path =
-  -- move up a directory
-  -- /hello/world -> /hello
-  up: (path) ->
-    path = path\gsub "/$", ""
-    path = path\gsub "[^/]*$", ""
-    path if path != ""
+Path = (io) -> {
+    set_io: (_io) -> io = _io
 
-  exists: (path) ->
-    file = io.open path
-    file\close! and true if file
+    -- move up a directory
+    -- /hello/world -> /hello
+    up: (path) ->
+      path = path\gsub "/$", ""
+      path = path\gsub "[^/]*$", ""
+      path if path != ""
 
-  write_file: (path, content) ->
-    with io.open path, "w"
-      \write content
-      \close!
-  normalize: (path) ->
-    path\gsub "^%./", ""
-  basepath: (path) ->
-    path\match"^(.*)/[^/]*$" or "."
-  mkdir: (path) ->
-    os.execute ("mkdir -p %s")\format path
-  copy: (src, dest) ->
-    os.execute ("cp %s %s")\format src, dest
-  join: (a, b) ->
-    a = a\match"^(.*)/$" or a if a != "/"
-    b = b\match"^/(.*)$" or b
-    return b if a == ""
-    return a if b == ""
-    a .. "/" .. b
+    exists: (path) ->
+      file = io.open path
+      file\close! and true if file
+
+    write_file: (path, content) ->
+      with io.open path, "w"
+        \write content
+        \close!
+
+    normalize: (path) ->
+      path\gsub "^%./", ""
+    basepath: (path) ->
+      path\match"^(.*)/[^/]*$" or "."
+    mkdir: (path) ->
+      os.execute ("mkdir -p %s")\format path
+    copy: (src, dest) ->
+      os.execute ("cp %s %s")\format src, dest
+    join: (a, b) ->
+      a = a\match"^(.*)/$" or a if a != "/"
+      b = b\match"^/(.*)$" or b
+      return b if a == ""
+      return a if b == ""
+      a .. "/" .. b
+  }
+
+Path = Path io
 
