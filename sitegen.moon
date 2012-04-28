@@ -14,7 +14,7 @@ import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from moon
 
 export create_site, register_plugin
-export Plugin, HTMLRenderer, MarkdownRenderer
+export Site, SiteFile, Plugin, HTMLRenderer, MarkdownRenderer
 
 plugins = {}
 register_plugin = (plugin) ->
@@ -81,6 +81,50 @@ render_until_complete = (tpl_scope, render_fn) ->
     else
       break
   out
+
+-- does two things:
+-- 1) finds the sitefile, looking up starting from the curret dir
+-- 2) lets us open files relative to where the sitefile is
+class SiteFile
+  new: (@name="site.moon") =>
+    dir = lfs.currentdir!
+    depth = 0
+    while dir
+      path = Path.join dir, name
+      if Path.exists path
+        @file_path = path
+        @rel_path = ("../")\rep depth
+        return
+      dir = Path.up dir
+      depth += 1
+
+    throw_error "failed to find sitefile: " .. name
+
+    -- performs operations relative to sitefile
+    @io = {
+      -- load a file relative to the sitepath
+      open: (fname, ...) ->
+        io.open Path.join(@rel_path, fname), ...
+    }
+
+  get_site: =>
+    print bright_yellow"Using:", Path.join @rel_path, @name
+
+    fn = moonscript.loadfile @file_path
+    -- sitefiles have \write! on the bottom, disable it
+    site = nil
+    run_with_scope fn, {
+      sitegen: extend {
+        create_site: (fn) ->
+          site = sitegen.create_site fn, Site self
+          site.write = ->
+          site
+      }, sitegen
+    }
+
+    site.write = nil -- restore default write
+    site
+
 
 class Plugin -- uhh
   new: (@tpl_scope) =>
@@ -410,7 +454,7 @@ class Site
     write_gitignore: true
   }
 
-  new: =>
+  new: (@sitefile=nil) =>
     @templates = Templates @config.template_dir
     @scope = SiteScope self
     @cache = Cache!
@@ -423,6 +467,8 @@ class Site
       HTMLRenderer
       MoonRenderer
     }
+
+    @io = @sitefile.io or io
 
     @plugins = OrderSet plugins
     -- extract aggregators from plugins
@@ -548,8 +594,8 @@ class Site
 
     @cache\write!
 
-create_site = (init_fn) ->
-  with Site!
+create_site = (init_fn, site=Site!) ->
+  with site
     \init_from_fn init_fn
     .scope\search "*md" unless .autoadd_disabled
 

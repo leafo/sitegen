@@ -2,17 +2,21 @@
 html = require "sitegen.html"
 require "moon"
 
-export *
-
 colors = {
   reset: 0
   bright: 1
   red: 31
+  yellow: 33
 }
 colors = { name, string.char(27) .. "[" .. tostring(key) .. "m" for name, key in pairs colors }
 
-bright_red = (str) ->
-  colors.bright .. colors.red .. tostring(str) .. colors.reset
+make_bright = (color) ->
+  (str) -> colors.bright .. colors[color] .. tostring(str) .. colors.reset
+
+export *
+
+bright_red = make_bright"red"
+bright_yellow = make_bright"yellow"
 
 throw_error = (...) ->
   if coroutine.running()
@@ -137,10 +141,17 @@ class Stack
       self[len] = nil
 
 Path =
+  -- move up a directory
+  -- /hello/world -> /hello
+  up: (path) ->
+    path = path\gsub "/$", ""
+    path = path\gsub "[^/]*$", ""
+    path if path != ""
+
   exists: (path) ->
     file = io.open path
-    with file
-      file\close if file
+    file\close! and true if file
+
   write_file: (path, content) ->
     with io.open path, "w"
       \write content
@@ -154,7 +165,7 @@ Path =
   copy: (src, dest) ->
     os.execute ("cp %s %s")\format src, dest
   join: (a, b) ->
-    a = a\match"^(.*)/$" or a
+    a = a\match"^(.*)/$" or a if a != "/"
     b = b\match"^/(.*)$" or b
     return b if a == ""
     return a if b == ""

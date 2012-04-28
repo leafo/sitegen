@@ -9,6 +9,7 @@ require "sitegen"
 require "sitegen.common"
 
 import run_with_scope, extend from moon
+import SiteFile from sitegen
 
 action = arg[1] or "build"
 
@@ -43,22 +44,7 @@ scope = (t={}) ->
       nil
   }
 
-get_site = ->
-  if Path.exists default.sitefile
-    fn = moonscript.loadfile(default.sitefile)
-    site, old_write = nil
-    run_with_scope fn, {
-      sitegen: extend {
-        create_site: (...) ->
-          site = sitegen.create_site ...
-          site.write = -> -- don't write it
-          site
-      }, sitegen
-    }
-    site.write = old_write
-    site
-  else
-    false
+get_site = -> SiteFile!\get_site!
 
 annotate = (obj, verbs) ->
   setmetatable {}, {
@@ -97,11 +83,11 @@ columnize = (rows, indent=2, padding=4) ->
   table.concat formatted, "\n"
 
 tasks = {
-  dump: ->
-    print moon.dump get_site!
+  dump: -> print moon.dump get_site!
+
   new: ->
-    if get_site!
-      error "sitefile already exists: " .. default.sitefile
+    if Path.exists default.sitefile
+      throw_error "sitefile already exists: " .. default.sitefile
 
     title = ("%q")\format arg[2] or "Hello World"
 
@@ -112,7 +98,7 @@ tasks = {
     Path.write_file default.sitefile, site_moon
 
   page: ->
-    get_site! or error "missing sitefile"
+    get_site!
     path, title = arg[2], arg[3]
 
     if not title
@@ -146,27 +132,25 @@ tasks = {
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
   deploy: ->
-    get_site! or error "missing sitefile"
+    get_site!
+
     deploy = require "sitegen.deploy"
     host, path = arg[2] or deploy.DeployPlugin.host, arg[3] or deploy.DeployPlugin.path
 
-    error "need host" if not host
-    error "need path" if not path
+    throw_error "need host" if not host
+    throw_error "need path" if not path
 
     log "uploading to:", host, path
     with deploy.Sync host, path
       \upload!
 
   build: ->
-    file = io.open default.sitefile
-    error "missing site file: " .. default.sitefile if not file
-    file\close!
+    site = get_site!
 
-    if #arg > 1
-      files = {a, true for i, a in ipairs arg when i > 1}
-      get_site!\write files
-    else
-      moonscript.loadfile(default.sitefile)!
+    filter = if #arg > 1
+      {a, true for i, a in ipairs arg when i > 1}
+
+    site\write filter
 
   help: ->
     print "Sitegen"
