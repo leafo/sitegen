@@ -93,8 +93,7 @@ class SiteFile
       path = Path.join dir, name
       if Path.exists path
         @file_path = path
-        @rel_path = ("../")\rep depth
-        @make_io!
+        @set_rel_path depth
         return
       dir = Path.up dir
       depth += 1
@@ -113,6 +112,15 @@ class SiteFile
     @prefix = @prefix or exec("realpath " .. rel_path) .. "/"
     realpath = exec "realpath " .. path
     realpath\gsub "^" .. escape_patt(@prefix), ""
+
+  -- set relative path to depth folders above current
+  -- add it to package.path
+  set_rel_path: (depth) =>
+    @rel_path = ("../")\rep depth
+    @make_io!
+    package.path = @rel_path .. "?.lua;" .. package.path
+    --  TODO: regenerate moonpath?
+    package.moonpath = @rel_path .. "?.moon;" .. package.moonpath
 
   make_io: =>
     -- performs operations relative to sitefile
