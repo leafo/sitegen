@@ -94,17 +94,21 @@ class SiteFile
       if Path.exists path
         @file_path = path
         @rel_path = ("../")\rep depth
+        @make_io!
         return
       dir = Path.up dir
       depth += 1
 
     throw_error "failed to find sitefile: " .. name
 
+  make_io: =>
     -- performs operations relative to sitefile
     @io = {
       -- load a file relative to the sitepath
       open: (fname, ...) ->
-        io.open Path.join(@rel_path, fname), ...
+        path = Path.join(@rel_path, fname)
+        print bright_yellow"+ opening: " .. path
+        io.open path, ...
     }
 
   get_site: =>
@@ -253,7 +257,7 @@ class Templates
   base_helpers: {
     render: (args) => -- render another page in current scope
       name = unpack args
-      Templates"."\fill name, @tpl_scope
+      @site\Templates"."\fill name, @tpl_scope
 
     wrap: (args) =>
       tpl_name = unpack args
@@ -289,10 +293,11 @@ class Templates
       nil
   }
 
-  new: (@dir) =>
+  new: (@dir, _io) =>
     @template_cache = {}
     @plugin_helpers = {}
     @base_helpers = extend @plugin_helpers, @base_helpers
+    @io = _io or io
 
   fill: (name, context) =>
     tpl = @get_template name
@@ -300,14 +305,17 @@ class Templates
 
   -- load an html (cosmo) template
   load_html: (name) =>
-    file = io.open Path.join @dir, name .. ".html"
+    file = @io.open Path.join @dir, name .. ".html"
     return if not file
-    cosmo.f file\read "*a"
+    with cosmo.f file\read "*a"
+      file\close!
 
   -- load a moonscript template
   load_moon: (name) =>
-    fn = moonscript.loadfile Path.join @dir, name .. ".moon"
-    return if not fn
+    file = @io.open Path.join @dir, name .. ".moon"
+    return if not file
+    fn = moonscript.loadstring file\read"*a", name
+    file\close!
 
     (scope) ->
       tpl_fn = loadstring string.dump fn -- copy function
@@ -319,9 +327,11 @@ class Templates
 
   -- load a markdown template
   load_md: (name) =>
-    file = io.open Path.join @dir, name .. ".md"
+    file = @io.open Path.join @dir, name .. ".md"
     return if not file
     html = MarkdownRenderer\render file\read"*a"
+    file\close!
+
     (scope) ->
       fill_ignoring_pre html, scope
 
@@ -352,7 +362,7 @@ class Templates
 
 -- an individual page
 class Page
-  __tostring: => table.concat { "<Page '",@source,">" }
+  __tostring: => table.concat { "<Page '",@source,"'>" }
 
   new: (@site, @source) =>
     @renderer = @site\renderer_for @source
@@ -385,7 +395,7 @@ class Page
   write: =>
     content = @_render!
     Path.mkdir Path.basepath @target
-    with io.open @target, "w"
+    with @site.io.open @target, "w"
       \write content
       \close!
     log "rendered", @source, "->", @target
@@ -397,7 +407,7 @@ class Page
     if not Path.exists @source
       throw_error "Can not open page source: " .. @source
 
-    with io.open @source
+    with @site.io.open @source
       text = \read"*a"
       \close!
     text
@@ -455,7 +465,10 @@ class Site
   }
 
   new: (@sitefile=nil) =>
-    @templates = Templates @config.template_dir
+    @io = @sitefile and @sitefile.io or io
+
+    @templates = @Templates @config.template_dir
+
     @scope = SiteScope self
     @cache = Cache!
 
@@ -468,8 +481,6 @@ class Site
       MoonRenderer
     }
 
-    @io = @sitefile.io or io
-
     @plugins = OrderSet plugins
     -- extract aggregators from plugins
     @aggregators = {}
@@ -480,6 +491,8 @@ class Site
 
       if plugin.on_site
         plugin\on_site self
+
+  Templates: (path) => Templates path, @io
 
   plugin_scope: =>
     scope = {}
@@ -514,7 +527,7 @@ class Site
     full_path = Path.join @config.out_dir, fname
     Path.mkdir Path.basepath full_path
 
-    with io.open full_path, "w"
+    with @io.open full_path, "w"
       \write content
       \close!
 
@@ -522,7 +535,7 @@ class Site
 
   -- strips the out_dir from the file paths
   write_gitignore: (written_files) =>
-    with io.open @config.out_dir .. ".gitignore", "w"
+    with @io.open @config.out_dir .. ".gitignore", "w"
       patt = "^" .. escape_patt(@config.out_dir) .. "(.+)$"
       relative = [fname\match patt for fname in *written_files]
       \write concat relative, "\n"
