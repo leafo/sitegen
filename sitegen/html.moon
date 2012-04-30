@@ -42,7 +42,6 @@ unescape = decode
 strip_tags = (html) ->
   html\gsub "<[^>]+>", ""
 
-
 is_list = (t) ->
   type(t) == "table" and t.type != "tag"
 
@@ -50,7 +49,9 @@ render_list = (list, delim) ->
   escaped = for item in *list
     if type(item) == "string"
       encode item
-    else
+    elseif is_list item
+      render_list item, delim
+    elseif item != nil
       tostring item
 
   table.concat escaped, delim
@@ -122,7 +123,7 @@ tag = setmetatable {}, {
   __index: (name) => builders[name] name
 }
 
-build = (fn) ->
+build = (fn, delim="\n") ->
   source_env = getfenv fn
   result = run_with_scope fn, setmetatable {}, {
     __index: (name) =>
@@ -132,7 +133,7 @@ build = (fn) ->
   }
 
   if type(result) == "table" and result.type != "tag"
-    result = render_list result, "\n"
+    result = render_list result, delim
 
   tostring result
 
