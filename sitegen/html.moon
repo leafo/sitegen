@@ -51,6 +51,8 @@ render_list = (list, delim) ->
       encode item
     elseif is_list item
       render_list item, delim
+    elseif type(item) == "function"
+      build item
     elseif item != nil
       tostring item
 
@@ -132,8 +134,6 @@ build = (fn, delim="\n") ->
       builders[name] name
   }
 
-  if type(result) == "table" and result.type != "tag"
-    result = render_list result, delim
-
+  result = render_list result, delim if is_list result
   tostring result
 
