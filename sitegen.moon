@@ -313,6 +313,11 @@ class Templates
         for item in *list
           cosmo.yield { [(name)]: item }
       nil
+
+    is_page: (args) =>
+      page_pattern = unpack args
+      cosmo.yield {} if @source\match page_pattern
+      nil
   }
 
   new: (@dir, _io) =>
@@ -439,7 +444,7 @@ class Page
     text = nil
     file = @site.io.open @source
 
-    throw_error "can't open page source: " .. @source if not file
+    throw_error "failed to read input file: " .. @source if not file
 
     with file\read"*a"
       file\close!
@@ -458,14 +463,14 @@ class Page
     root = "." if root == ""
     helpers.root = root
 
+    -- templates
+    @template_stack = Stack!
+
     tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
     @tpl_scope = tpl_scope
 
     tpl_scope.body = render_until_complete tpl_scope, ->
       fill_ignoring_pre tpl_scope.body, tpl_scope
-
-    -- templates
-    @template_stack = Stack!
 
     -- find the wrapping template
     @template_stack\push if @meta.template == nil

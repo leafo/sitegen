@@ -57,7 +57,7 @@ class PygmentsPlugin
     assert out\match '^<div class="highlight"><pre>(.-)\n?</pre></div>'
 
   -- checks cache and custom highlighters
-  _highlight: (lang, code, page) =>
+  _highlight: (lang, code, page=nil) =>
     lang_cache = @lang_cache\get lang
     cached = lang_cache[code]
     highlighted = if cached
