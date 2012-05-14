@@ -197,6 +197,7 @@ class MoonRenderer extends Renderer
   -- this does some crazy chaining
   render: (text, page) =>
     scopes = {}
+    meta = {}
 
     context = setmetatable {}, {
       __index: (key) =>
@@ -207,6 +208,10 @@ class MoonRenderer extends Renderer
 
     base_scope = setmetatable {
       _context: -> context
+
+      set: (name, value) -> meta[name] = value
+      get: (name) -> meta[name]
+
       -- appends a scope to __index of the context
       format: (name) ->
         formatter = if type(name) == "string"
@@ -223,7 +228,7 @@ class MoonRenderer extends Renderer
     fn = moonscript.loadstring text
     setfenv fn, context
     fn!
-    context.render!
+    context.render!, meta
 
 -- visible from init
 class SiteScope
