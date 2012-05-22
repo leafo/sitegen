@@ -164,6 +164,11 @@ Path = (io) -> {
     filename: (path) ->
       path\match"^([^/]*)$"
 
+    write_file: (path, content) ->
+      with io.open path, "w"
+        \write content
+        \close!
+
     mkdir: (path) ->
       os.execute ("mkdir -p %s")\format path
     copy: (src, dest) ->
