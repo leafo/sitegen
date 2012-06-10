@@ -19,6 +19,7 @@ dependencies = {
 	"lua-discount",
 	"luafilesystem >= 1.5",
 	"lua-cjson",
+	"date",
 	-- "luayaml"
 }
 
