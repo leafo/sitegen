@@ -572,18 +572,17 @@ class Site
 
     throw_error "don't know how to render: " .. path
 
-  run_builds: =>
-    for buildset in *@scope.builds
-      tool, input, args = unpack buildset
+  run_build: (buildset) =>
+    tool, input, args = unpack buildset
 
-      input = @io.real_path input
+    input = @io.real_path input
 
-      time, name, msg = timed_call ->
-        tool self, input, unpack args
+    time, name, msg = timed_call ->
+      tool self, input, unpack args
 
-      status = "built\t\t" .. name .. " (" .. msg .. ")"
-      status = status .. " (" .. ("%.3f")\format(time) .. "s)" if time
-      log status
+    status = "built\t\t" .. name .. " (" .. msg .. ")"
+    status = status .. " (" .. ("%.3f")\format(time) .. "s)" if time
+    log status
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>
@@ -653,7 +652,8 @@ class Site
     written_files = for page in *pages
       page\write!
 
-    @run_builds!
+    for buildset in *@scope.builds
+      @run_build buildset
 
     if not filter_files
       -- copy files

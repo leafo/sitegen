@@ -7,7 +7,3 @@ export system_command = (cmd, ext) ->
     cmd = cmd\format input, output
     cmd\match"^%w+", cmd, os.execute cmd
 
-export lessphp = (input, output) =>
-  cmd  = "plessc -r < " .. input .. " > " .. output
-  "lessphp", cmd, os.execute cmd
-
