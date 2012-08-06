@@ -151,7 +151,6 @@ class SiteFile
     site.write = nil -- restore default write
     site
 
-
 class Plugin -- uhh
   new: (@tpl_scope) =>
 
@@ -235,6 +234,8 @@ class SiteScope
   new: (@site) =>
     @files = OrderSet!
     @copy_files = OrderSet!
+
+    @builds = {}
     @filters = {}
 
   set: (name, value) => self[name] = value
@@ -246,6 +247,9 @@ class SiteScope
   add: (...) =>
     files = flatten_args ...
     @files\add fname for fname in *files
+
+  build: (tool, input, ...) =>
+    table.insert @builds, {tool, input, {...}}
 
   copy: (...) =>
     files = flatten_args ...
@@ -551,12 +555,15 @@ class Site
     bound = extend @plugin_scope!, bound
     run_with_scope fn, bound, @user_vars
 
-  output_path_for: (path, ext) =>
+  output_path_for: (path, ext=nil) =>
     if path\match"^%./"
       path = path\sub 3
 
-    path = path\gsub "%.[^.]+$", "." .. ext
+    path = path\gsub "%.[^.]+$", "." .. ext if ext
     Path.join @config.out_dir, path
+
+  real_output_path_for: (...) =>
+    @io.real_path @output_path_for ...
 
   renderer_for: (path) =>
     for renderer in *@renderers
@@ -564,6 +571,19 @@ class Site
         return renderer
 
     throw_error "don't know how to render: " .. path
+
+  run_builds: =>
+    for buildset in *@scope.builds
+      tool, input, args = unpack buildset
+
+      input = @io.real_path input
+
+      time, name, msg = timed_call ->
+        tool self, input, unpack args
+
+      status = "built\t\t" .. name .. " (" .. msg .. ")"
+      status = status .. " (" .. ("%.3f")\format(time) .. "s)" if time
+      log status
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>
@@ -632,6 +652,8 @@ class Site
 
     written_files = for page in *pages
       page\write!
+
+    @run_builds!
 
     if not filter_files
       -- copy files

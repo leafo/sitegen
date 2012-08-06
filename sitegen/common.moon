@@ -13,7 +13,16 @@ colors = { name, string.char(27) .. "[" .. tostring(key) .. "m" for name, key in
 make_bright = (color) ->
   (str) -> colors.bright .. colors[color] .. tostring(str) .. colors.reset
 
+socket = nil
+pcall ->
+  socket = require "socket"
+
 export *
+
+timed_call = (fn) ->
+  start = socket and socket.gettime!
+  res = {fn!}
+  socket and (socket.gettime! - start), unpack res
 
 bright_red = make_bright"red"
 bright_yellow = make_bright"yellow"
