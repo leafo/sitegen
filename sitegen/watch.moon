@@ -21,6 +21,7 @@ class Watcher
 
   watch_file_with: (file, handler) =>
     path = Path.basepath @site.io.real_path file
+
     @dirs[path] = @dirs[path] or { }
     @dirs[path][Path.filename file] = handler
 

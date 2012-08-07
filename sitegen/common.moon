@@ -167,11 +167,12 @@ Path = (io) -> {
 
     normalize: (path) ->
       path\gsub "^%./", ""
+
     basepath: (path) ->
       path\match"^(.*)/[^/]*$" or "."
 
     filename: (path) ->
-      path\match"^([^/]*)$"
+      path\match"([^/]*)$"
 
     write_file: (path, content) ->
       with io.open path, "w"
@@ -180,8 +181,10 @@ Path = (io) -> {
 
     mkdir: (path) ->
       os.execute ("mkdir -p %s")\format path
+
     copy: (src, dest) ->
       os.execute ("cp %s %s")\format src, dest
+
     join: (a, b) ->
       a = a\match"^(.*)/$" or a if a != "/"
       b = b\match"^/(.*)$" or b
