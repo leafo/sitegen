@@ -41,6 +41,10 @@ class Watcher
     for dir, set in pairs @dirs
       wd_table[@handle\addwatch dir, inotify.IN_CLOSE_WRITE] = set
 
+    -- sym links have ~ appended to end of name?
+    filter_name = (name) ->
+      name\match"^(.*)%~$" or name
+
     print "Watching " .. #wd_table .. " dirs, Ctrl+C to quit"
     while true
       events = @handle\read!
@@ -48,6 +52,8 @@ class Watcher
 
       for ev in *events
         set = wd_table[ev.wd]
-        if set and set[ev.name]
-          set[ev.name]()
+        name = filter_name ev.name
+
+        if set and set[name]
+          set[name]()
 
