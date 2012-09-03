@@ -1,4 +1,6 @@
 
+local:
+	luarocks make --local
 
 install: build
 	sudo luarocks make
