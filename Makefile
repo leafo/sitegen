@@ -1,5 +1,5 @@
 
-local:
+local: build
 	luarocks make --local
 
 install: build
