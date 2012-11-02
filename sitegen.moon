@@ -687,3 +687,5 @@ require "sitegen.extra"
 require "sitegen.blog"
 require "sitegen.feed"
 
+nil
+

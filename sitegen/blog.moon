@@ -103,3 +103,5 @@ class BlogPlugin
 
 sitegen.register_plugin BlogPlugin
 
+nil
+

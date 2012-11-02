@@ -23,3 +23,4 @@ class DeployPlugin
 
 sitegen.register_plugin DeployPlugin
 
+nil

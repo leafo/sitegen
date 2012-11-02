@@ -139,3 +139,5 @@ sitegen.register_plugin AnalyticsPlugin
 sitegen.register_plugin PygmentsPlugin
 sitegen.register_plugin CoffeeScriptPlugin
 
+nil
+

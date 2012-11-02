@@ -76,3 +76,5 @@ class FeedPlugin
 
 sitegen.register_plugin FeedPlugin
 
+
+nil

@@ -57,3 +57,4 @@ class Watcher
         if set and set[name]
           set[name]()
 
+nil
