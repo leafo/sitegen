@@ -410,6 +410,9 @@ class Page
     @raw_text, @meta = @renderer\render @_read!, self
     @meta = @meta or {}
 
+    if override_meta = @site.scope.meta[@source]
+      @merge_meta override_meta
+
     @target = if @meta.target
       Path.join @site.config.out_dir, @meta.target .. "." .. @renderer.ext
     else
@@ -643,9 +646,6 @@ class Site
     pages = for path in @scope.files\each!
       if not filter_files or filter_files[path]
         page = @Page path
-
-        if opts = @scope.meta[path]
-          page\merge_meta opts
 
         -- TODO: check dont_write
         for t in *make_list page.meta.is_a
