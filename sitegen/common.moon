@@ -106,14 +106,19 @@ slugify = (text) ->
 
 flatten_args = (...) ->
   accum = {}
+  options = {}
+
   flatten = (tbl) ->
-    for arg in *tbl
-      if type(arg) == "table"
-        flatten(arg)
+    for k,v in pairs tbl
+      if type(k) == "number"
+        if type(v) == "table"
+          flatten(v)
+        else
+          table.insert accum, v
       else
-        table.insert accum, arg
+        options[k] = v
   flatten {...}
-  accum
+  accum, options
 
 split = (str, delim using nil) ->
   str ..= delim

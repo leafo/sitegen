@@ -233,6 +233,7 @@ class MoonRenderer extends Renderer
 class SiteScope
   new: (@site) =>
     @files = OrderSet!
+    @meta = {}
     @copy_files = OrderSet!
 
     @builds = {}
@@ -245,8 +246,10 @@ class SiteScope
     @site[thing .. "_disabled"] = true
 
   add: (...) =>
-    files = flatten_args ...
-    @files\add fname for fname in *files
+    files, options = flatten_args ...
+    for fname in *files
+      @files\add fname
+      @meta[fname] = options if next(options)
 
   build: (tool, input, ...) =>
     table.insert @builds, {tool, input, {...}}
@@ -421,6 +424,9 @@ class Page
     extend self, (key) => cls[key] or @meta[key]
     getmetatable(self).__tostring = Page.__tostring
 
+  merge_meta: (tbl) =>
+    for k,v in pairs tbl
+      @meta[k] = v
 
   link_to: =>
     front = "^"..escape_patt @site.config.out_dir
@@ -482,10 +488,8 @@ class Page
       fill_ignoring_pre tpl_scope.body, tpl_scope
 
     -- find the wrapping template
-    @template_stack\push if @meta.template == nil
-      @site.config.default_template
-    else
-      @meta.template
+    if @meta.template != false
+      @template_stack\push @meta.template or @site.config.default_template
 
     while #@template_stack > 0
       tpl_name = @template_stack\pop!
@@ -639,6 +643,10 @@ class Site
     pages = for path in @scope.files\each!
       if not filter_files or filter_files[path]
         page = @Page path
+
+        if opts = @scope.meta[path]
+          page\merge_meta opts
+
         -- TODO: check dont_write
         for t in *make_list page.meta.is_a
           plugin = @aggregators[t]
