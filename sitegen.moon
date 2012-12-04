@@ -681,7 +681,7 @@ class Site
         table.insert written_files, file for file in *@written_files
         @write_gitignore written_files
 
-    @cache\write!
+    @cache\write! if not filter_files
 
 create_site = (init_fn, site=Site!) ->
   with site
