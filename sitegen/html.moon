@@ -55,6 +55,8 @@ render_list = (list, delim) ->
       build item
     elseif item != nil
       tostring item
+    else
+      error "unknown item"
 
   table.concat escaped, delim
 

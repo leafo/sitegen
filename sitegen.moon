@@ -1,10 +1,10 @@
 require "moon"
-require "moonscript"
 
 require "lfs"
 require "cosmo"
 require "yaml"
 discount = require "discount"
+moonscript = require "moonscript"
 
 module "sitegen", package.seeall
 
@@ -644,15 +644,14 @@ class Site
   -- write the entire website
   write: (filter_files=false) =>
     pages = for path in @scope.files\each!
-      if not filter_files or filter_files[path]
-        page = @Page path
-
-        -- TODO: check dont_write
-        for t in *make_list page.meta.is_a
-          plugin = @aggregators[t]
-          throw_error "unknown `is_a` type: " .. t if not plugin
-          plugin\on_aggregate page
-        page
+      continue if filter_files and not filter_files[path]
+      page = @Page path
+      -- TODO: check dont_write
+      for t in *make_list page.meta.is_a
+        plugin = @aggregators[t]
+        throw_error "unknown `is_a` type: " .. t if not plugin
+        plugin\on_aggregate page
+      page
 
     if filter_files and #pages == 0
       throw_error "no pages found for rendering"

@@ -1,6 +1,6 @@
 #!/usr/bin/env moon
 
-require "moonscript"
+moonscript = require "moonscript"
 require "moon"
 require "cosmo"
 require "date"
