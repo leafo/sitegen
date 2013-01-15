@@ -607,6 +607,7 @@ class Site
     with @io.open @config.out_dir .. ".gitignore", "w"
       patt = "^" .. escape_patt(@config.out_dir) .. "(.+)$"
       relative = [fname\match patt for fname in *written_files]
+      table.sort relative
       \write concat relative, "\n"
       \close!
 
