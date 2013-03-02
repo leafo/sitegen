@@ -9,7 +9,7 @@ discount = require "discount"
 require "moon"
 require "date"
 
-require "moonscript"
+moonscript = require "moonscript"
 
 import extend from moon
 
