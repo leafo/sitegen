@@ -37,7 +37,8 @@ class BlogPlugin
     print "blog posts:", #@posts
     import title, url, description from site.user_vars
     if #@posts > 0
-      feed_posts = for page in *@posts
+      feed_posts = for page in *@query!
+        print "*", page.title, page.date
         {
           title: page.title
           date: page.date
@@ -51,10 +52,6 @@ class BlogPlugin
       }
 
       site\write_file "feed.xml", rss_text
-
-    posts = @query!
-    for post in *posts
-      print "*", post.title, post.date
 
   query: (filter={}) =>
     filter.sort = {"date", cmp.date! }
