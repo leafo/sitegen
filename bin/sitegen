@@ -159,15 +159,14 @@ tasks = {
   deploy: ->
     get_site!
 
-    deploy = require "sitegen.deploy"
-    host, path = arg[2] or deploy.DeployPlugin.host, arg[3] or deploy.DeployPlugin.path
+    DeployPlugin = require "sitegen.deploy"
+    host, path = arg[2] or DeployPlugin.host, arg[3] or DeployPlugin.path
 
     throw_error "need host" if not host
     throw_error "need path" if not path
 
     log "uploading to:", host, path
-    with deploy.Sync host, path
-      \upload!
+    DeployPlugin\sync host, path
 
   build: ->
     site = get_site!
@@ -213,3 +212,6 @@ catch_error ->
     throw_error "unknown task: " .. action
 
   tasks[action]!
+
+
+-- vim: set filetype=moon:

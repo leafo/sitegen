@@ -1,18 +1,12 @@
-
-module "sitegen.deploy", package.seeall
 require "sitegen.common"
 
-export ^
-
--- 'rsync -arvuz www/ leaf@leafo.net:www/test'
-class Sync
-  new: (@host, @path) =>
-  upload: =>
+class DeployPlugin
+  -- 'rsync -arvuz www/ leaf@leafo.net:www/test'
+  @sync = (host, path) =>
     os.execute table.concat {
-      'rsync -rvuzL www/ ', @host ,':', @path
+      'rsync -rvuzL www/ ', host ,':', path
     }
 
-class DeployPlugin
   mixin_funcs: { "deploy_to" }
 
   help: [[
@@ -21,6 +15,3 @@ class DeployPlugin
 
   deploy_to: (@host=error"need host", @path=error"need path") =>
 
-sitegen.register_plugin DeployPlugin
-
-nil

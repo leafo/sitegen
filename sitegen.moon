@@ -24,6 +24,10 @@ register_plugin = (plugin) ->
 load_plugins = (register) ->
   register require "sitegen.feed"
   register require "sitegen.blog"
+  register require "sitegen.deploy"
+  register require "sitegen.indexer"
+
+  require "sitegen.extra"
 
 require "sitegen.common"
 import Cache from require "sitegen.cache"
@@ -702,10 +706,6 @@ create_site = (init_fn, site=Site!) ->
     \init_from_fn init_fn
     .scope\search "*md" unless .autoadd_disabled
 
--- plugin providers
-require "sitegen.deploy"
-require "sitegen.indexer"
-require "sitegen.extra"
 
 load_plugins sitegen.register_plugin
 

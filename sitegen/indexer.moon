@@ -1,27 +1,8 @@
 
-module "sitegen.indexer", package.seeall
 require "sitegen.common"
-
 html = require "sitegen.html"
 
 import insert, concat from table
-
-export render_index, build_from_html
-export IndexerPlugin
-
-class IndexerPlugin
-  tpl_helpers: { "index" }
-
-  new: (@tpl_scope) =>
-    @current_index = nil
-
-  index: =>
-    if not @current_index
-      body, @current_index = build_from_html @tpl_scope.body
-      coroutine.yield body
-    render_index @current_index
-
-sitegen.register_plugin IndexerPlugin
 
 render_index = (index) ->
   yield_index = (index) ->
@@ -92,5 +73,15 @@ build_from_html = (body, meta, opts={}) ->
 
   out, headers
 
+class IndexerPlugin
+  tpl_helpers: { "index" }
 
-nil
+  new: (@tpl_scope) =>
+    @current_index = nil
+
+  index: =>
+    if not @current_index
+      body, @current_index = build_from_html @tpl_scope.body
+      coroutine.yield body
+    render_index @current_index
+
