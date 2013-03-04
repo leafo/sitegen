@@ -21,6 +21,10 @@ register_plugin = (plugin) ->
   plugin\on_register!  if plugin.on_register
   table.insert plugins, plugin
 
+load_plugins = (register) ->
+  register require "sitegen.feed"
+  register require "sitegen.blog"
+
 require "sitegen.common"
 import Cache from require "sitegen.cache"
 
@@ -431,10 +435,18 @@ class Page
     for k,v in pairs tbl
       @meta[k] = v
 
-  link_to: =>
+  url_for: (absolute=false) =>
     front = "^"..escape_patt @site.config.out_dir
-    html.build ->
-      a { @title, href: @target\gsub front, "" }
+    path = @target\gsub front, ""
+
+    if absolute
+      if base = @site.user_vars.base_url or @site.user_vars.url
+        path = Path.join base, path
+
+    path
+
+  link_to: =>
+    html.build -> a { @title, href: @url_for! }
 
   -- write the file, return path to written file
   write: =>
@@ -468,6 +480,7 @@ class Page
       file\close!
 
   _render: =>
+    return @_content if @_content
     tpl_scope = {
       body: @raw_text
       generate_date: os.date!
@@ -504,7 +517,8 @@ class Page
 
         @site.templates\fill tpl_name, tpl_scope
 
-    tpl_scope.body
+    @_content = tpl_scope.body
+    @_content
 
 -- a webpage
 class Site
@@ -692,8 +706,8 @@ create_site = (init_fn, site=Site!) ->
 require "sitegen.deploy"
 require "sitegen.indexer"
 require "sitegen.extra"
-require "sitegen.blog"
-require "sitegen.feed"
+
+load_plugins sitegen.register_plugin
 
 nil
 

@@ -1,19 +1,13 @@
 
-module "sitegen.feed", package.seeall
 sitegen = require "sitegen"
 require "sitegen.common"
 
 html = require "sitegen.html"
 discount = require "discount"
 
-require "moon"
-require "date"
-
-moonscript = require "moonscript"
-
-import extend from moon
-
-export render_feed
+date = require "date"
+import extend from require "moon"
+import insert from table
 
 render_feed = (root) ->
   concat = (list) ->
@@ -34,23 +28,26 @@ render_feed = (root) ->
         link root.link
         description root.description
         concat for entry in *root
-          item {
-            title entry.title
-            link entry.link
-            pubDate format_date entry.date
-            description cdata entry.description
-          }
+          parts = { }
+          insert parts, title entry.title if entry.title
+          insert parts, link entry.link if entry.link
+          insert parts, pubDate format_date entry.date if entry.date
+          insert parts, description cdata entry.description if entry.description
+          item parts
       }
     }
   }
 
 class FeedPlugin
-  mixin_funcs: {"feed"}
+  @render_feed: render_feed
+
+  mixin_funcs: { "feed" }
 
   on_site: =>
     @feeds = {}
 
   feed: (source, dest) =>
+    moonscript = require "moonscript"
     fn = assert moonscript.loadfile source
     table.insert @feeds, { dest, fn! }
 
@@ -74,7 +71,3 @@ class FeedPlugin
 
       site\write_file dest, render_feed root
 
-sitegen.register_plugin FeedPlugin
-
-
-nil

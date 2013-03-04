@@ -1,57 +1,9 @@
 
-module "sitegen.blog", package.seeall
 html = require "sitegen.html"
-require "cosmo"
-require "moon"
-require "date"
-
-import copy, bind_methods from moon
-
-escaped = (data) ->
-  setmetatable {}, {
-    __index: (name) =>
-      value = data[name]
-      t = type value
-      if t == "string"
-        html.encode value
-      elseif t == "table"
-        escaped value
-      else
-        value
-  }
-
-helper = (tbl) ->
-  setmetatable {
-    has: (arg) ->
-      name = arg[1]
-      if tbl[name]
-        cosmo.yield tbl
-      nil
-  }, __index: tbl
-
-render_rss = (site, posts, limit=0) ->
-  tpl = cosmo.f [==[
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/">
-  <channel>
-  <title>$site|title</title>
-  <link>$site|url</link>
-  <description>$site|description</description>
-  $posts[[<item>
-    <title>$title</title>
-    $has{"description"}[=[<description>$description</description>]=]
-  </item>]]
-  </channel>
-</rss>
-]==]
-
-  tpl {
-    posts: ->
-      for post in *posts
-        t = helper escaped post
-        cosmo.yield t
-    site: escaped site.user_vars
-  }
+date = require "date"
+import copy, bind_methods from require "moon"
+import insert from table
+FeedPlugin = require "sitegen.feed"
 
 cmp = {
   date: (dir="desc") ->
@@ -83,8 +35,22 @@ class BlogPlugin
 
   write: (site) =>
     print "blog posts:", #@posts
+    import title, url, description from site.user_vars
     if #@posts > 0
-      site\write_file "feed.xml", render_rss site, @posts
+      feed_posts = for page in *@posts
+        {
+          title: page.title
+          date: page.date
+          link: page\url_for true
+          description: rawget page.meta, "description"
+        }
+
+      rss_text = FeedPlugin.render_feed {
+        :title, :description, link: url
+        unpack feed_posts
+      }
+
+      site\write_file "feed.xml", rss_text
 
     posts = @query!
     for post in *posts
@@ -100,8 +66,3 @@ class BlogPlugin
         c a[col], b[col]
 
     posts
-
-sitegen.register_plugin BlogPlugin
-
-nil
-
