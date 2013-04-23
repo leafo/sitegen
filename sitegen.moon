@@ -83,7 +83,9 @@ render_until_complete = (tpl_scope, render_fn) ->
       out = render_fn!
       nil
 
-    pass, altered_body = assert coroutine.resume co
+    success, altered_body = assert coroutine.resume co
+    pass_error altered_body
+
     if altered_body
       tpl_scope.body = altered_body
     else

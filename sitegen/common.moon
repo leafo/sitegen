@@ -33,6 +33,11 @@ throw_error = (...) ->
   else
     error ...
 
+pass_error = (obj, ...) ->
+  if type(obj) == "table" and obj[1] == "error"
+    throw_error unpack obj, 2
+  obj, ...
+
 catch_error = (fn) ->
   co = coroutine.create -> fn! and nil
 
