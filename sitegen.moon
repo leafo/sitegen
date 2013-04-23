@@ -256,6 +256,7 @@ class SiteScope
   add: (...) =>
     files, options = flatten_args ...
     for fname in *files
+      continue if @files\has fname
       @files\add fname
       @meta[fname] = options if next(options)
 
@@ -281,6 +282,7 @@ class SiteScope
             if full_path\match"^%./"
               full_path = full_path\sub 3
 
+            continue if @files\has full_path
             @files\add full_path
 
     search dir
