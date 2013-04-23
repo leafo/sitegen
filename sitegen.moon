@@ -388,7 +388,8 @@ class Templates
 
   get_template: (name) =>
     if not @template_cache[name]
-      tpl = nil
+      local tpl
+
       -- look up exact file name
       base, ext = name\match "^(.-)%.([^/]*)$"
       if ext
@@ -396,9 +397,9 @@ class Templates
         tpl = fn and fn self, base
 
       if not tpl
-        for kind in *{"html", "moon"}
+        for kind in *{"html", "moon", "md"}
           tpl = self["load_"..kind] self, name
-          break
+          break if tpl
 
       if tpl
         @template_cache[name] = tpl
