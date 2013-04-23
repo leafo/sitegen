@@ -104,7 +104,7 @@ class PygmentsPlugin
         body = trim_leading_white body, indent
       @_highlight lang, body, page
 
-    document = Cs((nl * code_block + 1)^0)
+    document = Cs(code_block + (nl * code_block + 1)^0)
 
     assert document\match text
 
