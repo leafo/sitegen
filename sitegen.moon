@@ -305,6 +305,9 @@ class Templates
       name = unpack args
       @site\Templates"."\fill name, @tpl_scope
 
+    markdown: (args) =>
+      MarkdownRenderer\render args[1] or ""
+
     wrap: (args) =>
       tpl_name = unpack args
       throw_error "missing template name" if not tpl_name
