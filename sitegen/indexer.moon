@@ -74,6 +74,8 @@ build_from_html = (body, meta, opts={}) ->
   out, headers
 
 class IndexerPlugin
+  @build_from_html: build_from_html
+
   tpl_helpers: { "index" }
 
   new: (@tpl_scope) =>
