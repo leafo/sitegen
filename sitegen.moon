@@ -1,5 +1,3 @@
-require "moon"
-
 require "lfs"
 require "cosmo"
 require "yaml"
@@ -11,7 +9,7 @@ module "sitegen", package.seeall
 require "sitegen.html"
 
 import insert, concat, sort from table
-import dump, extend, bind_methods, run_with_scope from moon
+import dump, extend, bind_methods, run_with_scope from require "moon"
 
 export create_site, register_plugin
 export Site, SiteFile, Plugin, HTMLRenderer, MarkdownRenderer

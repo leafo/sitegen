@@ -8,7 +8,7 @@ require "date"
 require "sitegen"
 require "sitegen.common"
 
-import run_with_scope, extend from moon
+import run_with_scope, extend, dump from require "moon"
 import SiteFile from sitegen
 
 action = arg[1] or "build"
@@ -34,7 +34,7 @@ log = (...) ->
   print "->", ...
 
 scope = (t={}) ->
-  moon.extend t, {
+  extend t, {
     eval: (arg) ->
       code = "return -> " .. arg[1]
       moonscript.loadstring(code)!!
@@ -108,7 +108,7 @@ columnize = (rows, indent=2, padding=4) ->
   table.concat formatted, "\n"
 
 tasks = {
-  dump: -> print moon.dump get_site!
+  dump: -> print dump get_site!
 
   new: ->
     if Path.exists default.sitefile

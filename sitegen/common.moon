@@ -1,6 +1,5 @@
 
 html = require "sitegen.html"
-require "moon"
 
 colors = {
   reset: 0
@@ -86,6 +85,7 @@ trim_leading_white = (str, leading) ->
   table.concat lines, "\n"
 
 dumps = (...) ->
+  import dump from require "moon"
   print moon.dump ...
 
 make_list = (item) ->

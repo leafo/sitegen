@@ -1,13 +1,12 @@
 
 module "sitegen.html", package.seeall
-require "moon"
 
 export encode, decode, strip_tags, build, builders
 export escape, unescape
 export tag
 
 import concat from table
-import run_with_scope, defaultbl from moon
+import run_with_scope, defaultbl from require "moon"
 
 punct = "[%^$()%.%[%]*+%-?]"
 escape_patt = (str) ->

@@ -1,8 +1,10 @@
-require "moon"
 
 module "sitegen.extra", package.seeall
 sitegen = require "sitegen"
 html = require "sitegen.html"
+
+import dump from require "moon"
+
 
 import CacheTable from require "sitegen.cache"
 
@@ -11,7 +13,7 @@ export ^
 class DumpPlugin extends sitegen.Plugin
   tpl_helpers: { "dump" }
   dump: (args) =>
-    moon.dump args
+    dump args
 
 class AnalyticsPlugin extends sitegen.Plugin
   tpl_helpers: { "analytics" }
