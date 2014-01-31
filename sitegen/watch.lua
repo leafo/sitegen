@@ -1,6 +1,5 @@
 module(..., package.seeall)
 do
-  local _parent_0 = nil
   local _base_0 = {
     page_handler = function(self, fname)
       return function()
@@ -44,9 +43,8 @@ do
         if not events then
           break
         end
-        local _list_0 = events
-        for _index_0 = 1, #_list_0 do
-          local ev = _list_0[_index_0]
+        for _index_0 = 1, #events do
+          local ev = events[_index_0]
           local set = wd_table[ev.wd]
           local name = filter_name(ev.name)
           if set and set[name] then
@@ -57,9 +55,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
@@ -70,17 +65,9 @@ do
       self.handle = inotify.init()
     end,
     __base = _base_0,
-    __name = "Watcher",
-    __parent = _parent_0
+    __name = "Watcher"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -88,9 +75,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Watcher = _class_0
 end
 return nil

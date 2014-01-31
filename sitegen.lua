@@ -5,11 +5,15 @@ local discount = require("discount")
 local moonscript = require("moonscript")
 module("sitegen", package.seeall)
 require("sitegen.html")
-local insert, concat, sort = table.insert, table.concat, table.sort
+local insert, concat, sort
+do
+  local _obj_0 = table
+  insert, concat, sort = _obj_0.insert, _obj_0.concat, _obj_0.sort
+end
 local dump, extend, bind_methods, run_with_scope
 do
-  local _table_0 = require("moon")
-  dump, extend, bind_methods, run_with_scope = _table_0.dump, _table_0.extend, _table_0.bind_methods, _table_0.run_with_scope
+  local _obj_0 = require("moon")
+  dump, extend, bind_methods, run_with_scope = _obj_0.dump, _obj_0.extend, _obj_0.bind_methods, _obj_0.run_with_scope
 end
 local plugins = { }
 register_plugin = function(plugin)
@@ -29,8 +33,8 @@ end
 require("sitegen.common")
 local Cache
 do
-  local _table_0 = require("sitegen.cache")
-  Cache = _table_0.Cache
+  local _obj_0 = require("sitegen.cache")
+  Cache = _obj_0.Cache
 end
 local log
 log = function(...)
@@ -39,7 +43,11 @@ end
 require("lpeg")
 local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
-  local P, R, S, V, Ct, C = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.Ct, lpeg.C
+  local P, R, S, V, Ct, C
+  do
+    local _obj_0 = lpeg
+    P, R, S, V, Ct, C = _obj_0.P, _obj_0.R, _obj_0.S, _obj_0.V, _obj_0.Ct, _obj_0.C
+  end
   local string_patt
   string_patt = function(delim)
     delim = P(delim)
@@ -67,12 +75,12 @@ fill_ignoring_pre = function(text, context)
   end
   local document = Ct((code + other) ^ 0)
   local parts = document:match(text)
-  local filled = (function()
+  local filled
+  do
     local _accum_0 = { }
     local _len_0 = 1
-    local _list_0 = parts
-    for _index_0 = 1, #_list_0 do
-      local part = _list_0[_index_0]
+    for _index_0 = 1, #parts do
+      local part = parts[_index_0]
       local t, body = unpack(part)
       if t == "text" then
         body = cosmo.f(body)(context)
@@ -81,8 +89,8 @@ fill_ignoring_pre = function(text, context)
       _accum_0[_len_0] = _value_0
       _len_0 = _len_0 + 1
     end
-    return _accum_0
-  end)()
+    filled = _accum_0
+  end
   return table.concat(filled)
 end
 local render_until_complete
@@ -104,7 +112,6 @@ render_until_complete = function(tpl_scope, render_fn)
   return out
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     relativeize = function(self, path)
       local exec
@@ -160,9 +167,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, name)
       if name == nil then
@@ -184,17 +188,9 @@ do
       return throw_error("failed to find sitefile: " .. name)
     end,
     __base = _base_0,
-    __name = "SiteFile",
-    __parent = _parent_0
+    __name = "SiteFile"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -202,34 +198,19 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   SiteFile = _class_0
 end
 do
-  local _parent_0 = nil
   local _base_0 = { }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, tpl_scope)
       self.tpl_scope = tpl_scope
     end,
     __base = _base_0,
-    __name = "Plugin",
-    __parent = _parent_0
+    __name = "Plugin"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -237,14 +218,10 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Plugin = _class_0
 end
 local Renderer
 do
-  local _parent_0 = nil
   local _base_0 = {
     render = function()
       return error("must provide render method")
@@ -266,25 +243,14 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, pattern)
       self.pattern = pattern
     end,
     __base = _base_0,
-    __name = "Renderer",
-    __parent = _parent_0
+    __name = "Renderer"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -292,9 +258,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Renderer = _class_0
 end
 do
@@ -304,14 +267,10 @@ do
     pattern = convert_pattern("*.html")
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
+      return _parent_0.__init(self, ...)
     end,
     __base = _base_0,
     __name = "HTMLRenderer",
@@ -319,7 +278,7 @@ do
   }, {
     __index = function(cls, name)
       local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
+      if val == nil then
         return _parent_0[name]
       else
         return val
@@ -332,7 +291,7 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
+  if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   HTMLRenderer = _class_0
@@ -355,14 +314,10 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
+      return _parent_0.__init(self, ...)
     end,
     __base = _base_0,
     __name = "MarkdownRenderer",
@@ -370,7 +325,7 @@ do
   }, {
     __index = function(cls, name)
       local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
+      if val == nil then
         return _parent_0[name]
       else
         return val
@@ -383,7 +338,7 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
+  if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   MarkdownRenderer = _class_0
@@ -438,14 +393,10 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
+      return _parent_0.__init(self, ...)
     end,
     __base = _base_0,
     __name = "MoonRenderer",
@@ -453,7 +404,7 @@ do
   }, {
     __index = function(cls, name)
       local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
+      if val == nil then
         return _parent_0[name]
       else
         return val
@@ -466,14 +417,13 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
+  if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   MoonRenderer = _class_0
 end
 local SiteScope
 do
-  local _parent_0 = nil
   local _base_0 = {
     set = function(self, name, value)
       self[name] = value
@@ -486,11 +436,10 @@ do
     end,
     add = function(self, ...)
       local files, options = flatten_args(...)
-      local _list_0 = files
-      for _index_0 = 1, #_list_0 do
+      for _index_0 = 1, #files do
         local _continue_0 = false
         repeat
-          local fname = _list_0[_index_0]
+          local fname = files[_index_0]
           if self.files:has(fname) then
             _continue_0 = true
             break
@@ -579,9 +528,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
@@ -592,17 +538,9 @@ do
       self.filters = { }
     end,
     __base = _base_0,
-    __name = "SiteScope",
-    __parent = _parent_0
+    __name = "SiteScope"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -610,14 +548,10 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   SiteScope = _class_0
 end
 local Templates
 do
-  local _parent_0 = nil
   local _base_0 = {
     defaults = require("sitegen.default.templates"),
     base_helpers = {
@@ -666,9 +600,8 @@ do
         local list, name = unpack(args)
         if list then
           list = flatten_args(list)
-          local _list_0 = list
-          for _index_0 = 1, #_list_0 do
-            local item = _list_0[_index_0]
+          for _index_0 = 1, #list do
+            local item = list[_index_0]
             cosmo.yield({
               [(name)] = item
             })
@@ -764,9 +697,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, dir, _io)
       self.dir = dir
@@ -776,17 +706,9 @@ do
       self.io = _io or io
     end,
     __base = _base_0,
-    __name = "Templates",
-    __parent = _parent_0
+    __name = "Templates"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -794,14 +716,10 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Templates = _class_0
 end
 local Page
 do
-  local _parent_0 = nil
   local _base_0 = {
     __tostring = function(self)
       return table.concat({
@@ -883,15 +801,16 @@ do
       }
       local helpers = self.site:template_helpers(tpl_scope, self)
       local base = Path.basepath(self.target)
-      local parts = (function()
+      local parts
+      do
         local _accum_0 = { }
         local _len_0 = 1
         for i = 1, #split(base, "/") - 1 do
           _accum_0[_len_0] = ".."
           _len_0 = _len_0 + 1
         end
-        return _accum_0
-      end)()
+        parts = _accum_0
+      end
       local root = table.concat(parts, "/")
       if root == "" then
         root = "."
@@ -921,9 +840,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, site, source)
       self.site, self.source = site, source
@@ -952,17 +868,9 @@ do
       getmetatable(self).__tostring = Page.__tostring
     end,
     __base = _base_0,
-    __name = "Page",
-    __parent = _parent_0
+    __name = "Page"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -970,13 +878,9 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Page = _class_0
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     __tostring = function(self)
       return "<Site>"
@@ -1062,17 +966,17 @@ do
       do
         local _with_0 = self.io.open(self.config.out_dir .. ".gitignore", "w")
         local patt = "^" .. escape_patt(self.config.out_dir) .. "(.+)$"
-        local relative = (function()
+        local relative
+        do
           local _accum_0 = { }
           local _len_0 = 1
-          local _list_0 = written_files
-          for _index_0 = 1, #_list_0 do
-            local fname = _list_0[_index_0]
+          for _index_0 = 1, #written_files do
+            local fname = written_files[_index_0]
             _accum_0[_len_0] = fname:match(patt)
             _len_0 = _len_0 + 1
           end
-          return _accum_0
-        end)()
+          relative = _accum_0
+        end
         table.sort(relative)
         _with_0:write(concat(relative, "\n"))
         _with_0:close()
@@ -1123,7 +1027,8 @@ do
       if filter_files == nil then
         filter_files = false
       end
-      local pages = (function()
+      local pages
+      do
         local _accum_0 = { }
         local _len_0 = 1
         for path in self.scope.files:each() do
@@ -1152,22 +1057,22 @@ do
             break
           end
         end
-        return _accum_0
-      end)()
+        pages = _accum_0
+      end
       if filter_files and #pages == 0 then
         throw_error("no pages found for rendering")
       end
-      local written_files = (function()
+      local written_files
+      do
         local _accum_0 = { }
         local _len_0 = 1
-        local _list_0 = pages
-        for _index_0 = 1, #_list_0 do
-          local page = _list_0[_index_0]
+        for _index_0 = 1, #pages do
+          local page = pages[_index_0]
           _accum_0[_len_0] = page:write()
           _len_0 = _len_0 + 1
         end
-        return _accum_0
-      end)()
+        written_files = _accum_0
+      end
       local _list_0 = self.scope.builds
       for _index_0 = 1, #_list_0 do
         local buildset = _list_0[_index_0]
@@ -1200,9 +1105,6 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, sitefile)
       if sitefile == nil then
@@ -1236,17 +1138,9 @@ do
       end
     end,
     __base = _base_0,
-    __name = "Site",
-    __parent = _parent_0
+    __name = "Site"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -1254,9 +1148,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Site = _class_0
 end
 create_site = function(init_fn, site)

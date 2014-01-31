@@ -1,13 +1,16 @@
 require("sitegen.common")
 local html = require("sitegen.html")
-local insert, concat = table.insert, table.concat
+local insert, concat
+do
+  local _obj_0 = table
+  insert, concat = _obj_0.insert, _obj_0.concat
+end
 local render_index
 render_index = function(index)
   local yield_index
   yield_index = function(index)
-    local _list_0 = index
-    for _index_0 = 1, #_list_0 do
-      local item = _list_0[_index_0]
+    for _index_0 = 1, #index do
+      local item = index[_index_0]
       if item.depth then
         cosmo.yield({
           _template = 2
@@ -86,7 +89,11 @@ build_from_html = function(body, meta, opts)
     })
   end
   require("lpeg")
-  local P, R, Cmt, Cs, Cg, Cb, C = lpeg.P, lpeg.R, lpeg.Cmt, lpeg.Cs, lpeg.Cg, lpeg.Cb, lpeg.C
+  local P, R, Cmt, Cs, Cg, Cb, C
+  do
+    local _obj_0 = lpeg
+    P, R, Cmt, Cs, Cg, Cb, C = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.Cg, _obj_0.Cb, _obj_0.C
+  end
   local nums = R("19")
   local open = P("<h") * Cg(nums, "num") * ">"
   local close = P("</h") * C(nums) * ">"
@@ -104,7 +111,6 @@ build_from_html = function(body, meta, opts)
 end
 local IndexerPlugin
 do
-  local _parent_0 = nil
   local _base_0 = {
     tpl_helpers = {
       "index"
@@ -119,26 +125,15 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, tpl_scope)
       self.tpl_scope = tpl_scope
       self.current_index = nil
     end,
     __base = _base_0,
-    __name = "IndexerPlugin",
-    __parent = _parent_0
+    __name = "IndexerPlugin"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -148,9 +143,6 @@ do
   _base_0.__class = _class_0
   local self = _class_0
   self.build_from_html = build_from_html
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   IndexerPlugin = _class_0
   return _class_0
 end

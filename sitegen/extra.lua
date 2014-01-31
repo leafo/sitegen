@@ -3,13 +3,13 @@ local sitegen = require("sitegen")
 local html = require("sitegen.html")
 local dump
 do
-  local _table_0 = require("moon")
-  dump = _table_0.dump
+  local _obj_0 = require("moon")
+  dump = _obj_0.dump
 end
 local CacheTable
 do
-  local _table_0 = require("sitegen.cache")
-  CacheTable = _table_0.CacheTable
+  local _obj_0 = require("sitegen.cache")
+  CacheTable = _obj_0.CacheTable
 end
 do
   local _parent_0 = sitegen.Plugin
@@ -22,14 +22,10 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
+      return _parent_0.__init(self, ...)
     end,
     __base = _base_0,
     __name = "DumpPlugin",
@@ -37,7 +33,7 @@ do
   }, {
     __index = function(cls, name)
       local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
+      if val == nil then
         return _parent_0[name]
       else
         return val
@@ -50,7 +46,7 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
+  if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   DumpPlugin = _class_0
@@ -79,14 +75,10 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
+  setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
     __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
+      return _parent_0.__init(self, ...)
     end,
     __base = _base_0,
     __name = "AnalyticsPlugin",
@@ -94,7 +86,7 @@ do
   }, {
     __index = function(cls, name)
       local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
+      if val == nil then
         return _parent_0[name]
       else
         return val
@@ -107,13 +99,12 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
+  if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
   AnalyticsPlugin = _class_0
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     custom_highlighters = { },
     disable_indent_detect = false,
@@ -166,7 +157,8 @@ do
     end,
     filter = function(self, text, page)
       local lpeg = require("lpeg")
-      local P, R, S, Cs, Cmt, C, Cg, Cb = lpeg.P, lpeg.R, lpeg.S, lpeg.Cs, lpeg.Cmt, lpeg.C, lpeg.Cg, lpeg.Cb
+      local P, R, S, Cs, Cmt, C, Cg, Cb
+      P, R, S, Cs, Cmt, C, Cg, Cb = lpeg.P, lpeg.R, lpeg.S, lpeg.Cs, lpeg.Cmt, lpeg.C, lpeg.Cg, lpeg.Cb
       local delim = P("```")
       local white = S(" \t") ^ 0
       local nl = P("\n")
@@ -206,27 +198,12 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
-    end,
+    __init = function() end,
     __base = _base_0,
-    __name = "PygmentsPlugin",
-    __parent = _parent_0
+    __name = "PygmentsPlugin"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -234,13 +211,9 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   PygmentsPlugin = _class_0
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     tpl_helpers = {
       "render_coffee"
@@ -260,27 +233,12 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
-    end,
+    __init = function() end,
     __base = _base_0,
-    __name = "CoffeeScriptPlugin",
-    __parent = _parent_0
+    __name = "CoffeeScriptPlugin"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -288,9 +246,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   CoffeeScriptPlugin = _class_0
 end
 sitegen.register_plugin(DumpPlugin)

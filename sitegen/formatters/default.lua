@@ -2,8 +2,8 @@ module(..., package.seeall)
 local html = require("sitegen.html")
 local extend, bind_methods
 do
-  local _table_0 = require("moon")
-  extend, bind_methods = _table_0.extend, _table_0.bind_methods
+  local _obj_0 = require("moon")
+  extend, bind_methods = _obj_0.extend, _obj_0.bind_methods
 end
 local scope = {
   write = function(self, ...)

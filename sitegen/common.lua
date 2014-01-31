@@ -5,13 +5,13 @@ local colors = {
   red = 31,
   yellow = 33
 }
-colors = (function()
+do
   local _tbl_0 = { }
   for name, key in pairs(colors) do
     _tbl_0[name] = string.char(27) .. "[" .. tostring(key) .. "m"
   end
-  return _tbl_0
-end)()
+  colors = _tbl_0
+end
 local make_bright
 make_bright = function(color)
   return function(str)
@@ -102,8 +102,8 @@ end
 dumps = function(...)
   local dump
   do
-    local _table_0 = require("moon")
-    dump = _table_0.dump
+    local _obj_0 = require("moon")
+    dump = _obj_0.dump
   end
   return print(moon.dump(...))
 end
@@ -158,21 +158,18 @@ flatten_args = function(...)
 end
 split = function(str, delim)
   str = str .. delim
-  return (function()
-    local _accum_0 = { }
-    local _len_0 = 1
-    for part in str:gmatch("(.-)" .. escape_patt(delim)) do
-      _accum_0[_len_0] = part
-      _len_0 = _len_0 + 1
-    end
-    return _accum_0
-  end)()
+  local _accum_0 = { }
+  local _len_0 = 1
+  for part in str:gmatch("(.-)" .. escape_patt(delim)) do
+    _accum_0[_len_0] = part
+    _len_0 = _len_0 + 1
+  end
+  return _accum_0
 end
 trim = function(str)
   return str:match("^%s*(.-)%s*$")
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     add = function(self, item)
       if self.list[item] == nil then
@@ -194,33 +191,21 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, items)
       self.list = { }
       self.set = { }
       if items then
-        local _list_0 = items
-        for _index_0 = 1, #_list_0 do
-          local item = _list_0[_index_0]
+        for _index_0 = 1, #items do
+          local item = items[_index_0]
           self:add(item)
         end
       end
     end,
     __base = _base_0,
-    __name = "OrderSet",
-    __parent = _parent_0
+    __name = "OrderSet"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -228,13 +213,9 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   OrderSet = _class_0
 end
 do
-  local _parent_0 = nil
   local _base_0 = {
     push = function(self, item)
       self[#self + 1] = item
@@ -249,27 +230,12 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
-    end,
+    __init = function() end,
     __base = _base_0,
-    __name = "Stack",
-    __parent = _parent_0
+    __name = "Stack"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -277,9 +243,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Stack = _class_0
 end
 Path = function(io)

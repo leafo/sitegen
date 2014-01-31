@@ -1,9 +1,13 @@
 module("sitegen.html", package.seeall)
-local concat = table.concat
+local concat
+do
+  local _obj_0 = table
+  concat = _obj_0.concat
+end
 local run_with_scope, defaultbl
 do
-  local _table_0 = require("moon")
-  run_with_scope, defaultbl = _table_0.run_with_scope, _table_0.defaultbl
+  local _obj_0 = require("moon")
+  run_with_scope, defaultbl = _obj_0.run_with_scope, _obj_0.defaultbl
 end
 local punct = "[%^$()%.%[%]*+%-?]"
 local escape_patt
@@ -56,12 +60,12 @@ is_list = function(t)
 end
 local render_list
 render_list = function(list, delim)
-  local escaped = (function()
+  local escaped
+  do
     local _accum_0 = { }
     local _len_0 = 1
-    local _list_0 = list
-    for _index_0 = 1, #_list_0 do
-      local item = _list_0[_index_0]
+    for _index_0 = 1, #list do
+      local item = list[_index_0]
       if type(item) == "string" then
         _accum_0[_len_0] = encode(item)
       elseif is_list(item) then
@@ -75,8 +79,8 @@ render_list = function(list, delim)
       end
       _len_0 = _len_0 + 1
     end
-    return _accum_0
-  end)()
+    escaped = _accum_0
+  end
   return table.concat(escaped, delim)
 end
 local render_tag
@@ -122,33 +126,21 @@ render_tag = function(name, inner, attributes)
 end
 local Text
 do
-  local _parent_0 = nil
   local _base_0 = {
     __tostring = function(self)
       return self.text
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, text)
       self.text = text
       self.type = "tag"
     end,
     __base = _base_0,
-    __name = "Text",
-    __parent = _parent_0
+    __name = "Text"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -156,40 +148,25 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Text = _class_0
 end
 local CData
 do
-  local _parent_0 = nil
   local _base_0 = {
     __tostring = function(self)
       return "<![CDATA[" .. self.text .. "]]>"
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, text)
       self.text = text
       self.type = "tag"
     end,
     __base = _base_0,
-    __name = "CData",
-    __parent = _parent_0
+    __name = "CData"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -197,14 +174,10 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   CData = _class_0
 end
 local Tag
 do
-  local _parent_0 = nil
   local _base_0 = {
     __tostring = function(self)
       return render_tag(self.name, self.inner, self.attributes)
@@ -232,26 +205,15 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
     __init = function(self, name, inner, attributes)
       self.name, self.inner, self.attributes = name, inner, attributes
       self.type = "tag"
     end,
     __base = _base_0,
-    __name = "Tag",
-    __parent = _parent_0
+    __name = "Tag"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -259,9 +221,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   Tag = _class_0
 end
 tag = nil

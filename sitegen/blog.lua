@@ -2,10 +2,14 @@ local html = require("sitegen.html")
 local date = require("date")
 local copy, bind_methods
 do
-  local _table_0 = require("moon")
-  copy, bind_methods = _table_0.copy, _table_0.bind_methods
+  local _obj_0 = require("moon")
+  copy, bind_methods = _obj_0.copy, _obj_0.bind_methods
 end
-local insert = table.insert
+local insert
+do
+  local _obj_0 = table
+  insert = _obj_0.insert
+end
 local FeedPlugin = require("sitegen.feed")
 local cmp = {
   date = function(dir)
@@ -23,7 +27,6 @@ local cmp = {
 }
 local BlogPlugin
 do
-  local _parent_0 = nil
   local _base_0 = {
     posts = { },
     consumes_pages = false,
@@ -47,11 +50,12 @@ do
       print("blog posts:", #self.posts)
       local title, url, description
       do
-        local _table_0 = site.user_vars
-        title, url, description = _table_0.title, _table_0.url, _table_0.description
+        local _obj_0 = site.user_vars
+        title, url, description = _obj_0.title, _obj_0.url, _obj_0.description
       end
       if #self.posts > 0 then
-        local feed_posts = (function()
+        local feed_posts
+        do
           local _accum_0 = { }
           local _len_0 = 1
           local _list_0 = self:query()
@@ -67,8 +71,8 @@ do
             _accum_0[_len_0] = _value_0
             _len_0 = _len_0 + 1
           end
-          return _accum_0
-        end)()
+          feed_posts = _accum_0
+        end
         local rss_text = FeedPlugin.render_feed({
           title = title,
           description = description,
@@ -97,27 +101,12 @@ do
     end
   }
   _base_0.__index = _base_0
-  if _parent_0 then
-    setmetatable(_base_0, _parent_0.__base)
-  end
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      if _parent_0 then
-        return _parent_0.__init(self, ...)
-      end
-    end,
+    __init = function() end,
     __base = _base_0,
-    __name = "BlogPlugin",
-    __parent = _parent_0
+    __name = "BlogPlugin"
   }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil and _parent_0 then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
+    __index = _base_0,
     __call = function(cls, ...)
       local _self_0 = setmetatable({}, _base_0)
       cls.__init(_self_0, ...)
@@ -125,9 +114,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  if _parent_0 and _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
   BlogPlugin = _class_0
   return _class_0
 end
