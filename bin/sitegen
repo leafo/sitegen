@@ -3,7 +3,6 @@
 moonscript = require "moonscript"
 require "moon"
 require "cosmo"
-require "date"
 
 require "sitegen"
 require "sitegen.common"
@@ -17,7 +16,7 @@ default = {
   sitefile: "site.moon"
   files:
     page: [==[
-    date: $eval{"date()"}
+    date: $eval{"require('date')()"}
     $if{"title"}[[title: $title]]
 --
 
