@@ -230,13 +230,12 @@ do
       return nil ~= fname:match(self.pattern)
     end,
     parse_header = function(self, text)
-      local header = { }
-      local s, e = text:find("%-%-\n")
-      if s then
-        header = yaml.load(text:sub(1, s - 1))
-        text = text:sub(e)
+      local extract_header
+      do
+        local _obj_0 = require("sitegen.header")
+        extract_header = _obj_0.extract_header
       end
-      return text, header
+      return extract_header(text)
     end,
     render = function(self, text, site)
       return self:parse_header(text)

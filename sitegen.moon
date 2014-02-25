@@ -169,13 +169,8 @@ class Renderer
     nil != fname\match @pattern
 
   parse_header: (text) =>
-    header = {}
-    s, e = text\find "%-%-\n"
-    if s
-      header = yaml.load text\sub 1, s - 1
-      text = text\sub e
-
-    text, header
+    import extract_header from require "sitegen.header"
+    extract_header text
 
   render: (text, site) =>
     @parse_header text
