@@ -1,5 +1,5 @@
 
-.PHONY: build local install
+.PHONY: build local install lint
 
 local: build
 	luarocks make --local
@@ -9,4 +9,7 @@ install: build
 
 build::
 	moonc sitegen
+
+lint::
+	moonc -l sitegen
 
