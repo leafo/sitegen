@@ -68,7 +68,8 @@ class PygmentsPlugin
       cached
     else
       out = if @custom_highlighters[lang]
-        @custom_highlighters[lang] self, code, page
+        assert @custom_highlighters[lang](self, code, page),
+          "custom highlighter #{lang} failed to return result"
       else
         @pre_tag @highlight(lang, code), lang
 
@@ -104,7 +105,8 @@ class PygmentsPlugin
     code_block = code_block * Cb"indent" / (lang, body, indent) ->
       if indent != ""
         body = trim_leading_white body, indent
-      @_highlight lang, body, page
+      assert @_highlight(lang, body, page),
+        "failed to highlight #{lang} code\n\n#{body}"
 
     document = Cs(code_block + (nl * code_block + 1)^0)
 

@@ -131,7 +131,7 @@ do
       else
         local out
         if self.custom_highlighters[lang] then
-          out = self.custom_highlighters[lang](self, code, page)
+          out = assert(self.custom_highlighters[lang](self, code, page), "custom highlighter " .. tostring(lang) .. " failed to return result")
         else
           out = self:pre_tag(self:highlight(lang, code), lang)
         end
@@ -175,7 +175,7 @@ do
         if indent ~= "" then
           body = trim_leading_white(body, indent)
         end
-        return self:_highlight(lang, body, page)
+        return assert(self:_highlight(lang, body, page), "failed to highlight " .. tostring(lang) .. " code\n\n" .. tostring(body))
       end
       local document = Cs(code_block + (nl * code_block + 1) ^ 0)
       return assert(document:match(text))
