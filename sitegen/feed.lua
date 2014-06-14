@@ -1,5 +1,8 @@
-local sitegen = require("sitegen")
-require("sitegen.common")
+local trim_leading_white
+do
+  local _obj_0 = require("sitegen.common")
+  trim_leading_white = _obj_0.trim_leading_white
+end
 local html = require("sitegen.html")
 local discount = require("discount")
 local date = require("date")

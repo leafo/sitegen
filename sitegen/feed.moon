@@ -1,11 +1,13 @@
 
-sitegen = require "sitegen"
-require "sitegen.common"
+import
+  trim_leading_white
+  from require "sitegen.common"
 
 html = require "sitegen.html"
 discount = require "discount"
 
 date = require "date"
+
 import extend from require "moon"
 import insert from table
 

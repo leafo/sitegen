@@ -4,7 +4,6 @@ local yaml = require("yaml")
 local discount = require("discount")
 local moonscript = require("moonscript")
 local lpeg = require("lpeg")
-module("sitegen", package.seeall)
 local insert, concat, sort
 do
   local _obj_0 = table
@@ -14,21 +13,6 @@ local dump, extend, bind_methods, run_with_scope
 do
   local _obj_0 = require("moon")
   dump, extend, bind_methods, run_with_scope = _obj_0.dump, _obj_0.extend, _obj_0.bind_methods, _obj_0.run_with_scope
-end
-local plugins = { }
-register_plugin = function(plugin)
-  if plugin.on_register then
-    plugin:on_register()
-  end
-  return table.insert(plugins, plugin)
-end
-local load_plugins
-load_plugins = function(register)
-  register(require("sitegen.feed"))
-  register(require("sitegen.blog"))
-  register(require("sitegen.deploy"))
-  register(require("sitegen.indexer"))
-  return require("sitegen.extra")
 end
 local html = require("sitegen.html")
 local Path, OrderSet, Stack, throw_error, make_list, timed_call, escape_patt, bound_fn, split, convert_pattern, bright_yellow, flatten_args, pass_error, trim
@@ -41,11 +25,17 @@ do
   local _obj_0 = require("sitegen.cache")
   Cache = _obj_0.Cache
 end
-local log
+local plugins, register_plugin, log, fill_ignoring_pre, render_until_complete, SiteFile, Plugin, Renderer, HTMLRenderer, MarkdownRenderer, MoonRenderer, SiteScope, Templates, Page, Site, create_site
+plugins = { }
+register_plugin = function(plugin)
+  if plugin.on_register then
+    plugin:on_register()
+  end
+  return table.insert(plugins, plugin)
+end
 log = function(...)
   return print(...)
 end
-local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
   local P, R, S, V, Ct, C
   P, R, S, V, Ct, C = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.Ct, lpeg.C
@@ -94,7 +84,6 @@ fill_ignoring_pre = function(text, context)
   end
   return table.concat(filled)
 end
-local render_until_complete
 render_until_complete = function(tpl_scope, render_fn)
   local out = nil
   while true do
@@ -157,11 +146,11 @@ do
       run_with_scope(fn, {
         sitegen = extend({
           create_site = function(fn)
-            site = sitegen.create_site(fn, Site(self))
+            site = create_site(fn, Site(self))
             site.write = function() end
             return site
           end
-        }, sitegen)
+        }, require("sitegen"))
       })
       site.write = nil
       return site
@@ -221,7 +210,6 @@ do
   _base_0.__class = _class_0
   Plugin = _class_0
 end
-local Renderer
 do
   local _base_0 = {
     render = function()
@@ -343,7 +331,6 @@ do
   end
   MarkdownRenderer = _class_0
 end
-local MoonRenderer
 do
   local _parent_0 = Renderer
   local _base_0 = {
@@ -422,7 +409,6 @@ do
   end
   MoonRenderer = _class_0
 end
-local SiteScope
 do
   local _base_0 = {
     set = function(self, name, value)
@@ -550,7 +536,6 @@ do
   _base_0.__class = _class_0
   SiteScope = _class_0
 end
-local Templates
 do
   local _base_0 = {
     defaults = require("sitegen.default.templates"),
@@ -718,7 +703,6 @@ do
   _base_0.__class = _class_0
   Templates = _class_0
 end
-local Page
 do
   local _base_0 = {
     __tostring = function(self)
@@ -1163,5 +1147,16 @@ create_site = function(init_fn, site)
     return _with_0
   end
 end
-load_plugins(sitegen.register_plugin)
-return nil
+register_plugin(require("sitegen.feed"))
+register_plugin(require("sitegen.blog"))
+register_plugin(require("sitegen.deploy"))
+register_plugin(require("sitegen.indexer"))
+return {
+  create_site = create_site,
+  register_plugin = register_plugin,
+  Site = Site,
+  SiteFile = SiteFile,
+  Plugin = Plugin,
+  HTMLRenderer = HTMLRenderer,
+  MarkdownRenderer = MarkdownRenderer
+}

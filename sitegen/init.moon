@@ -5,26 +5,8 @@ discount = require "discount"
 moonscript = require "moonscript"
 lpeg = require "lpeg"
 
-module "sitegen", package.seeall
-
 import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from require "moon"
-
-export create_site, register_plugin
-export Site, SiteFile, Plugin, HTMLRenderer, MarkdownRenderer
-
-plugins = {}
-register_plugin = (plugin) ->
-  plugin\on_register!  if plugin.on_register
-  table.insert plugins, plugin
-
-load_plugins = (register) ->
-  register require "sitegen.feed"
-  register require "sitegen.blog"
-  register require "sitegen.deploy"
-  register require "sitegen.indexer"
-
-  require "sitegen.extra"
 
 html = require "sitegen.html"
 
@@ -46,6 +28,14 @@ import
   from require "sitegen.common"
 
 import Cache from require "sitegen.cache"
+
+local *
+
+plugins = {}
+
+register_plugin = (plugin) ->
+  plugin\on_register!  if plugin.on_register
+  table.insert plugins, plugin
 
 log = (...) ->
   print ...
@@ -165,10 +155,10 @@ class SiteFile
     run_with_scope fn, {
       sitegen: extend {
         create_site: (fn) ->
-          site = sitegen.create_site fn, Site self
+          site = create_site fn, Site self
           site.write = ->
           site
-      }, sitegen
+      }, require "sitegen"
     }
 
     site.write = nil -- restore default write
@@ -722,8 +712,14 @@ create_site = (init_fn, site=Site!) ->
     \init_from_fn init_fn
     .scope\search "*md" unless .autoadd_disabled
 
+register_plugin require "sitegen.feed"
+register_plugin require "sitegen.blog"
+register_plugin require "sitegen.deploy"
+register_plugin require "sitegen.indexer"
 
-load_plugins sitegen.register_plugin
+-- require "sitegen.extra"
 
-nil
-
+{
+  :create_site, :register_plugin,
+  :Site, :SiteFile, :Plugin, :HTMLRenderer, :MarkdownRenderer
+}
