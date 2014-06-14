@@ -1,4 +1,4 @@
-module(..., package.seeall)
+local Watcher
 do
   local _base_0 = {
     page_handler = function(self, fname)
@@ -77,4 +77,6 @@ do
   _base_0.__class = _class_0
   Watcher = _class_0
 end
-return nil
+return {
+  Watcher = Watcher
+}

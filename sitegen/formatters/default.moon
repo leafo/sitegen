@@ -1,5 +1,3 @@
-module ..., package.seeall
-
 -- provides a basic scope that lets your write to a buffer
 -- and return it
 
@@ -18,8 +16,8 @@ scope = {
     table.concat @buffer, "\n"
 }
 
-export *
-
-make_context = (page) ->
-  bind_methods extend { buffer: {} }, scope
+{
+  make_context: (page) ->
+    bind_methods extend { buffer: {} }, scope
+}
 

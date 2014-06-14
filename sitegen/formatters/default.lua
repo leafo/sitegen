@@ -1,4 +1,3 @@
-module(..., package.seeall)
 local html = require("sitegen.html")
 local extend, bind_methods
 do
@@ -22,8 +21,10 @@ local scope = {
     return table.concat(self.buffer, "\n")
   end
 }
-make_context = function(page)
-  return bind_methods(extend({
-    buffer = { }
-  }, scope))
-end
+return {
+  make_context = function(page)
+    return bind_methods(extend({
+      buffer = { }
+    }, scope))
+  end
+}

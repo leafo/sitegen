@@ -1,5 +1,4 @@
-module(..., package.seeall)
-index = [==[<!DOCTYPE HTML>
+local index = [==[<!DOCTYPE HTML>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -14,3 +13,6 @@ index = [==[<!DOCTYPE HTML>
 </body>
 </html>
 ]==]
+return {
+  index = index
+}

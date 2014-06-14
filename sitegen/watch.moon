@@ -1,11 +1,6 @@
 
-module ..., package.seeall
-
-export *
-
 -- this is pretty basic, it just watches the page inputs, not any of the
 -- dependencies like templates or inline renders
-
 class Watcher
   new: (@site) =>
     inotify = require "inotify"
@@ -57,4 +52,8 @@ class Watcher
         if set and set[name]
           set[name]()
 
-nil
+
+{
+  :Watcher
+}
+

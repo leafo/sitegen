@@ -1,8 +1,4 @@
-
-module "sitegen.cache", package.seeall
-
 import concat from table
-export Cache, CacheTable
 
 json = require "cjson"
 
@@ -70,4 +66,8 @@ class Cache
   get: (...) => @cache\get ...
 
 
-nil
+{
+  :Cache
+  :CacheTable
+}
+

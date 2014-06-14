@@ -1,4 +1,3 @@
-module("sitegen.cache", package.seeall)
 local concat
 do
   local _obj_0 = table
@@ -13,6 +12,7 @@ local unserialize
 unserialize = function(text)
   return json.decode(text)
 end
+local CacheTable
 do
   local _base_0 = {
     __tostring = function(self)
@@ -60,6 +60,7 @@ do
   end
   CacheTable = _class_0
 end
+local Cache
 do
   local _base_0 = {
     write = function(self)
@@ -137,4 +138,7 @@ do
   end
   Cache = _class_0
 end
-return nil
+return {
+  Cache = Cache,
+  CacheTable = CacheTable
+}

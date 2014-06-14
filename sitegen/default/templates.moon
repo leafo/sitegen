@@ -1,7 +1,4 @@
 
-module ..., package.seeall
-export *
-
 index = [==[<!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -18,3 +15,6 @@ index = [==[<!DOCTYPE HTML>
 </html>
 ]==]
 
+{
+  :index
+}
