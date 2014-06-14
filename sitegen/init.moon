@@ -1,7 +1,6 @@
 lfs = require "lfs"
 cosmo = require "cosmo"
 yaml = require "yaml"
-discount = require "discount"
 moonscript = require "moonscript"
 lpeg = require "lpeg"
 
@@ -9,6 +8,24 @@ import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from require "moon"
 
 html = require "sitegen.html"
+
+default_plugins = {
+  "sitegen.feed"
+  "sitegen.blog"
+  "sitegen.deploy"
+  "sitegen.indexer"
+
+  "sitegen.plugins.analytics"
+  "sitegen.plugins.coffee_script"
+  "sitegen.plugins.pygments"
+  "sitegen.plugins.dump"
+}
+
+default_renderers = {
+  "sitegen.renderers.markdown"
+  "sitegen.renderers.html"
+  "sitegen.renderers.moon"
+}
 
 import
   Path
@@ -34,7 +51,7 @@ local *
 plugins = {}
 
 register_plugin = (plugin) ->
-  plugin\on_register!  if plugin.on_register
+  plugin\on_register! if plugin.on_register
   table.insert plugins, plugin
 
 log = (...) ->
@@ -164,79 +181,6 @@ class SiteFile
     site.write = nil -- restore default write
     site
 
-class Plugin -- uhh
-  new: (@tpl_scope) =>
-
-class Renderer
-  new: (@pattern) =>
-  render: -> error "must provide render method"
-  can_render: (fname) =>
-    nil != fname\match @pattern
-
-  parse_header: (text) =>
-    import extract_header from require "sitegen.header"
-    extract_header text
-
-  render: (text, site) =>
-    @parse_header text
-
-class HTMLRenderer extends Renderer
-  ext: "html"
-  pattern: convert_pattern "*.html"
-
-class MarkdownRenderer extends Renderer
-  ext: "html"
-  pattern: convert_pattern "*.md"
-  pre_render: {}
-
-  render: (text, page) =>
-    text, header = @parse_header text
-
-    for filter in *@pre_render
-      text = filter text, page
-
-    discount(text), header
-
-class MoonRenderer extends Renderer
-  ext: "html"
-  pattern: convert_pattern "*.moon"
-
-  -- this does some crazy chaining
-  render: (text, page) =>
-    scopes = {}
-    meta = {}
-
-    context = setmetatable {}, {
-      __index: (key) =>
-        for i=#scopes,1,-1
-          val = scopes[i][key]
-          return val if val
-    }
-
-    base_scope = setmetatable {
-      _context: -> context
-
-      set: (name, value) -> meta[name] = value
-      get: (name) -> meta[name]
-
-      -- appends a scope to __index of the context
-      format: (name) ->
-        formatter = if type(name) == "string"
-          require name
-        else
-          name
-
-        insert scopes, formatter.make_context page, context
-    }, __index: _G
-
-    insert scopes, base_scope
-    context.format "sitegen.formatters.default"
-
-    fn = moonscript.loadstring text
-    setfenv fn, context
-    fn!
-    context.render!, meta
-
 -- visible from init
 class SiteScope
   new: (@site) =>
@@ -304,6 +248,7 @@ class Templates
       @site\Templates"."\fill name, @tpl_scope
 
     markdown: (args) =>
+      MarkdownRenderer = require "sitegen.renderers.markdown"
       MarkdownRenderer\render args[1] or ""
 
     wrap: (args) =>
@@ -532,6 +477,9 @@ class Page
 
 -- a webpage
 class Site
+  @load_renderers: =>
+    [require rname for rname in *default_renderers]
+
   __tostring: => "<Site>"
 
   config: {
@@ -552,11 +500,7 @@ class Site
     @user_vars = {}
     @written_files = {}
 
-    @renderers = {
-      MarkdownRenderer
-      HTMLRenderer
-      MoonRenderer
-    }
+    @renderers = @@load_renderers!
 
     @plugins = OrderSet plugins
     -- extract aggregators from plugins
@@ -712,14 +656,10 @@ create_site = (init_fn, site=Site!) ->
     \init_from_fn init_fn
     .scope\search "*md" unless .autoadd_disabled
 
-register_plugin require "sitegen.feed"
-register_plugin require "sitegen.blog"
-register_plugin require "sitegen.deploy"
-register_plugin require "sitegen.indexer"
-
--- require "sitegen.extra"
+for pname in *default_plugins
+  register_plugin require pname
 
 {
   :create_site, :register_plugin,
-  :Site, :SiteFile, :Plugin, :HTMLRenderer, :MarkdownRenderer
+  :Site, :SiteFile
 }

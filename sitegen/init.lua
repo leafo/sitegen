@@ -1,7 +1,6 @@
 local lfs = require("lfs")
 local cosmo = require("cosmo")
 local yaml = require("yaml")
-local discount = require("discount")
 local moonscript = require("moonscript")
 local lpeg = require("lpeg")
 local insert, concat, sort
@@ -15,6 +14,21 @@ do
   dump, extend, bind_methods, run_with_scope = _obj_0.dump, _obj_0.extend, _obj_0.bind_methods, _obj_0.run_with_scope
 end
 local html = require("sitegen.html")
+local default_plugins = {
+  "sitegen.feed",
+  "sitegen.blog",
+  "sitegen.deploy",
+  "sitegen.indexer",
+  "sitegen.plugins.analytics",
+  "sitegen.plugins.coffee_script",
+  "sitegen.plugins.pygments",
+  "sitegen.plugins.dump"
+}
+local default_renderers = {
+  "sitegen.renderers.markdown",
+  "sitegen.renderers.html",
+  "sitegen.renderers.moon"
+}
 local Path, OrderSet, Stack, throw_error, make_list, timed_call, escape_patt, bound_fn, split, convert_pattern, bright_yellow, flatten_args, pass_error, trim
 do
   local _obj_0 = require("sitegen.common")
@@ -25,7 +39,7 @@ do
   local _obj_0 = require("sitegen.cache")
   Cache = _obj_0.Cache
 end
-local plugins, register_plugin, log, fill_ignoring_pre, render_until_complete, SiteFile, Plugin, Renderer, HTMLRenderer, MarkdownRenderer, MoonRenderer, SiteScope, Templates, Page, Site, create_site
+local plugins, register_plugin, log, fill_ignoring_pre, render_until_complete, SiteFile, SiteScope, Templates, Page, Site, create_site
 plugins = { }
 register_plugin = function(plugin)
   if plugin.on_register then
@@ -191,225 +205,6 @@ do
   SiteFile = _class_0
 end
 do
-  local _base_0 = { }
-  _base_0.__index = _base_0
-  local _class_0 = setmetatable({
-    __init = function(self, tpl_scope)
-      self.tpl_scope = tpl_scope
-    end,
-    __base = _base_0,
-    __name = "Plugin"
-  }, {
-    __index = _base_0,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  Plugin = _class_0
-end
-do
-  local _base_0 = {
-    render = function()
-      return error("must provide render method")
-    end,
-    can_render = function(self, fname)
-      return nil ~= fname:match(self.pattern)
-    end,
-    parse_header = function(self, text)
-      local extract_header
-      do
-        local _obj_0 = require("sitegen.header")
-        extract_header = _obj_0.extract_header
-      end
-      return extract_header(text)
-    end,
-    render = function(self, text, site)
-      return self:parse_header(text)
-    end
-  }
-  _base_0.__index = _base_0
-  local _class_0 = setmetatable({
-    __init = function(self, pattern)
-      self.pattern = pattern
-    end,
-    __base = _base_0,
-    __name = "Renderer"
-  }, {
-    __index = _base_0,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  Renderer = _class_0
-end
-do
-  local _parent_0 = Renderer
-  local _base_0 = {
-    ext = "html",
-    pattern = convert_pattern("*.html")
-  }
-  _base_0.__index = _base_0
-  setmetatable(_base_0, _parent_0.__base)
-  local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
-    end,
-    __base = _base_0,
-    __name = "HTMLRenderer",
-    __parent = _parent_0
-  }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  if _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
-  HTMLRenderer = _class_0
-end
-do
-  local _parent_0 = Renderer
-  local _base_0 = {
-    ext = "html",
-    pattern = convert_pattern("*.md"),
-    pre_render = { },
-    render = function(self, text, page)
-      local header
-      text, header = self:parse_header(text)
-      local _list_0 = self.pre_render
-      for _index_0 = 1, #_list_0 do
-        local filter = _list_0[_index_0]
-        text = filter(text, page)
-      end
-      return discount(text), header
-    end
-  }
-  _base_0.__index = _base_0
-  setmetatable(_base_0, _parent_0.__base)
-  local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
-    end,
-    __base = _base_0,
-    __name = "MarkdownRenderer",
-    __parent = _parent_0
-  }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  if _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
-  MarkdownRenderer = _class_0
-end
-do
-  local _parent_0 = Renderer
-  local _base_0 = {
-    ext = "html",
-    pattern = convert_pattern("*.moon"),
-    render = function(self, text, page)
-      local scopes = { }
-      local meta = { }
-      local context = setmetatable({ }, {
-        __index = function(self, key)
-          for i = #scopes, 1, -1 do
-            local val = scopes[i][key]
-            if val then
-              return val
-            end
-          end
-        end
-      })
-      local base_scope = setmetatable({
-        _context = function()
-          return context
-        end,
-        set = function(name, value)
-          meta[name] = value
-        end,
-        get = function(name)
-          return meta[name]
-        end,
-        format = function(name)
-          local formatter
-          if type(name) == "string" then
-            formatter = require(name)
-          else
-            formatter = name
-          end
-          return insert(scopes, formatter.make_context(page, context))
-        end
-      }, {
-        __index = _G
-      })
-      insert(scopes, base_scope)
-      context.format("sitegen.formatters.default")
-      local fn = moonscript.loadstring(text)
-      setfenv(fn, context)
-      fn()
-      return context.render(), meta
-    end
-  }
-  _base_0.__index = _base_0
-  setmetatable(_base_0, _parent_0.__base)
-  local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
-    end,
-    __base = _base_0,
-    __name = "MoonRenderer",
-    __parent = _parent_0
-  }, {
-    __index = function(cls, name)
-      local val = rawget(_base_0, name)
-      if val == nil then
-        return _parent_0[name]
-      else
-        return val
-      end
-    end,
-    __call = function(cls, ...)
-      local _self_0 = setmetatable({}, _base_0)
-      cls.__init(_self_0, ...)
-      return _self_0
-    end
-  })
-  _base_0.__class = _class_0
-  if _parent_0.__inherited then
-    _parent_0.__inherited(_parent_0, _class_0)
-  end
-  MoonRenderer = _class_0
-end
-do
   local _base_0 = {
     set = function(self, name, value)
       self[name] = value
@@ -545,6 +340,7 @@ do
         return self.site:Templates("."):fill(name, self.tpl_scope)
       end,
       markdown = function(self, args)
+        local MarkdownRenderer = require("sitegen.renderers.markdown")
         return MarkdownRenderer:render(args[1] or "")
       end,
       wrap = function(self, args)
@@ -1101,11 +897,7 @@ do
       self.cache = Cache(self)
       self.user_vars = { }
       self.written_files = { }
-      self.renderers = {
-        MarkdownRenderer,
-        HTMLRenderer,
-        MoonRenderer
-      }
+      self.renderers = self.__class:load_renderers()
       self.plugins = OrderSet(plugins)
       self.aggregators = { }
       for plugin in self.plugins:each() do
@@ -1132,6 +924,17 @@ do
     end
   })
   _base_0.__class = _class_0
+  local self = _class_0
+  self.load_renderers = function(self)
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #default_renderers do
+      local rname = default_renderers[_index_0]
+      _accum_0[_len_0] = require(rname)
+      _len_0 = _len_0 + 1
+    end
+    return _accum_0
+  end
   Site = _class_0
 end
 create_site = function(init_fn, site)
@@ -1147,16 +950,13 @@ create_site = function(init_fn, site)
     return _with_0
   end
 end
-register_plugin(require("sitegen.feed"))
-register_plugin(require("sitegen.blog"))
-register_plugin(require("sitegen.deploy"))
-register_plugin(require("sitegen.indexer"))
+for _index_0 = 1, #default_plugins do
+  local pname = default_plugins[_index_0]
+  register_plugin(require(pname))
+end
 return {
   create_site = create_site,
   register_plugin = register_plugin,
   Site = Site,
-  SiteFile = SiteFile,
-  Plugin = Plugin,
-  HTMLRenderer = HTMLRenderer,
-  MarkdownRenderer = MarkdownRenderer
+  SiteFile = SiteFile
 }
