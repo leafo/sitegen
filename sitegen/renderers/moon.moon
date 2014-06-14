@@ -1,6 +1,6 @@
 import Renderer from require "sitegen.renderer"
 
-moonscript = require "moonscript"
+moonscript = require "moonscript.base"
 
 import convert_pattern from require "sitegen.common"
 import insert from table

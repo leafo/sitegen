@@ -1,7 +1,7 @@
 local lfs = require("lfs")
 local cosmo = require("cosmo")
 local yaml = require("yaml")
-local moonscript = require("moonscript")
+local moonscript = require("moonscript.base")
 local lpeg = require("lpeg")
 local insert, concat, sort
 do
@@ -15,10 +15,10 @@ do
 end
 local html = require("sitegen.html")
 local default_plugins = {
-  "sitegen.feed",
-  "sitegen.blog",
-  "sitegen.deploy",
-  "sitegen.indexer",
+  "sitegen.plugins.feed",
+  "sitegen.plugins.blog",
+  "sitegen.plugins.deploy",
+  "sitegen.plugins.indexer",
   "sitegen.plugins.analytics",
   "sitegen.plugins.coffee_script",
   "sitegen.plugins.pygments",

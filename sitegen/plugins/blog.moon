@@ -1,9 +1,13 @@
 
+import Plugin from require "sitegen.plugin"
+
 html = require "sitegen.html"
 date = require "date"
+
 import copy, bind_methods from require "moon"
 import insert from table
-FeedPlugin = require "sitegen.feed"
+
+FeedPlugin = require "sitegen.plugins.feed"
 
 cmp = {
   date: (dir="desc") ->
@@ -14,7 +18,7 @@ cmp = {
         date(a) > date(b)
 }
 
-class BlogPlugin
+class BlogPlugin extends Plugin
   posts: {}
   consumes_pages: false
   type_name: "blog_post"

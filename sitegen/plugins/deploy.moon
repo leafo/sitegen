@@ -1,6 +1,6 @@
-require "sitegen.common"
+import Plugin from require "sitegen.plugin"
 
-class DeployPlugin
+class DeployPlugin extends Plugin
   -- 'rsync -arvuz www/ leaf@leafo.net:www/test'
   @sync = (host, path) =>
     os.execute table.concat {

@@ -1,7 +1,7 @@
 lfs = require "lfs"
 cosmo = require "cosmo"
 yaml = require "yaml"
-moonscript = require "moonscript"
+moonscript = require "moonscript.base"
 lpeg = require "lpeg"
 
 import insert, concat, sort from table
@@ -10,11 +10,10 @@ import dump, extend, bind_methods, run_with_scope from require "moon"
 html = require "sitegen.html"
 
 default_plugins = {
-  "sitegen.feed"
-  "sitegen.blog"
-  "sitegen.deploy"
-  "sitegen.indexer"
-
+  "sitegen.plugins.feed"
+  "sitegen.plugins.blog"
+  "sitegen.plugins.deploy"
+  "sitegen.plugins.indexer"
   "sitegen.plugins.analytics"
   "sitegen.plugins.coffee_script"
   "sitegen.plugins.pygments"

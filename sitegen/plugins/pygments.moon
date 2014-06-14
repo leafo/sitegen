@@ -3,6 +3,8 @@ html = require "sitegen.html"
 import CacheTable from require "sitegen.cache"
 import trim_leading_white from require "sitegen.common"
 
+import Plugin from require "sitegen.plugin"
+
 --
 -- Specify code to highlight using ````lang, eg.
 --
@@ -11,7 +13,7 @@ import trim_leading_white from require "sitegen.common"
 -- print "hello world"
 -- ```
 --
-class PygmentsPlugin
+class PygmentsPlugin extends Plugin
   custom_highlighters: {}
   disable_indent_detect: false
 

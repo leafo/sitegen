@@ -4,6 +4,8 @@ html = require "sitegen.html"
 
 import insert, concat from table
 
+import Plugin from require "sitegen.plugin"
+
 render_index = (index) ->
   yield_index = (index) ->
     for item in *index
@@ -73,7 +75,7 @@ build_from_html = (body, meta, opts={}) ->
 
   out, headers
 
-class IndexerPlugin
+class IndexerPlugin extends Plugin
   @build_from_html: build_from_html
 
   tpl_helpers: { "index" }

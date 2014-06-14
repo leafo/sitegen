@@ -3,7 +3,7 @@ do
   local _obj_0 = require("sitegen.renderer")
   Renderer = _obj_0.Renderer
 end
-local moonscript = require("moonscript")
+local moonscript = require("moonscript.base")
 local convert_pattern
 do
   local _obj_0 = require("sitegen.common")

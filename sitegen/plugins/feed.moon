@@ -1,4 +1,6 @@
 
+import Plugin from require "sitegen.plugin"
+
 import
   trim_leading_white
   from require "sitegen.common"
@@ -40,7 +42,7 @@ render_feed = (root) ->
     }
   }
 
-class FeedPlugin
+class FeedPlugin extends Plugin
   @render_feed: render_feed
 
   mixin_funcs: { "feed" }
@@ -49,7 +51,7 @@ class FeedPlugin
     @feeds = {}
 
   feed: (source, dest) =>
-    moonscript = require "moonscript"
+    moonscript = require "moonscript.base"
     fn = assert moonscript.loadfile source
     table.insert @feeds, { dest, fn! }
 
