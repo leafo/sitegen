@@ -58,7 +58,8 @@ class PygmentsPlugin
     out = p\read"*a"
 
     -- get rid of the div and pre inserted by pygments
-    assert out\match '^<div class="highlight"><pre>(.-)\n?</pre></div>'
+    assert out\match('^<div class="highlight"><pre>(.-)\n?</pre></div>'),
+      "Failed to parse pygmentize result, is pygments installed?"
 
   -- checks cache and custom highlighters
   _highlight: (lang, code, page=nil) =>

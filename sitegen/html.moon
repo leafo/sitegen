@@ -1,16 +1,10 @@
 
-module "sitegen.html", package.seeall
-
-export encode, decode, strip_tags, build, builders
-export escape, unescape
-export tag
-
 import concat from table
 import run_with_scope, defaultbl from require "moon"
 
-punct = "[%^$()%.%[%]*+%-?]"
-escape_patt = (str) ->
-  (str\gsub punct, (p) -> "%"..p)
+import escape_patt from require "sitegen.common"
+
+local *
 
 html_encode_entities = {
   ['&']: '&amp;'
@@ -138,5 +132,6 @@ build = (fn, delim="\n") ->
   result = render_list result, delim if is_list result
   tostring result
 
-
-nil
+{
+  :encode, :decode, :strip_tags, :build, :builders, :escape, :unescape, :tag
+}

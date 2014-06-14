@@ -1,14 +1,12 @@
 #!/usr/bin/env moon
 
 moonscript = require "moonscript"
-require "moon"
-require "cosmo"
-
-require "sitegen"
-require "sitegen.common"
+moon = require "moon"
+cosmo = require "cosmo"
 
 import run_with_scope, extend, dump from require "moon"
-import SiteFile from sitegen
+import SiteFile from require "sitegen"
+import catch_error from require "sitegen.common"
 
 action = arg[1] or "build"
 

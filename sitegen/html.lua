@@ -1,4 +1,3 @@
-module("sitegen.html", package.seeall)
 local concat
 do
   local _obj_0 = table
@@ -9,25 +8,24 @@ do
   local _obj_0 = require("moon")
   run_with_scope, defaultbl = _obj_0.run_with_scope, _obj_0.defaultbl
 end
-local punct = "[%^$()%.%[%]*+%-?]"
 local escape_patt
-escape_patt = function(str)
-  return (str:gsub(punct, function(p)
-    return "%" .. p
-  end))
+do
+  local _obj_0 = require("sitegen.common")
+  escape_patt = _obj_0.escape_patt
 end
-local html_encode_entities = {
+local html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
+html_encode_entities = {
   ['&'] = '&amp;',
   ['<'] = '&lt;',
   ['>'] = '&gt;',
   ['"'] = '&quot;',
   ["'"] = '&#039;'
 }
-local html_decode_entities = { }
+html_decode_entities = { }
 for key, value in pairs(html_encode_entities) do
   html_decode_entities[value] = key
 end
-local html_encode_pattern = "[" .. concat((function()
+html_encode_pattern = "[" .. concat((function()
   local _accum_0 = { }
   local _len_0 = 1
   for char in pairs(html_encode_entities) do
@@ -54,11 +52,9 @@ unescape = decode
 strip_tags = function(html)
   return html:gsub("<[^>]+>", "")
 end
-local is_list
 is_list = function(t)
   return type(t) == "table" and t.type ~= "tag"
 end
-local render_list
 render_list = function(list, delim)
   local escaped
   do
@@ -83,7 +79,6 @@ render_list = function(list, delim)
   end
   return table.concat(escaped, delim)
 end
-local render_tag
 render_tag = function(name, inner, attributes)
   if inner == nil then
     inner = ""
@@ -124,7 +119,6 @@ render_tag = function(name, inner, attributes)
   end
   return open .. inner .. close
 end
-local Text
 do
   local _base_0 = {
     __tostring = function(self)
@@ -150,7 +144,6 @@ do
   _base_0.__class = _class_0
   Text = _class_0
 end
-local CData
 do
   local _base_0 = {
     __tostring = function(self)
@@ -176,7 +169,6 @@ do
   _base_0.__class = _class_0
   CData = _class_0
 end
-local Tag
 do
   local _base_0 = {
     __tostring = function(self)
@@ -268,4 +260,13 @@ build = function(fn, delim)
   end
   return tostring(result)
 end
-return nil
+return {
+  encode = encode,
+  decode = decode,
+  strip_tags = strip_tags,
+  build = build,
+  builders = builders,
+  escape = escape,
+  unescape = unescape,
+  tag = tag
+}

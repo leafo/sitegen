@@ -1,7 +1,6 @@
 -- parses header
 yaml = require "yaml"
-
-require "sitegen.common"
+import trim_leading_white from require "sitegen.common"
 
 parse_header = (header) ->
   header = trim_leading_white header

@@ -1,5 +1,4 @@
 
-html = require "sitegen.html"
 
 colors = {
   reset: 0
@@ -16,7 +15,7 @@ socket = nil
 pcall ->
   socket = require "socket"
 
-export *
+local *
 
 timed_call = (fn) ->
   start = socket and socket.gettime!
@@ -24,6 +23,7 @@ timed_call = (fn) ->
   socket and (socket.gettime! - start), unpack res
 
 bright_red = make_bright"red"
+
 bright_yellow = make_bright"yellow"
 
 throw_error = (...) ->
@@ -105,6 +105,7 @@ convert_pattern = (patt) ->
   patt\gsub "[*]", ".*"
 
 slugify = (text) ->
+  html = require "sitegen.html"
   text = html.strip_tags text
   text = text\gsub "[&+]", " and "
   (text\lower!\gsub("%s+", "_")\gsub("[^%w_]", ""))
@@ -203,7 +204,27 @@ Path = (io) -> {
       a .. "/" .. b
   }
 
-Path = Path io
+{
+  :timed_call
+  :bright_red
+  :bright_yellow
+  :throw_error
+  :pass_error
+  :catch_error
+  :get_local
+  :trim_leading_white
+  :dumps
+  :make_list
+  :bound_fn
+  :escape_patt
+  :convert_pattern
+  :slugify
+  :flatten_args
+  :split
+  :trim
 
-nil
+  :OrderSet
+  :Stack
+  Path: Path(io)
+}
 

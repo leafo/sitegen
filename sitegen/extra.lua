@@ -117,7 +117,7 @@ do
       end
       local p = io.popen(("pygmentize -f html -l %s %s"):format(lang, fname))
       local out = p:read("*a")
-      return assert(out:match('^<div class="highlight"><pre>(.-)\n?</pre></div>'))
+      return assert(out:match('^<div class="highlight"><pre>(.-)\n?</pre></div>'), "Failed to parse pygmentize result, is pygments installed?")
     end,
     _highlight = function(self, lang, code, page)
       if page == nil then

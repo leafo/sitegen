@@ -1,4 +1,3 @@
-local html = require("sitegen.html")
 local colors = {
   reset = 0,
   bright = 1,
@@ -22,6 +21,7 @@ local socket = nil
 pcall(function()
   socket = require("socket")
 end)
+local timed_call, bright_red, bright_yellow, throw_error, pass_error, catch_error, get_local, trim_leading_white, dumps, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, Path
 timed_call = function(fn)
   local start = socket and socket.gettime()
   local res = {
@@ -130,6 +130,7 @@ convert_pattern = function(patt)
   return patt:gsub("[*]", ".*")
 end
 slugify = function(text)
+  local html = require("sitegen.html")
   text = html.strip_tags(text)
   text = text:gsub("[&+]", " and ")
   return (text:lower():gsub("%s+", "_"):gsub("[^%w_]", ""))
@@ -301,5 +302,25 @@ Path = function(io)
     end
   }
 end
-Path = Path(io)
-return nil
+return {
+  timed_call = timed_call,
+  bright_red = bright_red,
+  bright_yellow = bright_yellow,
+  throw_error = throw_error,
+  pass_error = pass_error,
+  catch_error = catch_error,
+  get_local = get_local,
+  trim_leading_white = trim_leading_white,
+  dumps = dumps,
+  make_list = make_list,
+  bound_fn = bound_fn,
+  escape_patt = escape_patt,
+  convert_pattern = convert_pattern,
+  slugify = slugify,
+  flatten_args = flatten_args,
+  split = split,
+  trim = trim,
+  OrderSet = OrderSet,
+  Stack = Stack,
+  Path = Path(io)
+}

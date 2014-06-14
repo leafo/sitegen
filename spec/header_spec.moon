@@ -1,6 +1,8 @@
 
-require "sitegen.common"
-
+import
+  trim_leading_white
+  trim
+  from require "sitegen.common"
 
 describe "sitegen.header", ->
   it "should trim front", ->

@@ -1,10 +1,10 @@
-require("lfs")
-require("cosmo")
-require("yaml")
+local lfs = require("lfs")
+local cosmo = require("cosmo")
+local yaml = require("yaml")
 local discount = require("discount")
 local moonscript = require("moonscript")
+local lpeg = require("lpeg")
 module("sitegen", package.seeall)
-require("sitegen.html")
 local insert, concat, sort
 do
   local _obj_0 = table
@@ -30,7 +30,12 @@ load_plugins = function(register)
   register(require("sitegen.indexer"))
   return require("sitegen.extra")
 end
-require("sitegen.common")
+local html = require("sitegen.html")
+local Path, OrderSet, Stack, throw_error, make_list, timed_call, escape_patt, bound_fn, split, convert_pattern, bright_yellow, flatten_args, pass_error, trim
+do
+  local _obj_0 = require("sitegen.common")
+  Path, OrderSet, Stack, throw_error, make_list, timed_call, escape_patt, bound_fn, split, convert_pattern, bright_yellow, flatten_args, pass_error, trim = _obj_0.Path, _obj_0.OrderSet, _obj_0.Stack, _obj_0.throw_error, _obj_0.make_list, _obj_0.timed_call, _obj_0.escape_patt, _obj_0.bound_fn, _obj_0.split, _obj_0.convert_pattern, _obj_0.bright_yellow, _obj_0.flatten_args, _obj_0.pass_error, _obj_0.trim
+end
 local Cache
 do
   local _obj_0 = require("sitegen.cache")
@@ -40,14 +45,10 @@ local log
 log = function(...)
   return print(...)
 end
-require("lpeg")
 local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
   local P, R, S, V, Ct, C
-  do
-    local _obj_0 = lpeg
-    P, R, S, V, Ct, C = _obj_0.P, _obj_0.R, _obj_0.S, _obj_0.V, _obj_0.Ct, _obj_0.C
-  end
+  P, R, S, V, Ct, C = lpeg.P, lpeg.R, lpeg.S, lpeg.V, lpeg.Ct, lpeg.C
   local string_patt
   string_patt = function(delim)
     delim = P(delim)
@@ -652,7 +653,7 @@ do
       if not file then
         return 
       end
-      local html = MarkdownRenderer:render(file:read("*a"))
+      html = MarkdownRenderer:render(file:read("*a"))
       file:close()
       return function(scope)
         return fill_ignoring_pre(html, scope)

@@ -1,12 +1,11 @@
-require "lfs"
-require "cosmo"
-require "yaml"
+lfs = require "lfs"
+cosmo = require "cosmo"
+yaml = require "yaml"
 discount = require "discount"
 moonscript = require "moonscript"
+lpeg = require "lpeg"
 
 module "sitegen", package.seeall
-
-require "sitegen.html"
 
 import insert, concat, sort from table
 import dump, extend, bind_methods, run_with_scope from require "moon"
@@ -27,13 +26,29 @@ load_plugins = (register) ->
 
   require "sitegen.extra"
 
-require "sitegen.common"
+html = require "sitegen.html"
+
+import
+  Path
+  OrderSet
+  Stack
+  throw_error
+  make_list
+  timed_call
+  escape_patt
+  bound_fn
+  split
+  convert_pattern
+  bright_yellow
+  flatten_args
+  pass_error
+  trim
+  from require "sitegen.common"
+
 import Cache from require "sitegen.cache"
 
 log = (...) ->
   print ...
-
-require "lpeg"
 
 -- replace all template vars in text not contained in a
 -- code block
