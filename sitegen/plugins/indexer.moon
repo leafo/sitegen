@@ -1,10 +1,12 @@
 
 require "sitegen.common"
 html = require "sitegen.html"
+cosmo = require "cosmo"
+lpeg = require "lpeg"
 
 import insert, concat from table
-
 import Plugin from require "sitegen.plugin"
+import slugify from require "sitegen.common"
 
 render_index = (index) ->
   yield_index = (index) ->

@@ -1,3 +1,9 @@
+local Path
+do
+  local _obj_0 = require("sitegen.common")
+  Path = _obj_0.Path
+end
+local inotify
 local Watcher
 do
   local _base_0 = {
@@ -58,7 +64,7 @@ do
   local _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
-      local inotify = require("inotify")
+      inotify = require("inotify")
       if not inotify then
         error("missing inotify")
       end

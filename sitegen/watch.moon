@@ -1,3 +1,6 @@
+import Path from require "sitegen.common"
+
+local inotify
 
 -- this is pretty basic, it just watches the page inputs, not any of the
 -- dependencies like templates or inline renders

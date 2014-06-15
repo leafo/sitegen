@@ -5,7 +5,7 @@ moon = require "moon"
 cosmo = require "cosmo"
 
 import run_with_scope, extend, dump from require "moon"
-import SiteFile from require "sitegen"
+import SiteFile from require "sitegen.site_file"
 import catch_error from require "sitegen.common"
 
 action = arg[1] or "build"

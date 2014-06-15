@@ -1,27 +1,8 @@
-local colors = {
-  reset = 0,
-  bright = 1,
-  red = 31,
-  yellow = 33
-}
-do
-  local _tbl_0 = { }
-  for name, key in pairs(colors) do
-    _tbl_0[name] = string.char(27) .. "[" .. tostring(key) .. "m"
-  end
-  colors = _tbl_0
-end
-local make_bright
-make_bright = function(color)
-  return function(str)
-    return colors.bright .. colors[color] .. tostring(str) .. colors.reset
-  end
-end
 local socket = nil
 pcall(function()
   socket = require("socket")
 end)
-local timed_call, bright_red, bright_yellow, throw_error, pass_error, catch_error, get_local, trim_leading_white, dumps, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, Path
+local timed_call, throw_error, pass_error, catch_error, get_local, trim_leading_white, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, Path, fill_ignoring_pre
 timed_call = function(fn)
   local start = socket and socket.gettime()
   local res = {
@@ -29,8 +10,6 @@ timed_call = function(fn)
   }
   return socket and (socket.gettime() - start), unpack(res)
 end
-bright_red = make_bright("red")
-bright_yellow = make_bright("yellow")
 throw_error = function(...)
   if coroutine.running() then
     return coroutine.yield({
@@ -48,6 +27,11 @@ pass_error = function(obj, ...)
   return obj, ...
 end
 catch_error = function(fn)
+  local bright_red
+  do
+    local _obj_0 = require("sitegen.output")
+    bright_red = _obj_0.bright_red
+  end
   local co = coroutine.create(function()
     return fn() and nil
   end)
@@ -98,14 +82,6 @@ trim_leading_white = function(str, leading)
     end
   end
   return table.concat(lines, "\n")
-end
-dumps = function(...)
-  local dump
-  do
-    local _obj_0 = require("moon")
-    dump = _obj_0.dump
-  end
-  return print(moon.dump(...))
 end
 make_list = function(item)
   return type(item) == "table" and item or {
@@ -302,16 +278,65 @@ Path = function(io)
     end
   }
 end
+fill_ignoring_pre = function(text, context)
+  local cosmo = require("cosmo")
+  local P, R, S, V, Ct, C
+  do
+    local _obj_0 = require("lpeg")
+    P, R, S, V, Ct, C = _obj_0.P, _obj_0.R, _obj_0.S, _obj_0.V, _obj_0.Ct, _obj_0.C
+  end
+  local string_patt
+  string_patt = function(delim)
+    delim = P(delim)
+    return delim * (1 - delim) ^ 0 * delim
+  end
+  local strings = string_patt("'") + string_patt('"')
+  local open = P("<code") * (strings + (1 - P(">"))) ^ 0 * ">"
+  local close = P("</code>")
+  local Code = V("Code")
+  local code = P({
+    Code,
+    Code = open * (Code + (1 - close)) ^ 0 * close
+  })
+  code = code / function(text)
+    return {
+      "code",
+      text
+    }
+  end
+  local other = (1 - code) ^ 1 / function(text)
+    return {
+      "text",
+      text
+    }
+  end
+  local document = Ct((code + other) ^ 0)
+  local parts = document:match(text)
+  local filled
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #parts do
+      local part = parts[_index_0]
+      local t, body = unpack(part)
+      if t == "text" then
+        body = cosmo.f(body)(context)
+      end
+      local _value_0 = body
+      _accum_0[_len_0] = _value_0
+      _len_0 = _len_0 + 1
+    end
+    filled = _accum_0
+  end
+  return table.concat(filled)
+end
 return {
   timed_call = timed_call,
-  bright_red = bright_red,
-  bright_yellow = bright_yellow,
   throw_error = throw_error,
   pass_error = pass_error,
   catch_error = catch_error,
   get_local = get_local,
   trim_leading_white = trim_leading_white,
-  dumps = dumps,
   make_list = make_list,
   bound_fn = bound_fn,
   escape_patt = escape_patt,
@@ -320,6 +345,7 @@ return {
   flatten_args = flatten_args,
   split = split,
   trim = trim,
+  fill_ignoring_pre = fill_ignoring_pre,
   OrderSet = OrderSet,
   Stack = Stack,
   Path = Path(io)

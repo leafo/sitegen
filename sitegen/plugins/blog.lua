@@ -5,6 +5,7 @@ do
 end
 local html = require("sitegen.html")
 local date = require("date")
+local cosmo = require("cosmo")
 local copy, bind_methods
 do
   local _obj_0 = require("moon")

@@ -3,6 +3,7 @@ do
   local _obj_0 = require("sitegen.plugin")
   Plugin = _obj_0.Plugin
 end
+local html = require("sitegen.html")
 local CoffeeScriptPlugin
 do
   local _parent_0 = Plugin

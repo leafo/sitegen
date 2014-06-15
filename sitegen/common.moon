@@ -1,16 +1,4 @@
 
-
-colors = {
-  reset: 0
-  bright: 1
-  red: 31
-  yellow: 33
-}
-colors = { name, string.char(27) .. "[" .. tostring(key) .. "m" for name, key in pairs colors }
-
-make_bright = (color) ->
-  (str) -> colors.bright .. colors[color] .. tostring(str) .. colors.reset
-
 socket = nil
 pcall ->
   socket = require "socket"
@@ -22,9 +10,6 @@ timed_call = (fn) ->
   res = {fn!}
   socket and (socket.gettime! - start), unpack res
 
-bright_red = make_bright"red"
-
-bright_yellow = make_bright"yellow"
 
 throw_error = (...) ->
   if coroutine.running()
@@ -38,6 +23,7 @@ pass_error = (obj, ...) ->
   obj, ...
 
 catch_error = (fn) ->
+  import bright_red from require "sitegen.output"
   co = coroutine.create -> fn! and nil
 
   status, res = coroutine.resume co
@@ -83,10 +69,6 @@ trim_leading_white = (str, leading) ->
       lines[#lines] = nil
 
   table.concat lines, "\n"
-
-dumps = (...) ->
-  import dump from require "moon"
-  print moon.dump ...
 
 make_list = (item) ->
   type(item) == "table" and item or {item}
@@ -204,16 +186,49 @@ Path = (io) -> {
       a .. "/" .. b
   }
 
+-- replace all template vars in text not contained in a
+-- code block
+fill_ignoring_pre = (text, context) ->
+  cosmo = require "cosmo"
+  import P, R, S, V, Ct, C from require "lpeg"
+
+  string_patt = (delim) ->
+    delim = P(delim)
+    delim * (1 - delim)^0 * delim
+
+  strings = string_patt"'" + string_patt'"'
+
+  open = P"<code" * (strings + (1 - P">"))^0 * ">"
+  close = P"</code>"
+
+  Code = V"Code"
+  code = P{
+    Code
+    Code: open * (Code + (1 - close))^0 * close
+  }
+
+  code = code / (text) -> {"code", text}
+
+  other = (1 - code)^1 / (text) ->
+    {"text", text}
+
+  document = Ct((code + other)^0)
+  -- parse to parts to avoid metamethod/c-call boundary
+  parts = document\match text
+  filled = for part in *parts
+    t, body = unpack part
+    body = cosmo.f(body) context if t == "text"
+    body
+
+  table.concat filled
+
 {
   :timed_call
-  :bright_red
-  :bright_yellow
   :throw_error
   :pass_error
   :catch_error
   :get_local
   :trim_leading_white
-  :dumps
   :make_list
   :bound_fn
   :escape_patt
@@ -222,6 +237,7 @@ Path = (io) -> {
   :flatten_args
   :split
   :trim
+  :fill_ignoring_pre
 
   :OrderSet
   :Stack

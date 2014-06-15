@@ -1,5 +1,7 @@
 import Plugin from require "sitegen.plugin"
 
+html = require "sitegen.html"
+
 -- embed compiled coffeescript directly into the page
 class CoffeeScriptPlugin extends Plugin
   tpl_helpers: { "render_coffee" }

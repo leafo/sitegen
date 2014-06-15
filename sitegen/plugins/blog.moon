@@ -3,6 +3,7 @@ import Plugin from require "sitegen.plugin"
 
 html = require "sitegen.html"
 date = require "date"
+cosmo = require "cosmo"
 
 import copy, bind_methods from require "moon"
 import insert from table

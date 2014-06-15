@@ -1,5 +1,7 @@
 require("sitegen.common")
 local html = require("sitegen.html")
+local cosmo = require("cosmo")
+local lpeg = require("lpeg")
 local insert, concat
 do
   local _obj_0 = table
@@ -9,6 +11,11 @@ local Plugin
 do
   local _obj_0 = require("sitegen.plugin")
   Plugin = _obj_0.Plugin
+end
+local slugify
+do
+  local _obj_0 = require("sitegen.common")
+  slugify = _obj_0.slugify
 end
 local render_index
 render_index = function(index)
@@ -95,10 +102,7 @@ build_from_html = function(body, meta, opts)
   end
   require("lpeg")
   local P, R, Cmt, Cs, Cg, Cb, C
-  do
-    local _obj_0 = lpeg
-    P, R, Cmt, Cs, Cg, Cb, C = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.Cg, _obj_0.Cb, _obj_0.C
-  end
+  P, R, Cmt, Cs, Cg, Cb, C = lpeg.P, lpeg.R, lpeg.Cmt, lpeg.Cs, lpeg.Cg, lpeg.Cb, lpeg.C
   local nums = R("19")
   local open = P("<h") * Cg(nums, "num") * ">"
   local close = P("</h") * C(nums) * ">"
