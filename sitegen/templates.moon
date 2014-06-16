@@ -13,6 +13,8 @@ import
 
 class Templates
   defaults: require "sitegen.default.templates"
+
+  -- helpers receive page as first argument
   base_helpers: {
     render: (args) => -- render another page in current scope
       name = unpack args
@@ -21,7 +23,7 @@ class Templates
     markdown: (args) =>
       MarkdownRenderer = require "sitegen.renderers.markdown"
       res = MarkdownRenderer\render args[1] or ""
-      cosmo.f(res) @tpl_scope
+      fill_ignoring_pre res, @tpl_scope
 
     wrap: (args) =>
       tpl_name = unpack args

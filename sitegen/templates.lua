@@ -23,7 +23,7 @@ do
       markdown = function(self, args)
         local MarkdownRenderer = require("sitegen.renderers.markdown")
         local res = MarkdownRenderer:render(args[1] or "")
-        return cosmo.f(res)(self.tpl_scope)
+        return fill_ignoring_pre(res, self.tpl_scope)
       end,
       wrap = function(self, args)
         local tpl_name = unpack(args)
