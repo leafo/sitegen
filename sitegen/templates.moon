@@ -20,7 +20,8 @@ class Templates
 
     markdown: (args) =>
       MarkdownRenderer = require "sitegen.renderers.markdown"
-      MarkdownRenderer\render args[1] or ""
+      res = MarkdownRenderer\render args[1] or ""
+      cosmo.f(res) @tpl_scope
 
     wrap: (args) =>
       tpl_name = unpack args
