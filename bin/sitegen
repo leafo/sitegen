@@ -6,9 +6,10 @@ cosmo = require "cosmo"
 
 import run_with_scope, extend, dump from require "moon"
 import SiteFile from require "sitegen.site_file"
-import catch_error from require "sitegen.common"
+import catch_error, throw_error, split, slugify from require "sitegen.common"
 
-action = arg[1] or "build"
+action = ... or "build"
+args = {...}
 
 default = {
   sitefile: "site.moon"
@@ -107,11 +108,11 @@ columnize = (rows, indent=2, padding=4) ->
 tasks = {
   dump: -> print dump get_site!
 
-  new: ->
+  new: (title) ->
     if Path.exists default.sitefile
       throw_error "sitefile already exists: " .. default.sitefile
 
-    title = ("%q")\format arg[2] or "Hello World"
+    title = ("%q")\format title or "Hello World"
 
     Path.mkdir"www"
     Path.mkdir"templates"
@@ -119,9 +120,8 @@ tasks = {
     site_moon = cosmo.f(default.files.sitefile) scope{:title}
     Path.write_file default.sitefile, site_moon
 
-  page: ->
+  page: (path, title)->
     get_site!
-    path, title = arg[2], arg[3]
 
     if not title
       title = path
@@ -153,11 +153,11 @@ tasks = {
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
-  deploy: ->
+  deploy: (host, path) ->
     get_site!
 
     DeployPlugin = require "sitegen.deploy"
-    host, path = arg[2] or DeployPlugin.host, arg[3] or DeployPlugin.path
+    host, path = host or DeployPlugin.host, path or DeployPlugin.path
 
     throw_error "need host" if not host
     throw_error "need path" if not path
@@ -165,15 +165,15 @@ tasks = {
     log "uploading to:", host, path
     DeployPlugin\sync host, path
 
-  build: ->
+  build: (...) ->
+    files = {...}
     site = get_site!
 
-    filter = nil
-    if #arg > 1
+    local filter
+    if next files
       filter = {}
-      for i, fname in ipairs arg
-        if i > 1
-          filter[site.sitefile\relativeize fname] = true
+      for i, fname in ipairs files
+        filter[site.sitefile\relativeize fname] = true
 
     site\write filter
 
@@ -208,7 +208,6 @@ catch_error ->
   if not tasks[action]
     throw_error "unknown task: " .. action
 
-  tasks[action]!
-
+  tasks[action] unpack args, 2
 
 -- vim: set filetype=moon:
