@@ -8,6 +8,7 @@ do
   local _obj_0 = require("sitegen.common")
   convert_pattern = _obj_0.convert_pattern
 end
+local amp_temp = tostring(os.time()) .. "amp" .. tostring(os.time())
 local MarkdownRenderer
 do
   local _parent_0 = Renderer
@@ -24,7 +25,10 @@ do
         local filter = _list_0[_index_0]
         text = filter(text, page)
       end
-      return discount(text), header
+      text = text:gsub("%$", amp_temp)
+      text = assert(discount(text))
+      text = text:gsub(amp_temp, "$")
+      return text, header
     end
   }
   _base_0.__index = _base_0
