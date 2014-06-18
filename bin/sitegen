@@ -156,7 +156,7 @@ tasks = {
   deploy: (host, path) ->
     get_site!
 
-    DeployPlugin = require "sitegen.deploy"
+    DeployPlugin = require "sitegen.plugins.deploy"
     host, path = host or DeployPlugin.host, path or DeployPlugin.path
 
     throw_error "need host" if not host
