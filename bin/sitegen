@@ -6,7 +6,7 @@ cosmo = require "cosmo"
 
 import run_with_scope, extend, dump from require "moon"
 import SiteFile from require "sitegen.site_file"
-import catch_error, throw_error, split, slugify from require "sitegen.common"
+import catch_error, throw_error, split, slugify, Path from require "sitegen.common"
 
 action = ... or "build"
 args = {...}
