@@ -44,7 +44,10 @@ class Site
     write_gitignore: true
   }
 
-  new: (@sitefile=nil) =>
+  new: (sitefile=nil) =>
+    import SiteFile from require "sitegen.site_file"
+    @sitefile = site_file or SiteFile.master
+
     @io = @sitefile and @sitefile.io or io
 
     @templates = @Templates @config.template_dir

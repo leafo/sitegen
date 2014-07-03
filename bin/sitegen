@@ -21,10 +21,9 @@ default = {
 
 ]==]
     sitefile: [==[
-require "sitegen"
-site = sitegen.create_site =>
+sitegen = require "sitegen"
+sitegen.create_site =>
   @title = $title
-site\write!
 ]==]
 }
 

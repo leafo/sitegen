@@ -277,7 +277,12 @@ do
       if sitefile == nil then
         sitefile = nil
       end
-      self.sitefile = sitefile
+      local SiteFile
+      do
+        local _obj_0 = require("sitegen.site_file")
+        SiteFile = _obj_0.SiteFile
+      end
+      self.sitefile = site_file or SiteFile.master
       self.io = self.sitefile and self.sitefile.io or io
       self.templates = self:Templates(self.config.template_dir)
       self.scope = SiteScope(self)

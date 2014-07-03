@@ -1,8 +1,4 @@
-local Site
-do
-  local _obj_0 = require("sitegen.site")
-  Site = _obj_0.Site
-end
+local Site = require("sitegen.site")
 local insert
 do
   local _obj_0 = require("table")

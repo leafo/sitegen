@@ -62,20 +62,25 @@ do
     end,
     get_site = function(self)
       print(bright_yellow("Using:"), Path.join(self.rel_path, self.name))
-      local fn = moonscript.loadfile(self.file_path)
-      local site = nil
+      local fn = assert(moonscript.loadfile(self.file_path))
       local sitegen = require("sitegen")
-      run_with_scope(fn, {
-        sitegen = extend({
-          create_site = function(fn)
-            site = sitegen.create_site(fn, Site(self))
-            site.write = function() end
-            return site
-          end
-        }, sitegen)
-      })
-      site.write = nil
-      return site
+      local old_write = Site.write
+      local site_ref, site
+      Site.__base.write = function(site)
+        site_ref = site
+        return site
+      end
+      do
+        local old_master = self.__class.master
+        self.__class.master = self
+        site = run_with_scope(fn, {
+          sitegen = require("sitegen")
+        })
+        self.__class.master = old_master
+      end
+      site = site or temp_site
+      Site.__base.write = old_write
+      return assert(site, "Failed to load site from sitefile, make sure site is returned")
     end
   }
   _base_0.__index = _base_0
@@ -110,6 +115,8 @@ do
     end
   })
   _base_0.__class = _class_0
+  local self = _class_0
+  self.master = nil
   SiteFile = _class_0
 end
 return {

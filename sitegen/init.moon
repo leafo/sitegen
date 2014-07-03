@@ -1,4 +1,4 @@
-import Site from require "sitegen.site"
+Site = require "sitegen.site"
 import insert from require "table"
 
 default_plugins = {

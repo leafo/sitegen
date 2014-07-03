@@ -20,6 +20,8 @@ import bright_yellow from require "sitegen.output"
 -- 1) finds the sitefile, looking up starting from the current dir
 -- 2) lets us open files relative to where the sitefile is
 class SiteFile
+  @master: nil -- the global sitefile of the current process
+
   new: (@name="site.moon") =>
     dir = lfs.currentdir!
     depth = 0
@@ -70,22 +72,31 @@ class SiteFile
   get_site: =>
     print bright_yellow"Using:", Path.join @rel_path, @name
 
-    fn = moonscript.loadfile @file_path
-    -- sitefiles have \write! on the bottom, disable it
-    site = nil
+    fn = assert moonscript.loadfile @file_path
     sitegen = require "sitegen"
 
-    run_with_scope fn, {
-      sitegen: extend {
-        create_site: (fn) ->
-          site = sitegen.create_site fn, Site self
-          site.write = ->
-          site
-      }, sitegen
-    }
+    -- stub out write to not run during load for legacy
+    old_write = Site.write
 
-    site.write = nil -- restore default write
-    site
+    local site_ref, site
+
+    Site.__base.write = (site) ->
+      site_ref = site
+      site
+
+    with old_master = @@master
+      @@master = @
+      site = run_with_scope fn, {
+        -- for legacy pages that doesn't reference module
+        sitegen: require "sitegen"
+      }
+      @@master = old_master
+
+    site or= temp_site
+
+    Site.__base.write = old_write
+
+    assert site, "Failed to load site from sitefile, make sure site is returned"
 
 {
   :SiteFile
