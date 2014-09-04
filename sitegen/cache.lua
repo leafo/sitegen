@@ -1,8 +1,5 @@
 local concat
-do
-  local _obj_0 = table
-  concat = _obj_0.concat
-end
+concat = table.concat
 local json = require("cjson")
 local serialize
 serialize = function(obj)

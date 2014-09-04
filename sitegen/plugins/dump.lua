@@ -1,13 +1,7 @@
 local dump
-do
-  local _obj_0 = require("moon")
-  dump = _obj_0.dump
-end
+dump = require("moon").dump
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local DumpPlugin
 do
   local _parent_0 = Plugin

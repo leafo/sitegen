@@ -4,10 +4,7 @@ local default_renderers = {
   "sitegen.renderers.moon"
 }
 local concat
-do
-  local _obj_0 = table
-  concat = _obj_0.concat
-end
+concat = table.concat
 local extend, run_with_scope, bind_methods
 do
   local _obj_0 = require("moon")
@@ -19,30 +16,15 @@ do
   Path, OrderSet, make_list, throw_error, escape_patt, timed_call, bound_fn = _obj_0.Path, _obj_0.OrderSet, _obj_0.make_list, _obj_0.throw_error, _obj_0.escape_patt, _obj_0.timed_call, _obj_0.bound_fn
 end
 local Cache
-do
-  local _obj_0 = require("sitegen.cache")
-  Cache = _obj_0.Cache
-end
+Cache = require("sitegen.cache").Cache
 local SiteScope
-do
-  local _obj_0 = require("sitegen.site_scope")
-  SiteScope = _obj_0.SiteScope
-end
+SiteScope = require("sitegen.site_scope").SiteScope
 local Templates
-do
-  local _obj_0 = require("sitegen.templates")
-  Templates = _obj_0.Templates
-end
+Templates = require("sitegen.templates").Templates
 local Page
-do
-  local _obj_0 = require("sitegen.page")
-  Page = _obj_0.Page
-end
+Page = require("sitegen.page").Page
 local log
-do
-  local _obj_0 = require("sitegen.output")
-  log = _obj_0.log
-end
+log = require("sitegen.output").log
 local Site
 do
   local _base_0 = {
@@ -278,10 +260,7 @@ do
         sitefile = nil
       end
       local SiteFile
-      do
-        local _obj_0 = require("sitegen.site_file")
-        SiteFile = _obj_0.SiteFile
-      end
+      SiteFile = require("sitegen.site_file").SiteFile
       self.sitefile = site_file or SiteFile.master
       self.io = self.sitefile and self.sitefile.io or io
       self.templates = self:Templates(self.config.template_dir)

@@ -1,8 +1,5 @@
 local Path
-do
-  local _obj_0 = require("sitegen.common")
-  Path = _obj_0.Path
-end
+Path = require("sitegen.common").Path
 local inotify
 local Watcher
 do

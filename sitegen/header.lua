@@ -1,9 +1,6 @@
 local yaml = require("yaml")
 local trim_leading_white
-do
-  local _obj_0 = require("sitegen.common")
-  trim_leading_white = _obj_0.trim_leading_white
-end
+trim_leading_white = require("sitegen.common").trim_leading_white
 local parse_header
 parse_header = function(header)
   header = trim_leading_white(header)

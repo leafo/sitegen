@@ -1,18 +1,12 @@
 local concat
-do
-  local _obj_0 = table
-  concat = _obj_0.concat
-end
+concat = table.concat
 local run_with_scope, defaultbl
 do
   local _obj_0 = require("moon")
   run_with_scope, defaultbl = _obj_0.run_with_scope, _obj_0.defaultbl
 end
 local escape_patt
-do
-  local _obj_0 = require("sitegen.common")
-  escape_patt = _obj_0.escape_patt
-end
+escape_patt = require("sitegen.common").escape_patt
 local html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
 html_encode_entities = {
   ['&'] = '&amp;',

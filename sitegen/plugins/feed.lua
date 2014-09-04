@@ -1,26 +1,14 @@
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local trim_leading_white
-do
-  local _obj_0 = require("sitegen.common")
-  trim_leading_white = _obj_0.trim_leading_white
-end
+trim_leading_white = require("sitegen.common").trim_leading_white
 local html = require("sitegen.html")
 local discount = require("discount")
 local date = require("date")
 local extend
-do
-  local _obj_0 = require("moon")
-  extend = _obj_0.extend
-end
+extend = require("moon").extend
 local insert
-do
-  local _obj_0 = table
-  insert = _obj_0.insert
-end
+insert = table.insert
 local render_feed
 render_feed = function(root)
   local concat

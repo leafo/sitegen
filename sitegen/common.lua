@@ -28,10 +28,7 @@ pass_error = function(obj, ...)
 end
 catch_error = function(fn)
   local bright_red
-  do
-    local _obj_0 = require("sitegen.output")
-    bright_red = _obj_0.bright_red
-  end
+  bright_red = require("sitegen.output").bright_red
   local co = coroutine.create(function()
     return fn() and nil
   end)

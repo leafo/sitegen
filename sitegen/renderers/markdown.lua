@@ -1,13 +1,7 @@
 local Renderer
-do
-  local _obj_0 = require("sitegen.renderer")
-  Renderer = _obj_0.Renderer
-end
+Renderer = require("sitegen.renderer").Renderer
 local convert_pattern
-do
-  local _obj_0 = require("sitegen.common")
-  convert_pattern = _obj_0.convert_pattern
-end
+convert_pattern = require("sitegen.common").convert_pattern
 local amp_temp = tostring(os.time()) .. "amp" .. tostring(os.time())
 local MarkdownRenderer
 do

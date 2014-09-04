@@ -1,8 +1,5 @@
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local html = require("sitegen.html")
 local CoffeeScriptPlugin
 do

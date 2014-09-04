@@ -1,19 +1,10 @@
 local Renderer
-do
-  local _obj_0 = require("sitegen.renderer")
-  Renderer = _obj_0.Renderer
-end
+Renderer = require("sitegen.renderer").Renderer
 local moonscript = require("moonscript.base")
 local convert_pattern
-do
-  local _obj_0 = require("sitegen.common")
-  convert_pattern = _obj_0.convert_pattern
-end
+convert_pattern = require("sitegen.common").convert_pattern
 local insert
-do
-  local _obj_0 = table
-  insert = _obj_0.insert
-end
+insert = table.insert
 local MoonRenderer
 do
   local _parent_0 = Renderer

@@ -9,10 +9,7 @@ do
     end,
     parse_header = function(self, text)
       local extract_header
-      do
-        local _obj_0 = require("sitegen.header")
-        extract_header = _obj_0.extract_header
-      end
+      extract_header = require("sitegen.header").extract_header
       return extract_header(text)
     end,
     render = function(self, text, site)

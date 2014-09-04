@@ -1,9 +1,6 @@
 local Site = require("sitegen.site")
 local insert
-do
-  local _obj_0 = require("table")
-  insert = _obj_0.insert
-end
+insert = require("table").insert
 local default_plugins = {
   "sitegen.plugins.feed",
   "sitegen.plugins.blog",

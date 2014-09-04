@@ -1,8 +1,5 @@
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local html = require("sitegen.html")
 local date = require("date")
 local cosmo = require("cosmo")
@@ -12,10 +9,7 @@ do
   copy, bind_methods = _obj_0.copy, _obj_0.bind_methods
 end
 local insert
-do
-  local _obj_0 = table
-  insert = _obj_0.insert
-end
+insert = table.insert
 local FeedPlugin = require("sitegen.plugins.feed")
 local cmp = {
   date = function(dir)

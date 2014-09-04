@@ -1,14 +1,8 @@
 local html = require("sitegen.html")
 local extend
-do
-  local _obj_0 = require("moon")
-  extend = _obj_0.extend
-end
+extend = require("moon").extend
 local log
-do
-  local _obj_0 = require("sitegen.output")
-  log = _obj_0.log
-end
+log = require("sitegen.output").log
 local Path, Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt
 do
   local _obj_0 = require("sitegen.common")

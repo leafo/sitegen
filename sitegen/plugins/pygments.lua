@@ -1,19 +1,10 @@
 local html = require("sitegen.html")
 local CacheTable
-do
-  local _obj_0 = require("sitegen.cache")
-  CacheTable = _obj_0.CacheTable
-end
+CacheTable = require("sitegen.cache").CacheTable
 local trim_leading_white
-do
-  local _obj_0 = require("sitegen.common")
-  trim_leading_white = _obj_0.trim_leading_white
-end
+trim_leading_white = require("sitegen.common").trim_leading_white
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local PygmentsPlugin
 do
   local _parent_0 = Plugin

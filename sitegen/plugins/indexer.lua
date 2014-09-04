@@ -8,15 +8,9 @@ do
   insert, concat = _obj_0.insert, _obj_0.concat
 end
 local Plugin
-do
-  local _obj_0 = require("sitegen.plugin")
-  Plugin = _obj_0.Plugin
-end
+Plugin = require("sitegen.plugin").Plugin
 local slugify
-do
-  local _obj_0 = require("sitegen.common")
-  slugify = _obj_0.slugify
-end
+slugify = require("sitegen.common").slugify
 local render_index
 render_index = function(index)
   local yield_index

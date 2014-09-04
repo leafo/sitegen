@@ -2,10 +2,7 @@ local cosmo = require("cosmo")
 local html = require("sitegen.html")
 local moonscript = require("moonscript.base")
 local extend
-do
-  local _obj_0 = require("moon")
-  extend = _obj_0.extend
-end
+extend = require("moon").extend
 local Path, fill_ignoring_pre, throw_error, flatten_args
 do
   local _obj_0 = require("sitegen.common")
