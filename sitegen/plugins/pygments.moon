@@ -38,8 +38,8 @@ class PygmentsPlugin extends Plugin
     highlighted = if cached
       cached
     else
-      out = if @custom_highlighters[lang]
-        assert @custom_highlighters[lang](self, code, page),
+      out = if custom = @custom_highlighters[lang]
+        assert custom(@, code, page),
           "custom highlighter #{lang} failed to return result"
       else
         @pre_tag @highlight(lang, code), lang
