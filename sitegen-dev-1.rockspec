@@ -20,7 +20,8 @@ dependencies = {
 	"luafilesystem >= 1.5",
 	"lua-cjson",
 	"date",
-	"yaml"
+	"yaml", -- remove me
+	"ansicolors",
 }
 
 build = {
@@ -35,6 +36,7 @@ build = {
 		["sitegen.html"] = "sitegen/html.lua",
 		["sitegen.output"] = "sitegen/output.lua",
 		["sitegen.page"] = "sitegen/page.lua",
+		["sitegen.path"] = "sitegen/path.lua",
 		["sitegen.plugin"] = "sitegen/plugin.lua",
 		["sitegen.plugins.analytics"] = "sitegen/plugins/analytics.lua",
 		["sitegen.plugins.blog"] = "sitegen/plugins/blog.lua",
