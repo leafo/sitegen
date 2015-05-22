@@ -1,7 +1,7 @@
 # Sitegen
 
-Sitegen assembles webpages through a pipeline consisting of templates and
-pages.
+Sitegen assembles static webpages through a pipeline consisting of templates and
+pages. If you're looking for something dynamic try out [Lapis](http://leafo.net/lapis).
 
 Pages and templates can be written in html or markdown. The site is defined
 through the `site.moon` file, which is written in [MoonScript][2]. It describes
