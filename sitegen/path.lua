@@ -3,7 +3,7 @@ local shell_escape
 shell_escape = function(str)
   return str:gsub("'", "''")
 end
-local up, exists, normalize, basepath, filename, write_file, read_file, mkdir, copy, join, exec, relative_to, annotate
+local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, copy, join, exec, relative_to, annotate
 up = function(path)
   path = path:gsub("/$", "")
   path = path:gsub("[^/]*$", "")
@@ -25,6 +25,21 @@ basepath = function(path)
 end
 filename = function(path)
   return (path:match("([^/]*)$"))
+end
+write_file_safe = function(self, path, content)
+  if exists(file) then
+    return nil, "file already exists: " .. tostring(file)
+  end
+  do
+    local prefix = file:match("^(.+)/[^/]+$")
+    if prefix then
+      if not (exists(prefix)) then
+        mkdir(prefix)
+      end
+    end
+  end
+  write_file(file, content)
+  return true
 end
 write_file = function(path, content)
   assert(content, "trying to write file with no content")
@@ -154,6 +169,7 @@ return {
   basepath = basepath,
   filename = filename,
   write_file = write_file,
+  write_file_safe = write_file_safe,
   mkdir = mkdir,
   copy = copy,
   join = join,

@@ -25,6 +25,16 @@ basepath = (path) ->
 filename = (path) ->
   (path\match"([^/]*)$")
 
+-- write a file, making sure directory exists and file isn't already written
+write_file_safe = (path, content) =>
+  return nil, "file already exists: #{file}" if exists file
+
+  if prefix = file\match "^(.+)/[^/]+$"
+    mkdir prefix unless exists prefix
+
+  write_file file, content
+  true
+
 write_file = (path, content) ->
   assert content, "trying to write file with no content"
   with io.open path, "w"
@@ -98,8 +108,8 @@ annotate = =>
   }
 
 {
-  :up, :exists, :normalize, :basepath, :filename, :write_file, :mkdir, :copy,
-  :join, :read_file, :shell_escape, :exec
+  :up, :exists, :normalize, :basepath, :filename, :write_file,
+  :write_file_safe, :mkdir, :copy, :join, :read_file, :shell_escape, :exec
 
   :relative_to, :annotate
 }
