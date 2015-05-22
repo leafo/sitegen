@@ -83,23 +83,18 @@ do
       return tpl(context)
     end,
     load_html = function(self, name)
-      local file = self.io.open(Path.join(self.dir, name .. ".html"))
-      if not file then
+      local full_name = Path.join(self.dir, name .. ".html")
+      if not (self.io.exists(full_name)) then
         return 
       end
-      do
-        local _with_0 = cosmo.f(file:read("*a"))
-        file:close()
-        return _with_0
-      end
+      return cosmo.f(self.io.read_file(full_name))
     end,
     load_moon = function(self, name)
-      local file = self.io.open(Path.join(self.dir, name .. ".moon"))
-      if not file then
+      local full_name = Path.join(self.dir, name .. ".moon")
+      if not (self.io.exists(full_name)) then
         return 
       end
-      local fn = moonscript.loadstring(file:read("*a"), name)
-      file:close()
+      local fn = moonscript.loadstring(self.io.read_file(full_name), name)
       return function(scope)
         local tpl_fn = loadstring(string.dump(fn))
         local source_env = getfenv(tpl_fn)
@@ -110,13 +105,12 @@ do
       end
     end,
     load_md = function(self, name)
-      local file = self.io.open(Path.join(self.dir, name .. ".md"))
-      if not file then
+      local full_name = Path.join(self.dir, name .. ".md")
+      if not (self.io.exists(full_name)) then
         return 
       end
       local MarkdownRenderer = require("sitegen.renderers.markdown")
-      html = MarkdownRenderer:render(file:read("*a"))
-      file:close()
+      html = MarkdownRenderer:render(self.io.read_file(full_name))
       return function(scope)
         return fill_ignoring_pre(html, scope)
       end

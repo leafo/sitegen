@@ -26,17 +26,18 @@ filename = (path) ->
   (path\match"([^/]*)$")
 
 -- write a file, making sure directory exists and file isn't already written
-write_file_safe = (path, content) =>
-  return nil, "file already exists: #{file}" if exists file
+write_file_safe = (path, content, check_exists=false) ->
+  if check_exists and exists path
+    return nil, "file already exists `#{path}`"
 
-  if prefix = file\match "^(.+)/[^/]+$"
+  if prefix = path\match "^(.+)/[^/]+$"
     mkdir prefix unless exists prefix
 
-  write_file file, content
+  write_file path, content
   true
 
 write_file = (path, content) ->
-  assert content, "trying to write file with no content"
+  assert content, "trying to write `#{path}` with no content"
   with io.open path, "w"
     \write content
     \close!
@@ -68,14 +69,15 @@ exec = (cmd, ...) ->
   os.execute full_cmd
 
 relative_to = (prefix) =>
-  methods = {"mkdir", "read_file", "write_file"}
+  methods = {"mkdir", "read_file", "write_file", "exists"}
 
   prefixed = (fn) ->
     (path, ...) ->
       @[fn] @.join(prefix, path), ...
 
   m = setmetatable {m, prefixed(m) for m in *methods}, {
-  }, __index: @
+    __index: @
+  }
 
   m.full_path = (path) -> @.join prefix, path
   m.get_prefix = -> prefix

@@ -85,11 +85,7 @@ class Page
     target_dir = Path.basepath @target
     target_dir = @site.io.real_path target_dir if @site.io.real_path
 
-    Path.mkdir target_dir
-
-    with @site.io.open @target, "w"
-      \write content
-      \close!
+    @site.io.write_file_safe @target, content
 
     real_path = @site.io.real_path
     source, target = if real_path
@@ -103,12 +99,9 @@ class Page
   -- read the source
   _read: =>
     text = nil
-    file = @site.io.open @source
-
-    throw_error "failed to read input file: " .. @source if not file
-
-    with file\read"*a"
-      file\close!
+    with out = @site.io.read_file @source
+      unless out
+        throw_error "failed to read input file: " .. @source
 
   _render: =>
     return @_content if @_content

@@ -35,31 +35,27 @@ class Cache
   new: (@site, @fname=".sitegen_cache", skip_load=false) =>
     @finalize = {}
     @cache = {}
-    if not skip_load
-      f = @site.io.open @fname
-      if f
-        @cache, err = unserialize f\read"*a"
-        if not @cache
-          error concat {
-            "Could not load cache, "
-            @fname
-            ", please delete and try again: "
-            err
-          }
-        f\close!
+
+    unless skip_load
+      @load_cache!
 
     CacheTable\inject @cache
+
+  load_cache: =>
+    return unless @site.io.exists @fname
+    content = @site.io.read_file @fname
+    @cache, err = unserialize content
+    unless @cache
+      error "could not load cache `#{@fname}`, delete and try again: #{err}"
 
   write: =>
     fn self for fn in *@finalize
     text = serialize @cache
-    error "Failed to serialize cache" if not text
-    with @site.io.open @fname, "w"
-      \write text
-      \close!
-
+    error "failed to serialize cache" if not text
+    @site.io.write_file @fname, text
 
   clear: =>
+    error "FIXXME" -- needs to be relative
     os.remove @fname
 
   set: (...) => @cache\set ...

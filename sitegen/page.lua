@@ -72,12 +72,7 @@ do
       if self.site.io.real_path then
         target_dir = self.site.io.real_path(target_dir)
       end
-      Path.mkdir(target_dir)
-      do
-        local _with_0 = self.site.io.open(self.target, "w")
-        _with_0:write(content)
-        _with_0:close()
-      end
+      self.site.io.write_file_safe(self.target, content)
       local real_path = self.site.io.real_path
       local source, target
       if real_path then
@@ -90,14 +85,12 @@ do
     end,
     _read = function(self)
       local text = nil
-      local file = self.site.io.open(self.source)
-      if not file then
-        throw_error("failed to read input file: " .. self.source)
-      end
       do
-        local _with_0 = file:read("*a")
-        file:close()
-        return _with_0
+        local out = self.site.io.read_file(self.source)
+        if not (out) then
+          throw_error("failed to read input file: " .. self.source)
+        end
+        return out
       end
     end,
     _render = function(self)

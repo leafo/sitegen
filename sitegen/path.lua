@@ -26,23 +26,26 @@ end
 filename = function(path)
   return (path:match("([^/]*)$"))
 end
-write_file_safe = function(self, path, content)
-  if exists(file) then
-    return nil, "file already exists: " .. tostring(file)
+write_file_safe = function(path, content, check_exists)
+  if check_exists == nil then
+    check_exists = false
+  end
+  if check_exists and exists(path) then
+    return nil, "file already exists `" .. tostring(path) .. "`"
   end
   do
-    local prefix = file:match("^(.+)/[^/]+$")
+    local prefix = path:match("^(.+)/[^/]+$")
     if prefix then
       if not (exists(prefix)) then
         mkdir(prefix)
       end
     end
   end
-  write_file(file, content)
+  write_file(path, content)
   return true
 end
 write_file = function(path, content)
-  assert(content, "trying to write file with no content")
+  assert(content, "trying to write `" .. tostring(path) .. "` with no content")
   do
     local _with_0 = io.open(path, "w")
     _with_0:write(content)
@@ -103,7 +106,8 @@ relative_to = function(self, prefix)
   local methods = {
     "mkdir",
     "read_file",
-    "write_file"
+    "write_file",
+    "exists"
   }
   local prefixed
   prefixed = function(fn)
@@ -118,7 +122,7 @@ relative_to = function(self, prefix)
       _tbl_0[m] = prefixed(m)
     end
     return _tbl_0
-  end)(), { }, {
+  end)(), {
     __index = self
   })
   m.full_path = function(path)

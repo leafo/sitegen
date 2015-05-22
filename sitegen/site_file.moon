@@ -60,15 +60,7 @@ class SiteFile
     package.moonpath = @rel_path .. "?.moon;" .. package.moonpath
 
   make_io: =>
-    -- performs operations relative to sitefile
-    @io = {
-      -- load a file relative to the sitepath
-      open: (fname, ...) ->
-        io.open @io.real_path(fname), ...
-
-      real_path: (fname) ->
-        Path.join(@rel_path, fname)
-    }
+    @io = Path\relative_to @rel_path
 
   get_site: =>
     print bright_yellow"Using:", Path.join @rel_path, @name

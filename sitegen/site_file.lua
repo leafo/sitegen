@@ -46,14 +46,7 @@ do
       package.moonpath = self.rel_path .. "?.moon;" .. package.moonpath
     end,
     make_io = function(self)
-      self.io = {
-        open = function(fname, ...)
-          return io.open(self.io.real_path(fname), ...)
-        end,
-        real_path = function(fname)
-          return Path.join(self.rel_path, fname)
-        end
-      }
+      self.io = Path:relative_to(self.rel_path)
     end,
     get_site = function(self)
       print(bright_yellow("Using:"), Path.join(self.rel_path, self.name))

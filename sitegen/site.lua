@@ -104,34 +104,24 @@ do
     end,
     write_file = function(self, fname, content)
       local full_path = Path.join(self.config.out_dir, fname)
-      Path.mkdir(Path.basepath(full_path))
-      do
-        local _with_0 = self.io.open(full_path, "w")
-        _with_0:write(content)
-        _with_0:close()
-      end
+      assert(self.io.write_file_safe(full_path, content))
       return table.insert(self.written_files, full_path)
     end,
     write_gitignore = function(self, written_files)
+      local patt = "^" .. escape_patt(self.config.out_dir) .. "(.+)$"
+      local relative
       do
-        local _with_0 = self.io.open(self.config.out_dir .. ".gitignore", "w")
-        local patt = "^" .. escape_patt(self.config.out_dir) .. "(.+)$"
-        local relative
-        do
-          local _accum_0 = { }
-          local _len_0 = 1
-          for _index_0 = 1, #written_files do
-            local fname = written_files[_index_0]
-            _accum_0[_len_0] = fname:match(patt)
-            _len_0 = _len_0 + 1
-          end
-          relative = _accum_0
+        local _accum_0 = { }
+        local _len_0 = 1
+        for _index_0 = 1, #written_files do
+          local fname = written_files[_index_0]
+          _accum_0[_len_0] = fname:match(patt)
+          _len_0 = _len_0 + 1
         end
-        table.sort(relative)
-        _with_0:write(concat(relative, "\n"))
-        _with_0:close()
-        return _with_0
+        relative = _accum_0
       end
+      table.sort(relative)
+      return self.io.write_file_safe(Path.join(self.config.out_dir, ".gitignore"), concat(relative, "\n"))
     end,
     filter_for = function(self, path)
       path = Path.normalize(path)

@@ -125,22 +125,17 @@ class Site
   -- TODO: refactor to use this?
   write_file: (fname, content) =>
     full_path = Path.join @config.out_dir, fname
-    Path.mkdir Path.basepath full_path
-
-    with @io.open full_path, "w"
-      \write content
-      \close!
-
+    assert @io.write_file_safe full_path, content
     table.insert @written_files, full_path
 
   -- strips the out_dir from the file paths
   write_gitignore: (written_files) =>
-    with @io.open @config.out_dir .. ".gitignore", "w"
-      patt = "^" .. escape_patt(@config.out_dir) .. "(.+)$"
-      relative = [fname\match patt for fname in *written_files]
-      table.sort relative
-      \write concat relative, "\n"
-      \close!
+    patt = "^" .. escape_patt(@config.out_dir) .. "(.+)$"
+    relative = [fname\match patt for fname in *written_files]
+    table.sort relative
+
+    @io.write_file_safe Path.join(@config.out_dir, ".gitignore"),
+      concat relative, "\n"
 
   filter_for: (path) =>
     path = Path.normalize path

@@ -17,7 +17,7 @@ class PygmentsPlugin extends Plugin
   custom_highlighters: {}
   disable_indent_detect: false
 
-  -- highlihgt code with pygments
+  -- highlight code with pygments
   highlight: (lang, code) =>
     fname = os.tmpname!
     with io.open fname, "w"

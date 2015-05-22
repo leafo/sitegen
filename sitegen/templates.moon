@@ -77,17 +77,17 @@ class Templates
 
   -- load an html (cosmo) template
   load_html: (name) =>
-    file = @io.open Path.join @dir, name .. ".html"
-    return if not file
-    with cosmo.f file\read "*a"
-      file\close!
+    full_name = Path.join @dir, name .. ".html"
+
+    return unless @io.exists full_name
+    cosmo.f @io.read_file full_name
 
   -- load a moonscript template
   load_moon: (name) =>
-    file = @io.open Path.join @dir, name .. ".moon"
-    return if not file
-    fn = moonscript.loadstring file\read"*a", name
-    file\close!
+    full_name = Path.join @dir, name .. ".moon"
+    return unless @io.exists full_name
+
+    fn = moonscript.loadstring @io.read_file(full_name), name
 
     (scope) ->
       tpl_fn = loadstring string.dump fn -- copy function
@@ -99,12 +99,11 @@ class Templates
 
   -- load a markdown template
   load_md: (name) =>
-    file = @io.open Path.join @dir, name .. ".md"
-    return if not file
+    full_name = Path.join @dir, name .. ".md"
+    return unless @io.exists full_name
 
     MarkdownRenderer = require "sitegen.renderers.markdown"
-    html = MarkdownRenderer\render file\read"*a"
-    file\close!
+    html = MarkdownRenderer\render @io.read_file full_name
 
     (scope) ->
       fill_ignoring_pre html, scope

@@ -60,6 +60,17 @@ end
 local Cache
 do
   local _base_0 = {
+    load_cache = function(self)
+      if not (self.site.io.exists(self.fname)) then
+        return 
+      end
+      local content = self.site.io.read_file(self.fname)
+      local err
+      self.cache, err = unserialize(content)
+      if not (self.cache) then
+        return error("could not load cache `" .. tostring(self.fname) .. "`, delete and try again: " .. tostring(err))
+      end
+    end,
     write = function(self)
       local _list_0 = self.finalize
       for _index_0 = 1, #_list_0 do
@@ -68,16 +79,12 @@ do
       end
       local text = serialize(self.cache)
       if not text then
-        error("Failed to serialize cache")
+        error("failed to serialize cache")
       end
-      do
-        local _with_0 = self.site.io.open(self.fname, "w")
-        _with_0:write(text)
-        _with_0:close()
-        return _with_0
-      end
+      return self.site.io.write_file(self.fname, text)
     end,
     clear = function(self)
+      error("FIXXME")
       return os.remove(self.fname)
     end,
     set = function(self, ...)
@@ -99,21 +106,8 @@ do
       self.site, self.fname = site, fname
       self.finalize = { }
       self.cache = { }
-      if not skip_load then
-        local f = self.site.io.open(self.fname)
-        if f then
-          local err
-          self.cache, err = unserialize(f:read("*a"))
-          if not self.cache then
-            error(concat({
-              "Could not load cache, ",
-              self.fname,
-              ", please delete and try again: ",
-              err
-            }))
-          end
-          f:close()
-        end
+      if not (skip_load) then
+        self:load_cache()
       end
       return CacheTable:inject(self.cache)
     end,
