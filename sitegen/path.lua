@@ -112,11 +112,7 @@ _prepare_command = function(cmd, ...)
     args = _accum_0
   end
   args = table.concat(args, " ")
-  do
-    local out = tostring(cmd) .. " " .. tostring(args)
-    print(out)
-    return out
-  end
+  return tostring(cmd) .. " " .. tostring(args)
 end
 exec = function(cmd, ...)
   return os.execute(_prepare_command(cmd, ...))

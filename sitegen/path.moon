@@ -78,8 +78,7 @@ _prepare_command = (cmd, ...) ->
       x
 
   args = table.concat args, " "
-  with out = "#{cmd} #{args}"
-    print out
+  "#{cmd} #{args}"
 
 exec = (cmd, ...) ->
   os.execute _prepare_command cmd, ...
