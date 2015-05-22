@@ -246,14 +246,15 @@ do
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, site_file)
-      if site_file == nil then
-        site_file = nil
+    __init = function(self, sitefile)
+      if sitefile == nil then
+        sitefile = nil
       end
       local SiteFile
       SiteFile = require("sitegen.site_file").SiteFile
-      self.sitefile = site_file or SiteFile.master
-      self.io = self.sitefile and self.sitefile.io or io
+      self.sitefile = assert(sitefile or SiteFile.master, "missing sitefile")
+      self.io = assert(self.sitefile.io, "missing sitefile.io")
+      self.io = self.io:annotate()
       self.templates = self:Templates(self.config.template_dir)
       self.scope = SiteScope(self)
       self.cache = Cache(self)

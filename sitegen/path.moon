@@ -100,7 +100,7 @@ annotate = =>
         if verbs[name]
           (...) ->
             fn ...
-            log verbs[name], (...)
+            print verbs[name], (...)
         else
           fn
     }
@@ -109,6 +109,8 @@ annotate = =>
   wrap_module @, {
     mkdir: colors "%{bright}%{magenta}made directory%{reset}"
     write_file: colors "%{bright}%{yellow}wrote%{reset}"
+    read_file: colors "%{bright}%{green}read%{reset}"
+    exists: colors "%{bright}%{cyan}exists?%{reset}"
     exec: colors "%{bright}%{red}exec%{reset}"
   }
 

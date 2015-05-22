@@ -16,10 +16,9 @@ describe "sitegen", ->
       Path.mkdir "spec/temp_site"
       path = Path\relative_to "spec/temp_site"
 
-      site_file = SiteFile rel_path: "spec/temp_site"
-      site = Site site_file
+      sitefile = SiteFile rel_path: "spec/temp_site"
+      site = Site sitefile
 
     it "should build an empty site", ->
-      -- 
-
+      site\write!
 

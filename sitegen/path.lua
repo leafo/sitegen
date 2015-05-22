@@ -154,7 +154,7 @@ annotate = function(self)
         if verbs[name] then
           return function(...)
             fn(...)
-            return log(verbs[name], (...))
+            return print(verbs[name], (...))
           end
         else
           return fn
@@ -166,6 +166,8 @@ annotate = function(self)
   return wrap_module(self, {
     mkdir = colors("%{bright}%{magenta}made directory%{reset}"),
     write_file = colors("%{bright}%{yellow}wrote%{reset}"),
+    read_file = colors("%{bright}%{green}read%{reset}"),
+    exists = colors("%{bright}%{cyan}exists?%{reset}"),
     exec = colors("%{bright}%{red}exec%{reset}")
   })
 end

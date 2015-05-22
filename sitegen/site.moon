@@ -45,11 +45,11 @@ class Site
     write_gitignore: true
   }
 
-  new: (site_file=nil) =>
+  new: (sitefile=nil) =>
     import SiteFile from require "sitegen.site_file"
-    @sitefile = site_file or SiteFile.master
-
-    @io = @sitefile and @sitefile.io or io
+    @sitefile = assert sitefile or SiteFile.master, "missing sitefile"
+    @io = assert @sitefile.io, "missing sitefile.io"
+    @io = @io\annotate!
 
     @templates = @Templates @config.template_dir
 
