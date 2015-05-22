@@ -152,6 +152,11 @@ relative_to = function(self, prefix)
   m.full_path = function(path)
     return self.join(prefix, path)
   end
+  m.strip_prefix = function(path)
+    local escape_patt
+    escape_patt = require("sitegen.common").escape_patt
+    return path:gsub("^" .. tostring(escape_patt(prefix)) .. "/?", "")
+  end
   m.get_prefix = function()
     return prefix
   end

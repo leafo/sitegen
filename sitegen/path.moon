@@ -100,6 +100,10 @@ relative_to = (prefix) =>
   }
 
   m.full_path = (path) -> @.join prefix, path
+  m.strip_prefix = (path) ->
+    import escape_patt from require "sitegen.common"
+    path\gsub "^#{escape_patt prefix}/?", ""
+
   m.get_prefix = -> prefix
   m.set_prefix = (p) -> prefix = p
 

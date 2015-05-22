@@ -43,20 +43,28 @@ class SiteScope
 
   search: (pattern, dir=".", enter_dirs=false) =>
     pattern = convert_pattern pattern
+    root_dir = @site.io.full_path dir
+
     search = (dir) ->
       for fname in lfs.dir dir
-        if not fname\match "^%."
-          full_path = Path.join dir, fname
-          if enter_dirs and "directory" == lfs.attributes full_path, "mode"
-            search full_path
-          elseif fname\match pattern
-            if full_path\match"^%./"
-              full_path = full_path\sub 3
+        continue if fname\match "^%." -- no hidden files
 
-            continue if @files\has full_path
-            @files\add full_path
+        full_path = Path.join dir, fname
 
-    search dir
+        if enter_dirs and "directory" == lfs.attributes full_path, "mode"
+          search full_path
+          continue
+
+        if fname\match pattern
+          if full_path\match"^%./"
+            full_path = full_path\sub 3
+
+          relative = @site.io.strip_prefix full_path
+
+          unless @files\has relative
+            @files\add relative
+
+    search root_dir
 
   dump_files: =>
     print "added files:"

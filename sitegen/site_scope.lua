@@ -69,24 +69,29 @@ do
         enter_dirs = false
       end
       pattern = convert_pattern(pattern)
+      local root_dir = self.site.io.full_path(dir)
       local search
       search = function(dir)
         for fname in lfs.dir(dir) do
           local _continue_0 = false
           repeat
-            if not fname:match("^%.") then
-              local full_path = Path.join(dir, fname)
-              if enter_dirs and "directory" == lfs.attributes(full_path, "mode") then
-                search(full_path)
-              elseif fname:match(pattern) then
-                if full_path:match("^%./") then
-                  full_path = full_path:sub(3)
-                end
-                if self.files:has(full_path) then
-                  _continue_0 = true
-                  break
-                end
-                self.files:add(full_path)
+            if fname:match("^%.") then
+              _continue_0 = true
+              break
+            end
+            local full_path = Path.join(dir, fname)
+            if enter_dirs and "directory" == lfs.attributes(full_path, "mode") then
+              search(full_path)
+              _continue_0 = true
+              break
+            end
+            if fname:match(pattern) then
+              if full_path:match("^%./") then
+                full_path = full_path:sub(3)
+              end
+              local relative = self.site.io.strip_prefix(full_path)
+              if not (self.files:has(relative)) then
+                self.files:add(relative)
               end
             end
             _continue_0 = true
@@ -96,7 +101,7 @@ do
           end
         end
       end
-      return search(dir)
+      return search(root_dir)
     end,
     dump_files = function(self)
       print("added files:")

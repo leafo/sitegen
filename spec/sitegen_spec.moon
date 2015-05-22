@@ -34,7 +34,7 @@ describe "sitegen", ->
       site = Site sitefile
 
     write = (...) ->
-      path.write_file ...
+      assert path.write_file_safe ...
 
     it "should build an empty site", ->
       site\init_from_fn =>
@@ -44,20 +44,42 @@ describe "sitegen", ->
         "www/.gitignore"
       }, get_files prefix
 
-    it "should build with a markdown file #ddd", ->
-      print!
+    it "should build with a markdown file", ->
       write "test.md", "hello I an *markdown*"
+      write "inside/other.md", "more markdown"
 
       site\init_from_fn =>
         add "test.md"
+        add "inside/other.md"
 
       site\write!
 
       assert.same {
         ".sitegen_cache"
+        "inside/other.md"
         "test.md"
         "www/.gitignore"
+        "www/inside/other.html"
         "www/test.html"
+      }, get_files prefix
+
+
+    it "should build many markdown files", ->
+      write "hello.md", "hello I an *markdown*"
+      write "world.md", "and I am world"
+
+      site\init_from_fn =>
+        search "*.md"
+
+      site\write!
+
+      assert.same {
+        ".sitegen_cache"
+        "hello.md"
+        "world.md"
+        "www/.gitignore"
+        "www/hello.html"
+        "www/world.html"
       }, get_files prefix
 
 
