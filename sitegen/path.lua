@@ -130,6 +130,7 @@ relative_to = function(self, prefix)
     "mkdir",
     "read_file",
     "write_file",
+    "write_file_safe",
     "exists"
   }
   local prefixed
@@ -186,6 +187,7 @@ annotate = function(self)
   return wrap_module(self, {
     mkdir = colors("%{bright}%{magenta}made directory%{reset}"),
     write_file = colors("%{bright}%{yellow}wrote%{reset}"),
+    write_file_safe = colors("%{bright}%{yellow}wrote%{reset}"),
     read_file = colors("%{bright}%{green}read%{reset}"),
     exists = colors("%{bright}%{cyan}exists?%{reset}"),
     exec = colors("%{bright}%{red}exec%{reset}"),

@@ -89,7 +89,7 @@ read_exec = (cmd, ...) ->
     f\close!
 
 relative_to = (prefix) =>
-  methods = {"mkdir", "read_file", "write_file", "exists"}
+  methods = {"mkdir", "read_file", "write_file", "write_file_safe", "exists"}
 
   prefixed = (fn) ->
     (path, ...) ->
@@ -126,6 +126,7 @@ annotate = =>
   wrap_module @, {
     mkdir: colors "%{bright}%{magenta}made directory%{reset}"
     write_file: colors "%{bright}%{yellow}wrote%{reset}"
+    write_file_safe: colors "%{bright}%{yellow}wrote%{reset}"
     read_file: colors "%{bright}%{green}read%{reset}"
     exists: colors "%{bright}%{cyan}exists?%{reset}"
     exec: colors "%{bright}%{red}exec%{reset}"
