@@ -81,16 +81,11 @@ class Page
   -- write the file, return path to written file
   write: =>
     content = @_render!
-    target_dir = Path.basepath @target
-    target_dir = @site.io.real_path target_dir if @site.io.real_path
 
     @site.io.write_file_safe @target, content
 
-    real_path = @site.io.real_path
-    source, target = if real_path
-      real_path(@source), real_path(@target)
-    else
-      @source, @target
+    source = @site.io.full_path @source
+    target = @site.io.full_path @target
 
     @site.logger\render source, target
     @target

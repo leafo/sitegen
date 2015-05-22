@@ -20,7 +20,7 @@ class Logger
     @print colors("%{bright}%{red}Error:%{reset} ") .. @_flatten ...
 
   render: (source, dest) =>
-    @print colors("  %{bright}%{green}rendered:%{reset} ") .. "#{source} -> #{dest}"
+    @print colors("%{bright}%{green}rendered:%{reset} ") .. "#{source} -> #{dest}"
 
   print: (...) =>
     return if @opts.silent

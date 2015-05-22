@@ -173,8 +173,8 @@ annotate = function(self)
         end
         if verbs[name] then
           return function(...)
-            fn(...)
-            return print(verbs[name], (...))
+            print(verbs[name], (...))
+            return fn(...)
           end
         else
           return fn

@@ -116,8 +116,8 @@ annotate = =>
         return fn if not type(fn) == "function"
         if verbs[name]
           (...) ->
-            fn ...
             print verbs[name], (...)
+            fn ...
         else
           fn
     }

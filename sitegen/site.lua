@@ -73,7 +73,7 @@ do
       return Path.join(self.config.out_dir, path)
     end,
     real_output_path_for = function(self, ...)
-      return self.io.real_path(self:output_path_for(...))
+      return self.io.full_path(self:output_path_for(...))
     end,
     renderer_for = function(self, path)
       local _list_0 = self.renderers
@@ -87,7 +87,7 @@ do
     end,
     run_build = function(self, buildset)
       local tool, input, args = unpack(buildset)
-      input = self.io.real_path(input)
+      input = self.io.full_path(input)
       local time, name, msg, code = timed_call(function()
         return tool(self, input, unpack(args))
       end)

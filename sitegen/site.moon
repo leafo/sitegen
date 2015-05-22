@@ -98,7 +98,7 @@ class Site
     Path.join @config.out_dir, path
 
   real_output_path_for: (...) =>
-    @io.real_path @output_path_for ...
+    @io.full_path @output_path_for ...
 
   renderer_for: (path) =>
     for renderer in *@renderers
@@ -110,7 +110,7 @@ class Site
   run_build: (buildset) =>
     tool, input, args = unpack buildset
 
-    input = @io.real_path input
+    input = @io.full_path input
 
     time, name, msg, code = timed_call ->
       tool self, input, unpack args

@@ -14,7 +14,7 @@ do
       end
     end,
     watch_file_with = function(self, file, handler)
-      local path = Path.basepath(self.site.io.real_path(file))
+      local path = Path.basepath(self.site.io.full_path(file))
       self.dirs[path] = self.dirs[path] or { }
       self.dirs[path][Path.filename(file)] = handler
     end,

@@ -66,18 +66,9 @@ do
     end,
     write = function(self)
       local content = self:_render()
-      local target_dir = Path.basepath(self.target)
-      if self.site.io.real_path then
-        target_dir = self.site.io.real_path(target_dir)
-      end
       self.site.io.write_file_safe(self.target, content)
-      local real_path = self.site.io.real_path
-      local source, target
-      if real_path then
-        source, target = real_path(self.source), real_path(self.target)
-      else
-        source, target = self.source, self.target
-      end
+      local source = self.site.io.full_path(self.source)
+      local target = self.site.io.full_path(self.target)
       self.site.logger:render(source, target)
       return self.target
     end,

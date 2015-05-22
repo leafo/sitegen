@@ -30,7 +30,7 @@ do
       return self:print(colors("%{bright}%{red}Error:%{reset} ") .. self:_flatten(...))
     end,
     render = function(self, source, dest)
-      return self:print(colors("  %{bright}%{green}rendered:%{reset} ") .. tostring(source) .. " -> " .. tostring(dest))
+      return self:print(colors("%{bright}%{green}rendered:%{reset} ") .. tostring(source) .. " -> " .. tostring(dest))
     end,
     print = function(self, ...)
       if self.opts.silent then

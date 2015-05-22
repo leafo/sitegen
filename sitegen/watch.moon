@@ -18,7 +18,7 @@ class Watcher
     -> @site\run_build buildset
 
   watch_file_with: (file, handler) =>
-    path = Path.basepath @site.io.real_path file
+    path = Path.basepath @site.io.full_path file
 
     @dirs[path] = @dirs[path] or { }
     @dirs[path][Path.filename file] = handler
