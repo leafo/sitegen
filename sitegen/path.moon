@@ -1,5 +1,8 @@
 io = io
 
+needs_shell_escape = (str) ->
+  not not str\match "[^%w_-]"
+
 shell_escape = (str) ->
   str\gsub "'", "''"
 
@@ -67,12 +70,24 @@ join = (a, b) ->
   return a if b == ""
   a .. "/" .. b
 
-exec = (cmd, ...) ->
-  args = [shell_escape x for x in *{...}]
-  args = table.concat args, " "
+_prepare_command = (cmd, ...) ->
+  args = for x in *{...}
+    if needs_shell_escape x
+      "'#{shell_escape x}'"
+    else
+      x
 
-  full_cmd = "#{cmd} #{args}"
-  os.execute full_cmd
+  args = table.concat args, " "
+  with out = "#{cmd} #{args}"
+    print out
+
+exec = (cmd, ...) ->
+  os.execute _prepare_command cmd, ...
+
+read_exec = (cmd, ...) ->
+  f = assert io.popen _prepare_command(cmd, ...), "r"
+  with f\read "*a"
+    f\close!
 
 relative_to = (prefix) =>
   methods = {"mkdir", "read_file", "write_file", "exists"}
@@ -115,12 +130,13 @@ annotate = =>
     read_file: colors "%{bright}%{green}read%{reset}"
     exists: colors "%{bright}%{cyan}exists?%{reset}"
     exec: colors "%{bright}%{red}exec%{reset}"
+    read_exec: colors "%{bright}%{red}exec%{reset}"
   }
 
 {
   :up, :exists, :normalize, :basepath, :filename, :write_file,
   :write_file_safe, :mkdir, :rmdir, :copy, :join, :read_file, :shell_escape,
-  :exec
+  :exec, :read_exec
 
   :relative_to, :annotate
 }

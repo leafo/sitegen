@@ -1,9 +1,13 @@
 local io = io
+local needs_shell_escape
+needs_shell_escape = function(str)
+  return not not str:match("[^%w_-]")
+end
 local shell_escape
 shell_escape = function(str)
   return str:gsub("'", "''")
 end
-local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, rmdir, copy, join, exec, relative_to, annotate
+local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, rmdir, copy, join, _prepare_command, exec, read_exec, relative_to, annotate
 up = function(path)
   path = path:gsub("/$", "")
   path = path:gsub("[^/]*$", "")
@@ -88,7 +92,7 @@ join = function(a, b)
   end
   return a .. "/" .. b
 end
-exec = function(cmd, ...)
+_prepare_command = function(cmd, ...)
   local args
   do
     local _accum_0 = { }
@@ -98,14 +102,32 @@ exec = function(cmd, ...)
     }
     for _index_0 = 1, #_list_0 do
       local x = _list_0[_index_0]
-      _accum_0[_len_0] = shell_escape(x)
+      if needs_shell_escape(x) then
+        _accum_0[_len_0] = "'" .. tostring(shell_escape(x)) .. "'"
+      else
+        _accum_0[_len_0] = x
+      end
       _len_0 = _len_0 + 1
     end
     args = _accum_0
   end
   args = table.concat(args, " ")
-  local full_cmd = tostring(cmd) .. " " .. tostring(args)
-  return os.execute(full_cmd)
+  do
+    local out = tostring(cmd) .. " " .. tostring(args)
+    print(out)
+    return out
+  end
+end
+exec = function(cmd, ...)
+  return os.execute(_prepare_command(cmd, ...))
+end
+read_exec = function(cmd, ...)
+  local f = assert(io.popen(_prepare_command(cmd, ...), "r"))
+  do
+    local _with_0 = f:read("*a")
+    f:close()
+    return _with_0
+  end
 end
 relative_to = function(self, prefix)
   local methods = {
@@ -170,7 +192,8 @@ annotate = function(self)
     write_file = colors("%{bright}%{yellow}wrote%{reset}"),
     read_file = colors("%{bright}%{green}read%{reset}"),
     exists = colors("%{bright}%{cyan}exists?%{reset}"),
-    exec = colors("%{bright}%{red}exec%{reset}")
+    exec = colors("%{bright}%{red}exec%{reset}"),
+    read_exec = colors("%{bright}%{red}exec%{reset}")
   })
 end
 return {
@@ -188,6 +211,7 @@ return {
   read_file = read_file,
   shell_escape = shell_escape,
   exec = exec,
+  read_exec = read_exec,
   relative_to = relative_to,
   annotate = annotate
 }
