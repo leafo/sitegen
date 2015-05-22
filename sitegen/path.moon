@@ -64,9 +64,14 @@ relative_to = (prefix) =>
     (path, ...) ->
       @[fn] @.join(prefix, path), ...
 
-  setmetatable {m, prefixed(m) for m in *methods}, {
+  m = setmetatable {m, prefixed(m) for m in *methods}, {
   }, __index: @
 
+  m.full_path = (path) -> @.join prefix, path
+  m.get_prefix = -> prefix
+  m.set_prefix = (p) -> prefix = p
+
+  m
 
 annotate = =>
   wrap_module = (obj, verbs) ->
