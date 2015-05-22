@@ -20,5 +20,6 @@ describe "sitegen", ->
       site = Site sitefile
 
     it "should build an empty site", ->
+      site\init_from_fn =>
       site\write!
 
