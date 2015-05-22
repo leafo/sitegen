@@ -51,6 +51,9 @@ read_file = (path) ->
 mkdir = (path) ->
   os.execute "mkdir -p '#{shell_escape path}'"
 
+rmdir = (path) ->
+  os.execute "rm -r '#{shell_escape path}'"
+
 copy = (src, dest) ->
   os.execute "cp '#{shell_escape src}' '#{shell_escape dest}'"
 
@@ -111,7 +114,8 @@ annotate = =>
 
 {
   :up, :exists, :normalize, :basepath, :filename, :write_file,
-  :write_file_safe, :mkdir, :copy, :join, :read_file, :shell_escape, :exec
+  :write_file_safe, :mkdir, :rmdir, :copy, :join, :read_file, :shell_escape,
+  :exec
 
   :relative_to, :annotate
 }

@@ -45,7 +45,7 @@ class Site
     write_gitignore: true
   }
 
-  new: (sitefile=nil) =>
+  new: (site_file=nil) =>
     import SiteFile from require "sitegen.site_file"
     @sitefile = site_file or SiteFile.master
 

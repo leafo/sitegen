@@ -3,7 +3,7 @@ local shell_escape
 shell_escape = function(str)
   return str:gsub("'", "''")
 end
-local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, copy, join, exec, relative_to, annotate
+local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, rmdir, copy, join, exec, relative_to, annotate
 up = function(path)
   path = path:gsub("/$", "")
   path = path:gsub("[^/]*$", "")
@@ -66,6 +66,9 @@ read_file = function(path)
 end
 mkdir = function(path)
   return os.execute("mkdir -p '" .. tostring(shell_escape(path)) .. "'")
+end
+rmdir = function(path)
+  return os.execute("rm -r '" .. tostring(shell_escape(path)) .. "'")
 end
 copy = function(src, dest)
   return os.execute("cp '" .. tostring(shell_escape(src)) .. "' '" .. tostring(shell_escape(dest)) .. "'")
@@ -175,6 +178,7 @@ return {
   write_file = write_file,
   write_file_safe = write_file_safe,
   mkdir = mkdir,
+  rmdir = rmdir,
   copy = copy,
   join = join,
   read_file = read_file,

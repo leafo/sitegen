@@ -19,6 +19,21 @@ bright_yellow = require("sitegen.output").bright_yellow
 local SiteFile
 do
   local _base_0 = {
+    find_root = function(self)
+      local dir = lfs.currentdir()
+      local depth = 0
+      while dir do
+        local path = Path.join(dir, name)
+        if Path.exists(path) then
+          self.file_path = path
+          self:set_rel_path(depth)
+          return 
+        end
+        dir = Path.up(dir)
+        depth = depth + 1
+      end
+      return throw_error("failed to find sitefile: " .. name)
+    end,
     relativeize = function(self, path)
       local exec
       exec = function(cmd)
@@ -73,24 +88,18 @@ do
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, name)
-      if name == nil then
-        name = "site.moon"
+    __init = function(self, opts)
+      if opts == nil then
+        opts = { }
       end
-      self.name = name
-      local dir = lfs.currentdir()
-      local depth = 0
-      while dir do
-        local path = Path.join(dir, name)
-        if Path.exists(path) then
-          self.file_path = path
-          self:set_rel_path(depth)
-          return 
-        end
-        dir = Path.up(dir)
-        depth = depth + 1
+      self.name = opts.name or "site.moon"
+      if opts.rel_path then
+        self.rel_path = opts.rel_path
+        self.file_path = Path.join(self.rel_path, self.name)
+        return self:make_io()
+      else
+        return self:find_root()
       end
-      return throw_error("failed to find sitefile: " .. name)
     end,
     __base = _base_0,
     __name = "SiteFile"

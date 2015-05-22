@@ -23,7 +23,16 @@ import bright_yellow from require "sitegen.output"
 class SiteFile
   @master: nil -- the global sitefile of the current process
 
-  new: (@name="site.moon") =>
+  new: (opts={}) =>
+    @name = opts.name or "site.moon"
+    if opts.rel_path
+      @rel_path = opts.rel_path
+      @file_path = Path.join @rel_path, @name
+      @make_io!
+    else
+      @find_root!
+
+  find_root: =>
     dir = lfs.currentdir!
     depth = 0
     while dir

@@ -246,9 +246,9 @@ do
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, sitefile)
-      if sitefile == nil then
-        sitefile = nil
+    __init = function(self, site_file)
+      if site_file == nil then
+        site_file = nil
       end
       local SiteFile
       SiteFile = require("sitegen.site_file").SiteFile
