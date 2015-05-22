@@ -32,8 +32,20 @@ describe "sitegen", ->
       sitefile = SiteFile rel_path: prefix
       site = Site sitefile
 
+    write = (...) ->
+      path.write_file ...
+
     it "should build an empty site", ->
       site\init_from_fn =>
       site\write!
       assert.same {".sitegen_cache"}, get_files prefix
+
+    it "should build with a markdown file #ddd", ->
+      print!
+      write "test.md", "hello I an *markdown*"
+
+      site\init_from_fn =>
+        add "test.md"
+
+      site\write!
 
