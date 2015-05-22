@@ -1,8 +1,9 @@
 local lfs = require("lfs")
-local OrderSet, Path, flatten_args, convert_pattern
+local Path = require("sitegen.path")
+local OrderSet, flatten_args, convert_pattern
 do
   local _obj_0 = require("sitegen.common")
-  OrderSet, Path, flatten_args, convert_pattern = _obj_0.OrderSet, _obj_0.Path, _obj_0.flatten_args, _obj_0.convert_pattern
+  OrderSet, flatten_args, convert_pattern = _obj_0.OrderSet, _obj_0.flatten_args, _obj_0.convert_pattern
 end
 local SiteScope
 do

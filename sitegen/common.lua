@@ -2,7 +2,7 @@ local socket = nil
 pcall(function()
   socket = require("socket")
 end)
-local timed_call, throw_error, pass_error, catch_error, get_local, trim_leading_white, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, Path, fill_ignoring_pre
+local timed_call, throw_error, pass_error, catch_error, get_local, trim_leading_white, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, fill_ignoring_pre
 timed_call = function(fn)
   local start = socket and socket.gettime()
   local res = {
@@ -219,62 +219,6 @@ do
   _base_0.__class = _class_0
   Stack = _class_0
 end
-Path = function(io)
-  return {
-    set_io = function(_io)
-      io = _io
-    end,
-    up = function(path)
-      path = path:gsub("/$", "")
-      path = path:gsub("[^/]*$", "")
-      if path ~= "" then
-        return path
-      end
-    end,
-    exists = function(path)
-      local file = io.open(path)
-      if file then
-        return file:close() and true
-      end
-    end,
-    normalize = function(path)
-      return path:gsub("^%./", "")
-    end,
-    basepath = function(path)
-      return path:match("^(.*)/[^/]*$") or "."
-    end,
-    filename = function(path)
-      return path:match("([^/]*)$")
-    end,
-    write_file = function(path, content)
-      do
-        local _with_0 = io.open(path, "w")
-        _with_0:write(content)
-        _with_0:close()
-        return _with_0
-      end
-    end,
-    mkdir = function(path)
-      return os.execute(("mkdir -p %s"):format(path))
-    end,
-    copy = function(src, dest)
-      return os.execute(("cp %s %s"):format(src, dest))
-    end,
-    join = function(a, b)
-      if a ~= "/" then
-        a = a:match("^(.*)/$") or a
-      end
-      b = b:match("^/(.*)$") or b
-      if a == "" then
-        return b
-      end
-      if b == "" then
-        return a
-      end
-      return a .. "/" .. b
-    end
-  }
-end
 fill_ignoring_pre = function(text, context)
   local cosmo = require("cosmo")
   local P, R, S, V, Ct, C
@@ -344,6 +288,5 @@ return {
   trim = trim,
   fill_ignoring_pre = fill_ignoring_pre,
   OrderSet = OrderSet,
-  Stack = Stack,
-  Path = Path(io)
+  Stack = Stack
 }

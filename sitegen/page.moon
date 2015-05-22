@@ -3,8 +3,9 @@ html = require "sitegen.html"
 import extend from require "moon"
 import log from require "sitegen.output"
 
+Path = require "sitegen.path"
+
 import
-  Path
   Stack
   fill_ignoring_pre
   split

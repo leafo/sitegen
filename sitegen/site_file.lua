@@ -8,10 +8,11 @@ do
   extend, run_with_scope = _obj_0.extend, _obj_0.run_with_scope
 end
 local moonscript = require("moonscript.base")
+Path = require("sitegen.path")
 local throw_error, trim, escape_patt
 do
   local _obj_0 = require("sitegen.common")
-  Path, throw_error, trim, escape_patt = _obj_0.Path, _obj_0.throw_error, _obj_0.trim, _obj_0.escape_patt
+  throw_error, trim, escape_patt = _obj_0.throw_error, _obj_0.trim, _obj_0.escape_patt
 end
 local bright_yellow
 bright_yellow = require("sitegen.output").bright_yellow

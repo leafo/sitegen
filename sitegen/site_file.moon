@@ -7,8 +7,9 @@ import extend, run_with_scope from require "moon"
 
 moonscript = require "moonscript.base"
 
+Path = require "sitegen.path"
+
 import
-  Path
   throw_error
   trim
   escape_patt

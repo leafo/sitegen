@@ -1,5 +1,4 @@
-local Path
-Path = require("sitegen.common").Path
+local Path = require("sitegen.path")
 local inotify
 local Watcher
 do

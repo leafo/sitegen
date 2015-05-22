@@ -1,8 +1,9 @@
 lfs = require "lfs"
 
+Path = require "sitegen.path"
+
 import
   OrderSet
-  Path
   flatten_args
   convert_pattern
   from require "sitegen.common"

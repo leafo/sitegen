@@ -13,8 +13,9 @@ import
   bind_methods
   from require "moon"
 
+Path = require "sitegen.path"
+
 import
-  Path
   OrderSet
   make_list
   throw_error

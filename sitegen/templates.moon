@@ -4,8 +4,9 @@ moonscript = require "moonscript.base"
 
 import extend from require "moon"
 
+Path = require "sitegen.path"
+
 import
-  Path
   fill_ignoring_pre
   throw_error
   flatten_args

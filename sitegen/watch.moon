@@ -1,4 +1,4 @@
-import Path from require "sitegen.common"
+Path = require "sitegen.path"
 
 local inotify
 

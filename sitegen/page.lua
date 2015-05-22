@@ -3,10 +3,11 @@ local extend
 extend = require("moon").extend
 local log
 log = require("sitegen.output").log
-local Path, Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt
+local Path = require("sitegen.path")
+local Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt
 do
   local _obj_0 = require("sitegen.common")
-  Path, Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt = _obj_0.Path, _obj_0.Stack, _obj_0.fill_ignoring_pre, _obj_0.split, _obj_0.throw_error, _obj_0.pass_error, _obj_0.escape_patt
+  Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt = _obj_0.Stack, _obj_0.fill_ignoring_pre, _obj_0.split, _obj_0.throw_error, _obj_0.pass_error, _obj_0.escape_patt
 end
 local render_until_complete
 render_until_complete = function(tpl_scope, render_fn)
