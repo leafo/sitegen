@@ -49,7 +49,6 @@ class Site
 
     @logger = assert @sitefile.logger, "missing sitefile.logger"
     @io = assert @sitefile.io, "missing sitefile.io"
-    @io = @io\annotate!
 
     @templates = @Templates @config.template_dir
 
@@ -118,9 +117,10 @@ class Site
     if code > 0
       throw_error "failed to run command #{name}"
 
-    status = "built\t\t#{name} (#{msg})"
+    status = "#{name} (#{msg})"
     status = status .. " (" .. ("%.3f")\format(time) .. "s)" if time
-    @logger\plain status
+
+    @logger\build status
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>

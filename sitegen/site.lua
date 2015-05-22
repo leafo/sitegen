@@ -94,11 +94,11 @@ do
       if code > 0 then
         throw_error("failed to run command " .. tostring(name))
       end
-      local status = "built\t\t" .. tostring(name) .. " (" .. tostring(msg) .. ")"
+      local status = tostring(name) .. " (" .. tostring(msg) .. ")"
       if time then
         status = status .. " (" .. ("%.3f"):format(time) .. "s)"
       end
-      return self.logger:plain(status)
+      return self.logger:build(status)
     end,
     write_file = function(self, fname, content)
       local full_path = Path.join(self.config.out_dir, fname)
@@ -252,7 +252,6 @@ do
       self.sitefile = assert(sitefile or SiteFile.master, "missing sitefile")
       self.logger = assert(self.sitefile.logger, "missing sitefile.logger")
       self.io = assert(self.sitefile.io, "missing sitefile.io")
-      self.io = self.io:annotate()
       self.templates = self:Templates(self.config.template_dir)
       self.scope = SiteScope(self)
       self.cache = Cache(self)

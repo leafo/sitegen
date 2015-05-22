@@ -13,14 +13,25 @@ class Logger
   notice: (prefix, ...) =>
     @print colors("%{bright}%{yellow}#{prefix}:%{reset} ") .. @_flatten ...
 
+  positive: (prefix, ...) =>
+    @print colors("%{bright}%{green}#{prefix}:%{reset} ") .. @_flatten ...
+
+  negative: (prefix, ...) =>
+    @print colors("%{bright}%{red}#{prefix}:%{reset} ") .. @_flatten ...
+
+  --
+
   warn: (...) =>
-    @print colors("%{bright}%{yellow}Warning:%{reset} ") .. @_flatten ...
+    @notice "Warning", ...
 
   error: (...) =>
-    @print colors("%{bright}%{red}Error:%{reset} ") .. @_flatten ...
+    @negative "Error", ...
 
   render: (source, dest) =>
-    @print colors("%{bright}%{green}rendered:%{reset} ") .. "#{source} -> #{dest}"
+    @positive "rendered", "#{source} -> #{dest}"
+
+  build: (...) =>
+    @positive "built", ...
 
   print: (...) =>
     return if @opts.silent

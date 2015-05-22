@@ -23,14 +23,23 @@ do
     notice = function(self, prefix, ...)
       return self:print(colors("%{bright}%{yellow}" .. tostring(prefix) .. ":%{reset} ") .. self:_flatten(...))
     end,
+    positive = function(self, prefix, ...)
+      return self:print(colors("%{bright}%{green}" .. tostring(prefix) .. ":%{reset} ") .. self:_flatten(...))
+    end,
+    negative = function(self, prefix, ...)
+      return self:print(colors("%{bright}%{red}" .. tostring(prefix) .. ":%{reset} ") .. self:_flatten(...))
+    end,
     warn = function(self, ...)
-      return self:print(colors("%{bright}%{yellow}Warning:%{reset} ") .. self:_flatten(...))
+      return self:notice("Warning", ...)
     end,
     error = function(self, ...)
-      return self:print(colors("%{bright}%{red}Error:%{reset} ") .. self:_flatten(...))
+      return self:negative("Error", ...)
     end,
     render = function(self, source, dest)
-      return self:print(colors("%{bright}%{green}rendered:%{reset} ") .. tostring(source) .. " -> " .. tostring(dest))
+      return self:positive("rendered", tostring(source) .. " -> " .. tostring(dest))
+    end,
+    build = function(self, ...)
+      return self:positive("built", ...)
     end,
     print = function(self, ...)
       if self.opts.silent then
