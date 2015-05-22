@@ -14,6 +14,7 @@ get_files = (path, prefix=path) ->
     files = for file in *files
       file\gsub "^#{escape_patt prefix}/?", ""
 
+  table.sort files
   files
 
 describe "sitegen", ->
@@ -38,7 +39,10 @@ describe "sitegen", ->
     it "should build an empty site", ->
       site\init_from_fn =>
       site\write!
-      assert.same {".sitegen_cache"}, get_files prefix
+      assert.same {
+        ".sitegen_cache"
+        "www/.gitignore"
+      }, get_files prefix
 
     it "should build with a markdown file #ddd", ->
       print!
@@ -48,4 +52,12 @@ describe "sitegen", ->
         add "test.md"
 
       site\write!
+
+      assert.same {
+        ".sitegen_cache"
+        "test.md"
+        "www/.gitignore"
+        "www/test.html"
+      }, get_files prefix
+
 

@@ -82,7 +82,7 @@ class Page
   write: =>
     content = @_render!
 
-    @site.io.write_file_safe @target, content
+    assert @site.io.write_file_safe @target, content
 
     source = @site.io.full_path @source
     target = @site.io.full_path @target

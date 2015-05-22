@@ -66,7 +66,7 @@ do
     end,
     write = function(self)
       local content = self:_render()
-      self.site.io.write_file_safe(self.target, content)
+      assert(self.site.io.write_file_safe(self.target, content))
       local source = self.site.io.full_path(self.source)
       local target = self.site.io.full_path(self.target)
       self.site.logger:render(source, target)
