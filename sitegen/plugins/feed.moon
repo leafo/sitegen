@@ -56,7 +56,9 @@ class FeedPlugin extends Plugin
     table.insert @feeds, { dest, fn! }
 
   write: (site) =>
-    print "feeds:  ", #@feeds
+    return unless @feeds[1]
+    site.logger\plain "feeds:", #@feeds
+
     for feed in *@feeds
       dest, root = unpack feed
 

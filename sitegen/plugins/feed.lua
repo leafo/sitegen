@@ -82,7 +82,10 @@ do
       })
     end,
     write = function(self, site)
-      print("feeds:  ", #self.feeds)
+      if not (self.feeds[1]) then
+        return 
+      end
+      site.logger:plain("feeds:", #self.feeds)
       local _list_0 = self.feeds
       for _index_0 = 1, #_list_0 do
         local feed = _list_0[_index_0]

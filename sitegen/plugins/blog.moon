@@ -39,24 +39,26 @@ class BlogPlugin extends Plugin
     @consumes_pages
 
   write: (site) =>
-    print "blog posts:", #@posts
-    import title, url, description from site.user_vars
-    if #@posts > 0
-      feed_posts = for page in *@query!
-        print "*", page.title, page.date
-        {
-          title: page.title
-          date: page.date
-          link: page\url_for true
-          description: rawget page.meta, "description"
-        }
+    return unless @posts[1]
+    site.logger\plain "blog posts:", #@posts
 
-      rss_text = FeedPlugin.render_feed {
-        :title, :description, link: url
-        unpack feed_posts
+    import title, url, description from site.user_vars
+
+    feed_posts = for page in *@query!
+      print "*", page.title, page.date
+      {
+        title: page.title
+        date: page.date
+        link: page\url_for true
+        description: rawget page.meta, "description"
       }
 
-      site\write_file "feed.xml", rss_text
+    rss_text = FeedPlugin.render_feed {
+      :title, :description, link: url
+      unpack feed_posts
+    }
+
+    site\write_file "feed.xml", rss_text
 
   query: (filter={}) =>
     filter.sort = {"date", cmp.date! }

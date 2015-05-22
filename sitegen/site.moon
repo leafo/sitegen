@@ -193,7 +193,6 @@ class Site
       -- copy files
       for path in @scope.copy_files\each!
         target = Path.join @config.out_dir, path
-        print "copied", target
         table.insert written_files, target
         Path.copy path, target
 

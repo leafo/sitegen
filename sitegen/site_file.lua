@@ -64,7 +64,7 @@ do
       self.io = Path:relative_to(self.rel_path)
     end,
     get_site = function(self)
-      self.logger:notice("Using", Path.join(self.rel_path, self.name))
+      self.logger:notice("using", Path.join(self.rel_path, self.name))
       local fn = assert(moonscript.loadfile(self.file_path))
       local sitegen = require("sitegen")
       local old_write = Site.write

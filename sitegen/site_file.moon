@@ -74,7 +74,7 @@ class SiteFile
     @io = Path\relative_to @rel_path
 
   get_site: =>
-    @logger\notice "Using", Path.join @rel_path, @name
+    @logger\notice "using", Path.join @rel_path, @name
 
     fn = assert moonscript.loadfile @file_path
     sitegen = require "sitegen"

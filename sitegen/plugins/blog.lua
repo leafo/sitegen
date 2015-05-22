@@ -48,40 +48,41 @@ do
       return self.consumes_pages
     end,
     write = function(self, site)
-      print("blog posts:", #self.posts)
+      if not (self.posts[1]) then
+        return 
+      end
+      site.logger:plain("blog posts:", #self.posts)
       local title, url, description
       do
         local _obj_0 = site.user_vars
         title, url, description = _obj_0.title, _obj_0.url, _obj_0.description
       end
-      if #self.posts > 0 then
-        local feed_posts
-        do
-          local _accum_0 = { }
-          local _len_0 = 1
-          local _list_0 = self:query()
-          for _index_0 = 1, #_list_0 do
-            local page = _list_0[_index_0]
-            print("*", page.title, page.date)
-            local _value_0 = {
-              title = page.title,
-              date = page.date,
-              link = page:url_for(true),
-              description = rawget(page.meta, "description")
-            }
-            _accum_0[_len_0] = _value_0
-            _len_0 = _len_0 + 1
-          end
-          feed_posts = _accum_0
+      local feed_posts
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = self:query()
+        for _index_0 = 1, #_list_0 do
+          local page = _list_0[_index_0]
+          print("*", page.title, page.date)
+          local _value_0 = {
+            title = page.title,
+            date = page.date,
+            link = page:url_for(true),
+            description = rawget(page.meta, "description")
+          }
+          _accum_0[_len_0] = _value_0
+          _len_0 = _len_0 + 1
         end
-        local rss_text = FeedPlugin.render_feed({
-          title = title,
-          description = description,
-          link = url,
-          unpack(feed_posts)
-        })
-        return site:write_file("feed.xml", rss_text)
+        feed_posts = _accum_0
       end
+      local rss_text = FeedPlugin.render_feed({
+        title = title,
+        description = description,
+        link = url,
+        unpack(feed_posts)
+      })
+      return site:write_file("feed.xml", rss_text)
     end,
     query = function(self, filter)
       if filter == nil then

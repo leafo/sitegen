@@ -219,7 +219,6 @@ do
       if not filter_files then
         for path in self.scope.copy_files:each() do
           local target = Path.join(self.config.out_dir, path)
-          print("copied", target)
           table.insert(written_files, target)
           Path.copy(path, target)
         end
