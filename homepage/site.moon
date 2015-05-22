@@ -1,20 +1,19 @@
-require "sitegen"
+sitegen = require "sitegen"
 
-extra = require"sitegen.extra"
-html = require"sitegen.html"
+tools = require "sitegen.tools"
 
-site = sitegen.create_site =>
-  extra.PygmentsPlugin.custom_highlighters.moon = (code_text) =>
-    html.build ->
-      pre {
-        class: "moon-code"
-        code_text
-      }
+scssphp = tools.system_command "sassc < %s > %s", "css"
+coffeescript = tools.system_command "coffee -c -s < %s > %s", "js"
 
+sitegen.create =>
   deploy_to "leaf@leafo.net", "www/sitegen"
+
+  build scssphp, "style.scss", "style.css"
+  build coffeescript, "main.coffee", "main.js"
+
+  add "index.md"
   add "../doc/plugins.md"
 
   @title = "Sitegen"
   @url = "http://leafo.net/sitegen/"
 
-site\write!
