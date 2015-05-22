@@ -15,4 +15,4 @@ extract_header = (text) ->
 
   text, header or {}
 
-{ :extract_header, :parse_header, :trim_front }
+{ :extract_header, :parse_header }

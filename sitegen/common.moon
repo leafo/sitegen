@@ -108,7 +108,7 @@ flatten_args = (...) ->
   flatten {...}
   accum, options
 
-split = (str, delim using nil) ->
+split = (str, delim) ->
   str ..= delim
   [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
 

@@ -74,6 +74,8 @@ copy = function(src, dest)
   return os.execute("cp '" .. tostring(shell_escape(src)) .. "' '" .. tostring(shell_escape(dest)) .. "'")
 end
 join = function(a, b)
+  assert(a, "missing left argument to Path.join")
+  assert(b, "missing right argument to Path.join")
   if a ~= "/" then
     a = a:match("^(.*)/$") or a
   end

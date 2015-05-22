@@ -23,7 +23,7 @@ do
       local dir = lfs.currentdir()
       local depth = 0
       while dir do
-        local path = Path.join(dir, name)
+        local path = Path.join(dir, self.name)
         if Path.exists(path) then
           self.file_path = path
           self:set_rel_path(depth)
@@ -32,7 +32,7 @@ do
         dir = Path.up(dir)
         depth = depth + 1
       end
-      return throw_error("failed to find sitefile: " .. name)
+      return throw_error("failed to find sitefile `" .. tostring(self.name) .. "`")
     end,
     relativeize = function(self, path)
       local exec
@@ -81,7 +81,6 @@ do
         })
         self.__class.master = old_master
       end
-      site = site or temp_site
       Site.__base.write = old_write
       return assert(site, "Failed to load site from sitefile, make sure site is returned")
     end

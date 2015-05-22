@@ -18,6 +18,5 @@ extract_header = function(text)
 end
 return {
   extract_header = extract_header,
-  parse_header = parse_header,
-  trim_front = trim_front
+  parse_header = parse_header
 }

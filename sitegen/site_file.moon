@@ -36,7 +36,7 @@ class SiteFile
     dir = lfs.currentdir!
     depth = 0
     while dir
-      path = Path.join dir, name
+      path = Path.join dir, @name
       if Path.exists path
         @file_path = path
         @set_rel_path depth
@@ -44,7 +44,7 @@ class SiteFile
       dir = Path.up dir
       depth += 1
 
-    throw_error "failed to find sitefile: " .. name
+    throw_error "failed to find sitefile `#{@name}`"
 
   -- convert from shell relative to sitefile relative
   relativeize: (path) =>
@@ -94,10 +94,7 @@ class SiteFile
       }
       @@master = old_master
 
-    site or= temp_site
-
     Site.__base.write = old_write
-
     assert site, "Failed to load site from sitefile, make sure site is returned"
 
 {

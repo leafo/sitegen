@@ -58,6 +58,9 @@ copy = (src, dest) ->
   os.execute "cp '#{shell_escape src}' '#{shell_escape dest}'"
 
 join = (a, b) ->
+  assert a, "missing left argument to Path.join"
+  assert b, "missing right argument to Path.join"
+
   a = a\match"^(.*)/$" or a if a != "/"
   b = b\match"^/(.*)$" or b
   return b if a == ""
