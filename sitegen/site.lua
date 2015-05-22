@@ -24,8 +24,6 @@ local Templates
 Templates = require("sitegen.templates").Templates
 local Page
 Page = require("sitegen.page").Page
-local log
-log = require("sitegen.output").log
 local Site
 do
   local _base_0 = {
@@ -100,7 +98,7 @@ do
       if time then
         status = status .. " (" .. ("%.3f"):format(time) .. "s)"
       end
-      return log(status)
+      return self.logger:plain(status)
     end,
     write_file = function(self, fname, content)
       local full_path = Path.join(self.config.out_dir, fname)
@@ -253,6 +251,7 @@ do
       local SiteFile
       SiteFile = require("sitegen.site_file").SiteFile
       self.sitefile = assert(sitefile or SiteFile.master, "missing sitefile")
+      self.logger = assert(self.sitefile.logger, "missing sitefile.logger")
       self.io = assert(self.sitefile.io, "missing sitefile.io")
       self.io = self.io:annotate()
       self.templates = self:Templates(self.config.template_dir)

@@ -29,8 +29,6 @@ import SiteScope from require "sitegen.site_scope"
 import Templates from require "sitegen.templates"
 import Page from require "sitegen.page"
 
-import log from require "sitegen.output"
-
 -- a webpage
 class Site
   @load_renderers: =>
@@ -48,6 +46,8 @@ class Site
   new: (sitefile=nil) =>
     import SiteFile from require "sitegen.site_file"
     @sitefile = assert sitefile or SiteFile.master, "missing sitefile"
+
+    @logger = assert @sitefile.logger, "missing sitefile.logger"
     @io = assert @sitefile.io, "missing sitefile.io"
     @io = @io\annotate!
 
@@ -120,7 +120,7 @@ class Site
 
     status = "built\t\t#{name} (#{msg})"
     status = status .. " (" .. ("%.3f")\format(time) .. "s)" if time
-    log status
+    @logger\plain status
 
   -- TODO: refactor to use this?
   write_file: (fname, content) =>

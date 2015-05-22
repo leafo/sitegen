@@ -15,7 +15,7 @@ import
   escape_patt
   from require "sitegen.common"
 
-import bright_yellow from require "sitegen.output"
+import Logger from require "sitegen.output"
 
 -- does two things:
 -- 1) finds the sitefile, looking up starting from the current dir
@@ -25,6 +25,8 @@ class SiteFile
 
   new: (opts={}) =>
     @name = opts.name or "site.moon"
+    @logger = Logger opts.logger_opts
+
     if opts.rel_path
       @rel_path = opts.rel_path
       @file_path = Path.join @rel_path, @name
@@ -72,7 +74,7 @@ class SiteFile
     @io = Path\relative_to @rel_path
 
   get_site: =>
-    print bright_yellow"Using:", Path.join @rel_path, @name
+    @logger\notice "Using", Path.join @rel_path, @name
 
     fn = assert moonscript.loadfile @file_path
     sitegen = require "sitegen"

@@ -23,7 +23,7 @@ pass_error = (obj, ...) ->
   obj, ...
 
 catch_error = (fn) ->
-  import bright_red from require "sitegen.output"
+  import Logger from require "sitegen.output"
   co = coroutine.create -> fn! and nil
 
   status, res = coroutine.resume co
@@ -33,7 +33,7 @@ catch_error = (fn) ->
 
   -- something thrown
   if res
-    print bright_red"Error:",  res[2]
+    Logger!\error res[2]
     os.exit 1
 
   false

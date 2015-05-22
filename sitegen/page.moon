@@ -1,7 +1,6 @@
 html = require "sitegen.html"
 
 import extend from require "moon"
-import log from require "sitegen.output"
 
 Path = require "sitegen.path"
 
@@ -93,7 +92,7 @@ class Page
     else
       @source, @target
 
-    log "rendered", source, "->", target
+    @site.logger\render source, target
     @target
 
   -- read the source

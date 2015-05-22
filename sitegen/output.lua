@@ -1,29 +1,65 @@
-local log
-log = function(...)
-  return print(...)
-end
-local colors = {
-  reset = 0,
-  bright = 1,
-  red = 31,
-  yellow = 33
-}
+local colors = require("ansicolors")
+local Logger
 do
-  local _tbl_0 = { }
-  for name, key in pairs(colors) do
-    _tbl_0[name] = string.char(27) .. "[" .. tostring(key) .. "m"
-  end
-  colors = _tbl_0
-end
-local make_bright
-make_bright = function(color)
-  return function(str)
-    return colors.bright .. colors[color] .. tostring(str) .. colors.reset
-  end
+  local _base_0 = {
+    _flatten = function(self, ...)
+      return table.concat((function(...)
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = {
+          ...
+        }
+        for _index_0 = 1, #_list_0 do
+          local p = _list_0[_index_0]
+          _accum_0[_len_0] = tostring(p)
+          _len_0 = _len_0 + 1
+        end
+        return _accum_0
+      end)(...), " ")
+    end,
+    plain = function(self, ...)
+      return self:print(self:_flatten(...))
+    end,
+    notice = function(self, prefix, ...)
+      return self:print(colors("%{bright}%{yellow}" .. tostring(prefix) .. ":%{reset} ") .. self:_flatten(...))
+    end,
+    warn = function(self, ...)
+      return self:print(colors("%{bright}%{yellow}Warning:%{reset} ") .. self:_flatten(...))
+    end,
+    error = function(self, ...)
+      return self:print(colors("%{bright}%{red}Error:%{reset} ") .. self:_flatten(...))
+    end,
+    render = function(self, source, dest)
+      return self:print(colors("  %{bright}%{green}rendered:%{reset} ") .. tostring(source) .. " -> " .. tostring(dest))
+    end,
+    print = function(self, ...)
+      if self.opts.silent then
+        return 
+      end
+      return print(...)
+    end
+  }
+  _base_0.__index = _base_0
+  local _class_0 = setmetatable({
+    __init = function(self, opts)
+      if opts == nil then
+        opts = { }
+      end
+      self.opts = opts
+    end,
+    __base = _base_0,
+    __name = "Logger"
+  }, {
+    __index = _base_0,
+    __call = function(cls, ...)
+      local _self_0 = setmetatable({}, _base_0)
+      cls.__init(_self_0, ...)
+      return _self_0
+    end
+  })
+  _base_0.__class = _class_0
+  Logger = _class_0
 end
 return {
-  log = log,
-  make_bright = make_bright,
-  bright_red = make_bright("red"),
-  bright_yellow = make_bright("yellow")
+  Logger = Logger
 }

@@ -27,8 +27,8 @@ pass_error = function(obj, ...)
   return obj, ...
 end
 catch_error = function(fn)
-  local bright_red
-  bright_red = require("sitegen.output").bright_red
+  local Logger
+  Logger = require("sitegen.output").Logger
   local co = coroutine.create(function()
     return fn() and nil
   end)
@@ -37,7 +37,7 @@ catch_error = function(fn)
     error(debug.traceback(co, res))
   end
   if res then
-    print(bright_red("Error:"), res[2])
+    Logger():error(res[2])
     os.exit(1)
   end
   return false

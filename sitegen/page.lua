@@ -1,8 +1,6 @@
 local html = require("sitegen.html")
 local extend
 extend = require("moon").extend
-local log
-log = require("sitegen.output").log
 local Path = require("sitegen.path")
 local Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt
 do
@@ -80,7 +78,7 @@ do
       else
         source, target = self.source, self.target
       end
-      log("rendered", source, "->", target)
+      self.site.logger:render(source, target)
       return self.target
     end,
     _read = function(self)

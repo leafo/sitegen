@@ -14,8 +14,8 @@ do
   local _obj_0 = require("sitegen.common")
   throw_error, trim, escape_patt = _obj_0.throw_error, _obj_0.trim, _obj_0.escape_patt
 end
-local bright_yellow
-bright_yellow = require("sitegen.output").bright_yellow
+local Logger
+Logger = require("sitegen.output").Logger
 local SiteFile
 do
   local _base_0 = {
@@ -64,7 +64,7 @@ do
       self.io = Path:relative_to(self.rel_path)
     end,
     get_site = function(self)
-      print(bright_yellow("Using:"), Path.join(self.rel_path, self.name))
+      self.logger:notice("Using", Path.join(self.rel_path, self.name))
       local fn = assert(moonscript.loadfile(self.file_path))
       local sitegen = require("sitegen")
       local old_write = Site.write
@@ -92,6 +92,7 @@ do
         opts = { }
       end
       self.name = opts.name or "site.moon"
+      self.logger = Logger(opts.logger_opts)
       if opts.rel_path then
         self.rel_path = opts.rel_path
         self.file_path = Path.join(self.rel_path, self.name)
