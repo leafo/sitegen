@@ -8,13 +8,13 @@ $index
 Plugins provide methods to different parts of the site generation pipeline. The
 method types are:
 
- * **template helpers**: available in any template file (html, markdown, etc).
-   Typically cosmo functions.
+* **template helpers**: available in any template file (html, markdown, etc).
+ Typically cosmo functions.
 
- * **site helpers**: available in the `site.moon` initialization function.
+* **site helpers**: available in the `site.moon` initialization function.
 
- * **command line helper**: available as an action in the command line tool,
-   `sitegen`.
+* **command line helper**: available as an action in the command line tool,
+ `sitegen`.
 
 Plugins can also change other aspects of the pipeline, for example, the
 [Pygments](#pygments) plugin adds a pre-renderer to all markdown files which
@@ -28,31 +28,31 @@ Provides a site helper called `feed` that triggers a feed to be written from a
 MoonScript file when the site is written. First argument is source, second is
 destination.
 
-    ```moon
-    feed "my_feed.moon", "feeds/feed.xml"
-    ```
+```moon
+feed "my_feed.moon", "feeds/feed.xml"
+```
 
 The feed file must return a table of feed entires:
 
-    ```moon
-    -- my_feed.moon
-    require "date"
-    return {
-      format: "markdown"
-      title: "My Site's Title"
-      {
-        title: "The First Post"
-        date: date 2011, 11, 26
-        link: "http://example.com/my-post"
-        description: [[
-          The things I did.
+```moon
+-- my_feed.moon
+date = require "date"
+return {
+  format: "markdown"
+  title: "My Site's Title"
+  {
+    title: "The First Post"
+    date: date 2011, 11, 26
+    link: "http://example.com/my-post"
+    description: [[
+      The things I did.
 
-          * ordered pizza
-          * ate it
-        ]]
-      }
-    }
-    ```
+      * ordered pizza
+      * ate it
+    ]]
+  }
+}
+```
 
 
 When rendering each entry, if a key is missing the entry, it will be searched
@@ -165,24 +165,24 @@ The lifespan of a plugin is started by registering a plugin using
   * `on_register` class method called if exists
 * The site is created...
   * If the *plugin class* has field `type_name`, plugin is saved as an
-	aggregator for that type. (may be a list of types)
+    aggregator for that type. (may be a list of types)
   * `on_site` class method called if exists, passed in site instance
 * The site is prepared to be initialized from function...
   * The *plugin class* is checked for field `mixin_funcs`, which is an optional
-	list of function names in the class that are inserted into the site scope.
-	The functions are guaranteed to be called with *plugin class* as first
-	argument
+    list of function names in the class that are inserted into the site scope.
+    The functions are guaranteed to be called with *plugin class* as first
+    argument
 * `write` is called on the site...
   * for every page...
-	* Page is checked for an `is_a` meta field, if it exists and matches one
-	  of the aggregator types mentioned above, `on_aggregate` is called on the
-	  corresponding *plugin class* with the page instance as the argument
-	* The page is written (rendered)...
-	  * template helpers are extracted from the plugin if it has a
-		`tpl_helpers` field. If there are helpers, the plugin is instanced. The
-		constructor is passed the `tpl_scope`. All the `tpl_helpers` inserted
-		into site scope automatically, and are guaranteed to be called with
-		*plugin instance* as first object
+  * Page is checked for an `is_a` meta field, if it exists and matches one
+    of the aggregator types mentioned above, `on_aggregate` is called on the
+    corresponding *plugin class* with the page instance as the argument
+  * The page is written (rendered)...
+    * template helpers are extracted from the plugin if it has a
+    `tpl_helpers` field. If there are helpers, the plugin is instanced. The
+    constructor is passed the `tpl_scope`. All the `tpl_helpers` inserted
+    into site scope automatically, and are guaranteed to be called with
+    *plugin instance* as first object
   * `write` class method is called if exists
 
 ### Terminology
