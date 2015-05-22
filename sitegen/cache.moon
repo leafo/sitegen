@@ -28,25 +28,25 @@ class CacheTable
     self[name] = value
 
 class Cache
-  @clear = =>
-    c = Cache nil, true
-    c\clear!
-
-  new: (@site, @fname=".sitegen_cache", skip_load=false) =>
+  new: (@site, @fname=".sitegen_cache") =>
     @finalize = {}
-    @cache = {}
-
-    unless skip_load
-      @load_cache!
-
-    CacheTable\inject @cache
 
   load_cache: =>
-    return unless @site.io.exists @fname
-    content = @site.io.read_file @fname
-    @cache, err = unserialize content
-    unless @cache
-      error "could not load cache `#{@fname}`, delete and try again: #{err}"
+    return if @loaded
+    @loaded = true
+
+    @cache = if @site.io.exists @fname
+      content = @site.io.read_file @fname
+
+      cache, err = unserialize content
+
+      unless cache
+        error "could not load cache `#{@fname}`, delete and try again: #{err}"
+      cache
+    else
+      {}
+
+    CacheTable\inject @cache
 
   write: =>
     fn self for fn in *@finalize
@@ -54,13 +54,13 @@ class Cache
     error "failed to serialize cache" if not text
     @site.io.write_file @fname, text
 
-  clear: =>
-    error "FIXXME" -- needs to be relative
-    os.remove @fname
+  set: (...) =>
+    @load_cache!
+    @cache\set ...
 
-  set: (...) => @cache\set ...
-  get: (...) => @cache\get ...
-
+  get: (...) =>
+    @load_cache!
+    @cache\get ...
 
 {
   :Cache

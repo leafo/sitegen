@@ -61,15 +61,21 @@ local Cache
 do
   local _base_0 = {
     load_cache = function(self)
-      if not (self.site.io.exists(self.fname)) then
+      if self.loaded then
         return 
       end
-      local content = self.site.io.read_file(self.fname)
-      local err
-      self.cache, err = unserialize(content)
-      if not (self.cache) then
-        return error("could not load cache `" .. tostring(self.fname) .. "`, delete and try again: " .. tostring(err))
+      self.loaded = true
+      if self.site.io.exists(self.fname) then
+        local content = self.site.io.read_file(self.fname)
+        local cache, err = unserialize(content)
+        if not (cache) then
+          error("could not load cache `" .. tostring(self.fname) .. "`, delete and try again: " .. tostring(err))
+        end
+        self.cache = cache
+      else
+        self.cache = { }
       end
+      return CacheTable:inject(self.cache)
     end,
     write = function(self)
       local _list_0 = self.finalize
@@ -83,33 +89,23 @@ do
       end
       return self.site.io.write_file(self.fname, text)
     end,
-    clear = function(self)
-      error("FIXXME")
-      return os.remove(self.fname)
-    end,
     set = function(self, ...)
+      self:load_cache()
       return self.cache:set(...)
     end,
     get = function(self, ...)
+      self:load_cache()
       return self.cache:get(...)
     end
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, site, fname, skip_load)
+    __init = function(self, site, fname)
       if fname == nil then
         fname = ".sitegen_cache"
       end
-      if skip_load == nil then
-        skip_load = false
-      end
       self.site, self.fname = site, fname
       self.finalize = { }
-      self.cache = { }
-      if not (skip_load) then
-        self:load_cache()
-      end
-      return CacheTable:inject(self.cache)
     end,
     __base = _base_0,
     __name = "Cache"
@@ -122,11 +118,6 @@ do
     end
   })
   _base_0.__class = _class_0
-  local self = _class_0
-  self.clear = function(self)
-    local c = Cache(nil, true)
-    return c:clear()
-  end
   Cache = _class_0
 end
 return {
