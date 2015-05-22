@@ -33,10 +33,13 @@ do
         highlighted = cached
       else
         local out
-        if self.custom_highlighters[lang] then
-          out = assert(self.custom_highlighters[lang](self, code, page), "custom highlighter " .. tostring(lang) .. " failed to return result")
-        else
-          out = self:pre_tag(self:highlight(lang, code), lang)
+        do
+          local custom = self.custom_highlighters[lang]
+          if custom then
+            out = assert(custom(self, code, page), "custom highlighter " .. tostring(lang) .. " failed to return result")
+          else
+            out = self:pre_tag(self:highlight(lang, code), lang)
+          end
         end
         lang_cache[code] = out
         highlighted = out
