@@ -11,7 +11,6 @@ class Renderer
   render: (text, site) =>
     @parse_header text
 
-
 {
   :Renderer
 }
