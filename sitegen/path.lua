@@ -142,8 +142,8 @@ relative_to = function(self, prefix)
   local m = setmetatable((function()
     local _tbl_0 = { }
     for _index_0 = 1, #methods do
-      m = methods[_index_0]
-      _tbl_0[m] = prefixed(m)
+      local meth = methods[_index_0]
+      _tbl_0[meth] = prefixed(meth)
     end
     return _tbl_0
   end)(), {

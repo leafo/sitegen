@@ -95,7 +95,7 @@ relative_to = (prefix) =>
     (path, ...) ->
       @[fn] @.join(prefix, path), ...
 
-  m = setmetatable {m, prefixed(m) for m in *methods}, {
+  m = setmetatable {meth, prefixed(meth) for meth in *methods}, {
     __index: @
   }
 
