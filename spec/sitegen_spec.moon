@@ -118,3 +118,29 @@ describe "sitegen", ->
         "www/index.html"
       }, get_files prefix
 
+
+    it "builds site with lapis renderer", ->
+      write "hello.moon", [[
+import Widget from require "lapis.html"
+
+class Thinger extends Widget
+  content: =>
+    div class: "hi", "Hello world"
+]]
+
+      site\init_from_fn =>
+        add_renderer "sitegen.renderers.lapis"
+
+        add "hello.moon"
+
+      site\write!
+
+      print read "www/hello.html"
+
+      assert.same {
+        ".sitegen_cache"
+        "hello.moon"
+        "www/.gitignore"
+        "www/hello.html"
+      }, get_files prefix
+
