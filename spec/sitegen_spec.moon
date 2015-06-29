@@ -86,7 +86,7 @@ describe "sitegen", ->
       }, get_files prefix
 
 
-    it "should build with a moon file", ->
+    it "builds site with moon renderer", ->
       write "index.moon", [[write "hello world!"]]
 
       site\init_from_fn =>

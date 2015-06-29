@@ -24,6 +24,12 @@ class SiteScope
   disable: (thing) =>
     @site[thing .. "_disabled"] = true
 
+  add_renderer: (renderer) =>
+    if type(renderer) == "string"
+      renderer = require renderer
+
+    table.insert @site.renderers, 1, (assert renderer, "nil renderer")
+
   add: (...) =>
     files, options = flatten_args ...
     for fname in *files

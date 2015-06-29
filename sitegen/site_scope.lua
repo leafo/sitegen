@@ -17,6 +17,12 @@ do
     disable = function(self, thing)
       self.site[thing .. "_disabled"] = true
     end,
+    add_renderer = function(self, renderer)
+      if type(renderer) == "string" then
+        renderer = require(renderer)
+      end
+      return table.insert(self.site.renderers, 1, (assert(renderer, "nil renderer")))
+    end,
     add = function(self, ...)
       local files, options = flatten_args(...)
       for _index_0 = 1, #files do
