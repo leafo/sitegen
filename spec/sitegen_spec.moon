@@ -34,7 +34,10 @@ describe "sitegen", ->
       site = Site sitefile
 
     write = (...) ->
-      assert path.write_file_safe ...
+      (assert path.write_file_safe ...)
+
+    read = (...) ->
+      (assert path.read_file ...)
 
     it "should build an empty site", ->
       site\init_from_fn =>
@@ -82,4 +85,36 @@ describe "sitegen", ->
         "www/world.html"
       }, get_files prefix
 
+
+    it "should build with a moon file", ->
+      write "index.moon", [[write "hello world!"]]
+
+      site\init_from_fn =>
+        @title = "The title"
+        add "index.moon"
+
+      site\write!
+
+      read "www/index.html"
+
+      assert.same [[<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The title</title>
+  
+  
+</head>
+<body>
+  hello world!
+</body>
+</html>
+]], read "www/index.html"
+
+      assert.same {
+        ".sitegen_cache"
+        "index.moon"
+        "www/.gitignore"
+        "www/index.html"
+      }, get_files prefix
 
