@@ -65,26 +65,31 @@ class Templates
       nil
   }
 
-  new: (@dir, _io) =>
+  new: (@site) =>
+    @io = assert @site.io, "site missing io"
+
     @template_cache = {}
     @plugin_helpers = {}
     @base_helpers = extend @plugin_helpers, @base_helpers
-    @io = _io or io
 
   fill: (name, context) =>
+
     tpl = @get_template name
     tpl context
 
+  templates_path: (subpath) =>
+    Path.join @site.config.template_dir, subpath
+
   -- load an html (cosmo) template
   load_html: (name) =>
-    full_name = Path.join @dir, name .. ".html"
+    full_name = @templates_path name .. ".html"
 
     return unless @io.exists full_name
     cosmo.f @io.read_file full_name
 
   -- load a moonscript template
   load_moon: (name) =>
-    full_name = Path.join @dir, name .. ".moon"
+    full_name = @templates_path name .. ".moon"
     return unless @io.exists full_name
 
     fn = moonscript.loadstring @io.read_file(full_name), name
@@ -99,7 +104,7 @@ class Templates
 
   -- load a markdown template
   load_md: (name) =>
-    full_name = Path.join @dir, name .. ".md"
+    full_name = @templates_path name .. ".md"
     return unless @io.exists full_name
 
     MarkdownRenderer = require "sitegen.renderers.markdown"

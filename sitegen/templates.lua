@@ -82,15 +82,18 @@ do
       local tpl = self:get_template(name)
       return tpl(context)
     end,
+    templates_path = function(self, subpath)
+      return Path.join(self.site.config.template_dir, subpath)
+    end,
     load_html = function(self, name)
-      local full_name = Path.join(self.dir, name .. ".html")
+      local full_name = self:templates_path(name .. ".html")
       if not (self.io.exists(full_name)) then
         return 
       end
       return cosmo.f(self.io.read_file(full_name))
     end,
     load_moon = function(self, name)
-      local full_name = Path.join(self.dir, name .. ".moon")
+      local full_name = self:templates_path(name .. ".moon")
       if not (self.io.exists(full_name)) then
         return 
       end
@@ -105,7 +108,7 @@ do
       end
     end,
     load_md = function(self, name)
-      local full_name = Path.join(self.dir, name .. ".md")
+      local full_name = self:templates_path(name .. ".md")
       if not (self.io.exists(full_name)) then
         return 
       end
@@ -152,12 +155,12 @@ do
   }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, dir, _io)
-      self.dir = dir
+    __init = function(self, site)
+      self.site = site
+      self.io = assert(self.site.io, "site missing io")
       self.template_cache = { }
       self.plugin_helpers = { }
       self.base_helpers = extend(self.plugin_helpers, self.base_helpers)
-      self.io = _io or io
     end,
     __base = _base_0,
     __name = "Templates"

@@ -36,8 +36,8 @@ do
       out_dir = "www/",
       write_gitignore = true
     },
-    Templates = function(self, path)
-      return Templates(path, self.io)
+    Templates = function(self)
+      return Templates(self)
     end,
     Page = function(self, ...)
       return Page(self, ...)

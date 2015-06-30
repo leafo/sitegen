@@ -104,7 +104,7 @@ class Page
       generate_date: os.date!
     }
 
-    helpers = @site\template_helpers tpl_scope, self
+    helpers = @site\template_helpers tpl_scope, @
 
     base = Path.basepath @target
     parts = for i = 1, #split(base, "/") - 1 do ".."

@@ -10,7 +10,9 @@ do
     ext = "html",
     pattern = convert_pattern("*.moon"),
     render = function(self, text, page)
-      return "hi", { }
+      local fn = assert(moonscript.loadstring(text))
+      local widget = fn()
+      return widget:render_to_string(), { }
     end
   }
   _base_0.__index = _base_0

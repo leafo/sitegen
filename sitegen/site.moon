@@ -72,7 +72,7 @@ class Site
       if plugin.on_site
         plugin\on_site self
 
-  Templates: (path) => Templates path, @io
+  Templates: => Templates @
   Page: (...) => Page self, ...
 
   plugin_scope: =>
