@@ -26,7 +26,7 @@ import Page from require "sitegen.page"
 -- a webpage
 class Site
   @default_renderers: {
-    -- "sitegen.renderers.markdown"
+    "sitegen.renderers.markdown"
     "sitegen.renderers.html"
     -- "sitegen.renderers.moon"
   }

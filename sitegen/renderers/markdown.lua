@@ -1,26 +1,24 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
-local amp_temp = tostring(os.time()) .. "amp" .. tostring(os.time())
+local amp_temp = "0000sitegen_markdown00amp0000"
 local MarkdownRenderer
 do
-  local _parent_0 = Renderer
+  local _parent_0 = require("sitegen.renderers.html")
   local _base_0 = {
     source_ext = "md",
     ext = "html",
     pre_render = { },
-    render = function(self, text, page)
+    render = function(self, page, md_source)
       local discount = require("discount")
-      local header
-      text, header = self:parse_header(text)
       local _list_0 = self.pre_render
       for _index_0 = 1, #_list_0 do
         local filter = _list_0[_index_0]
-        text = filter(text, page)
+        md_source = filter(md_source, page)
       end
-      text = text:gsub("%$", amp_temp)
-      text = assert(discount(text))
-      text = text:gsub(amp_temp, "$")
-      return text, header
+      md_source = md_source:gsub("%$", amp_temp)
+      local html_source = assert(discount(md_source))
+      html_source = html_source:gsub(amp_temp, "$")
+      return _parent_0.render(self, page, html_source)
     end
   }
   _base_0.__index = _base_0

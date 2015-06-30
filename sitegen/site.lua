@@ -279,6 +279,7 @@ do
   _base_0.__class = _class_0
   local self = _class_0
   self.default_renderers = {
+    "sitegen.renderers.markdown",
     "sitegen.renderers.html"
   }
   Site = _class_0
