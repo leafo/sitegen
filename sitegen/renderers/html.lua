@@ -111,24 +111,25 @@ do
       end
       return extend({ }, cosmo, page.tpl_scope)
     end,
-    load = function(self, source, site)
-      local content_fn, meta = _parent_0.load(self, source, site)
-      local render
-      render = function(page)
-        local cosmo_scope = self:helpers(page)
-        page.tpl_scope.render_source = content_fn()
-        local init_stack = #page.template_stack
-        local out = render_until_complete(page.tpl_scope, (function()
-          return fill_ignoring_pre(page.tpl_scope.render_source, cosmo_scope)
-        end), (function()
-          while #page.template_stack > init_stack do
-            page.template_stack:pop()
-          end
-        end))
-        page.tpl_scope.render_source = nil
-        return out
-      end
-      return render, meta
+    render = function(self, page, html_source)
+      local cosmo_scope = self:helpers(page)
+      page.tpl_scope.render_source = html_source
+      local init_stack = #page.template_stack
+      local out = render_until_complete(page.tpl_scope, (function()
+        return fill_ignoring_pre(page.tpl_scope.render_source, cosmo_scope)
+      end), (function()
+        while #page.template_stack > init_stack do
+          page.template_stack:pop()
+        end
+      end))
+      page.tpl_scope.render_source = nil
+      return out
+    end,
+    load = function(self, source)
+      local content_fn, meta = _parent_0.load(self, source)
+      return (function(page)
+        return self:render(page, content_fn())
+      end), meta
     end
   }
   _base_0.__index = _base_0

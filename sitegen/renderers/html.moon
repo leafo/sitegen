@@ -90,24 +90,23 @@ class HTMLRenderer extends Renderer
     cosmo = { k, ((...) -> v page, ...) for k,v in pairs @cosmo_helpers}
     extend {}, cosmo, page.tpl_scope
 
-  load: (source, site) =>
-    content_fn, meta = super source, site
+  render: (page, html_source) =>
+    cosmo_scope = @helpers page
+    page.tpl_scope.render_source = html_source
 
-    render = (page) ->
-      cosmo_scope = @helpers page
-      page.tpl_scope.render_source = content_fn!
+    -- stack size is remembered so re-renders don't continue to grow the
+    -- template stack
+    init_stack = #page.template_stack
 
-      -- stack size is remembered so re-renders don't continue to grow the
-      -- template stack
-      init_stack = #page.template_stack
+    out = render_until_complete page.tpl_scope,
+      (-> fill_ignoring_pre page.tpl_scope.render_source, cosmo_scope),
+      (-> while #page.template_stack > init_stack do page.template_stack\pop!)
 
-      out = render_until_complete page.tpl_scope,
-        (-> fill_ignoring_pre page.tpl_scope.render_source, cosmo_scope),
-        (-> while #page.template_stack > init_stack do page.template_stack\pop!)
+    page.tpl_scope.render_source = nil
 
-      page.tpl_scope.render_source = nil
+    out
 
-      out
-
-    render, meta
+  load: (source) =>
+    content_fn, meta = super source
+    ((page) -> @render page, content_fn!), meta
 
