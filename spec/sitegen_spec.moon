@@ -47,6 +47,20 @@ describe "sitegen", ->
         "www/.gitignore"
       }, get_files prefix
 
+    it "builds site with html renderer #ddd", ->
+      write "test.html", "hello I an html file"
+      site\init_from_fn =>
+        add "test.html"
+
+      site\write!
+
+      assert.same {
+        ".sitegen_cache"
+        "test.html"
+        "www/.gitignore"
+        "www/test.html"
+      }, get_files prefix
+
     it "should build with a markdown file", ->
       write "test.md", "hello I an *markdown*"
       write "inside/other.md", "more markdown"
@@ -130,12 +144,9 @@ class Thinger extends Widget
 
       site\init_from_fn =>
         add_renderer "sitegen.renderers.lapis"
-
         add "hello.moon"
 
       site\write!
-
-      print read "www/hello.html"
 
       assert.same {
         ".sitegen_cache"
@@ -143,4 +154,15 @@ class Thinger extends Widget
         "www/.gitignore"
         "www/hello.html"
       }, get_files prefix
+
+
+    it "builds site moon template", ->
+      write "index.moon", [[write "this is the inside"]]
+      write "templates/web.moon", [[write "this is the template"]]
+
+      site\init_from_fn =>
+        @title = "The title"
+        add "index.moon"-- , template: "web"
+
+      site\write!
 

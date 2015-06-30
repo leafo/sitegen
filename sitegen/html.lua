@@ -7,7 +7,11 @@ do
 end
 local escape_patt
 escape_patt = require("sitegen.common").escape_patt
-local html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
+local sort_attributes, set_sort_attributes, html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
+sort_attributes = false
+set_sort_attributes = function(v)
+  sort_attributes = v
+end
 html_encode_entities = {
   ['&'] = '&amp;',
   ['<'] = '&lt;',
@@ -85,6 +89,9 @@ render_tag = function(name, inner, attributes)
     if not attr_name:match("^__") then
       table.insert(formatted_attributes, ('%s="%s"'):format(attr_name, encode(attr_value)))
     end
+  end
+  if sort_attributes then
+    table.sort(formatted_attributes)
   end
   if is_list(inner) then
     inner = render_list(inner, "\n")
@@ -262,5 +269,6 @@ return {
   builders = builders,
   escape = escape,
   unescape = unescape,
-  tag = tag
+  tag = tag,
+  sort_attributes = sort_attributes
 }

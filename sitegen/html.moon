@@ -6,6 +6,9 @@ import escape_patt from require "sitegen.common"
 
 local *
 
+sort_attributes = false
+set_sort_attributes = (v) -> sort_attributes = v
+
 html_encode_entities = {
   ['&']: '&amp;'
   ['<']: '&lt;'
@@ -59,6 +62,9 @@ render_tag = (name, inner="", attributes={}) ->
     if not attr_name\match"^__"
       table.insert formatted_attributes,
         ('%s="%s"')\format attr_name, encode attr_value
+
+  if sort_attributes
+    table.sort formatted_attributes
 
   if is_list inner
     inner = render_list inner, "\n"
@@ -133,5 +139,6 @@ build = (fn, delim="\n") ->
   tostring result
 
 {
-  :encode, :decode, :strip_tags, :build, :builders, :escape, :unescape, :tag
+  :encode, :decode, :strip_tags, :build, :builders, :escape, :unescape, :tag,
+  :sort_attributes
 }
