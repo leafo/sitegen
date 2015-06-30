@@ -138,8 +138,13 @@ describe "sitegen", ->
 import Widget from require "lapis.html"
 
 class Thinger extends Widget
+  @options: {
+    title: "cool stuff"
+  }
+
   content: =>
     div class: "hi", "Hello world"
+    div @title
 ]]
 
       site\init_from_fn =>
@@ -155,14 +160,33 @@ class Thinger extends Widget
         "www/hello.html"
       }, get_files prefix
 
+      assert.same [[<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>cool stuff</title>
+
+</head>
+<body>
+  <div class="hi">Hello world</div><div>cool stuff</div>
+</body>
+</html>
+]], read "www/hello.html"
 
     it "builds site moon template", ->
       write "index.moon", [[write "this is the inside"]]
-      write "templates/web.moon", [[write "this is the template"]]
+      write "templates/web.moon", [[
+write "TEMPLATE TOP"
+write @body
+write "TEMPLATE BOTTOM"]]
 
       site\init_from_fn =>
         @title = "The title"
-        add "index.moon"-- , template: "web"
+        add "index.moon", template: "web"
 
       site\write!
+      assert.same [[
+TEMPLATE TOP
+this is the inside
+TEMPLATE BOTTOM]], read "www/index.html"
 

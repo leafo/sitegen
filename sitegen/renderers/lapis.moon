@@ -2,15 +2,14 @@ import Renderer from require "sitegen.renderer"
 
 moonscript = require "moonscript.base"
 
-import convert_pattern from require "sitegen.common"
-
 class LapisRenderer extends Renderer
+  source_ext: "moon"
   ext: "html"
-  pattern: convert_pattern "*.moon"
 
-  render: (text, page) =>
-    fn = assert moonscript.loadstring text
+  load: (source) =>
+    fn = assert moonscript.loadstring source
     widget = fn!
-    widget\render_to_string!, {}
-
-
+    ((page) ->
+      w = widget(:page)
+      w\include_helper page.tpl_scope
+      w\render_to_string!), widget.options

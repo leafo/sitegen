@@ -1,18 +1,22 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
 local moonscript = require("moonscript.base")
-local convert_pattern
-convert_pattern = require("sitegen.common").convert_pattern
 local LapisRenderer
 do
   local _parent_0 = Renderer
   local _base_0 = {
+    source_ext = "moon",
     ext = "html",
-    pattern = convert_pattern("*.moon"),
-    render = function(self, text, page)
-      local fn = assert(moonscript.loadstring(text))
+    load = function(self, source)
+      local fn = assert(moonscript.loadstring(source))
       local widget = fn()
-      return widget:render_to_string(), { }
+      return (function(page)
+        local w = widget({
+          page = page
+        })
+        w:include_helper(page.tpl_scope)
+        return w:render_to_string()
+      end), widget.options
     end
   }
   _base_0.__index = _base_0
