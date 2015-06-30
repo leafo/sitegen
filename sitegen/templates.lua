@@ -40,6 +40,13 @@ do
           break
         end
       end
+      do
+        local default = not self.template_cache[name] and self.defaults[name]
+        if default then
+          local HTMLRenderer = require("sitegen.renderers.html")
+          self.template_cache[name] = HTMLRenderer:load(default)
+        end
+      end
       return self.template_cache[name]
     end
   }

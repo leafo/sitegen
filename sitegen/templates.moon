@@ -33,7 +33,9 @@ class Templates
         @template_cache[name] = renderer\load @io.read_file fname
         break
 
-    -- TODO: load default here
+    if default = not @template_cache[name] and @defaults[name]
+      HTMLRenderer = require "sitegen.renderers.html"
+      @template_cache[name] = HTMLRenderer\load(default)
 
     @template_cache[name]
 
