@@ -2,6 +2,8 @@ import Renderer from require "sitegen.renderer"
  
 amp_temp = "0000sitegen_markdown00amp0000"
 
+-- Converts input from markdown, then passes through cosmo filter from HTML
+-- renderer
 class MarkdownRenderer extends require "sitegen.renderers.html"
   source_ext: "md"
   ext: "html"

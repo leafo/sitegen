@@ -8,39 +8,39 @@ class MoonRenderer extends Renderer
   source_ext: "moon"
   ext: "html"
 
-  -- this does some crazy chaining
-  render: (text, page) =>
-    scopes = {}
-    meta = {}
+  load: (source) =>
+    content_fn, meta = super source
 
-    context = setmetatable {}, {
-      __index: (key) =>
-        for i=#scopes,1,-1
-          val = scopes[i][key]
-          return val if val
-    }
+    render = (page) ->
+      scopes = {}
+      fn = assert moonscript.loadstring content_fn!
 
-    base_scope = setmetatable {
-      _context: -> context
+      context = setmetatable {}, {
+        __index: (key) =>
+          for i=#scopes,1,-1
+            val = scopes[i][key]
+            return val if val
+      }
 
-      set: (name, value) -> meta[name] = value
-      get: (name) -> meta[name]
+      base_scope = setmetatable {
+        _context: -> context
+        self: page.tpl_scope
+        page: page
 
-      -- appends a scope to __index of the context
-      format: (name) ->
-        formatter = if type(name) == "string"
-          require name
-        else
-          name
+        -- appends a scope to __index of the context
+        format: (formatter) ->
+          if type(formatter) == "string"
+            formatter = require formatter
 
-        insert scopes, formatter.make_context page, context
-    }, __index: _G
+          insert scopes, formatter.make_context page, context
+      }, __index: _G
 
-    insert scopes, base_scope
-    context.format "sitegen.formatters.default"
+      insert scopes, base_scope
+      context.format "sitegen.formatters.default"
 
-    fn = moonscript.loadstring text
-    setfenv fn, context
-    fn!
-    context.render!, meta
+      setfenv fn, context
+      fn!
+      context.render!
+
+    render, meta
 

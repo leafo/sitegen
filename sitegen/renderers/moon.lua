@@ -9,47 +9,44 @@ do
   local _base_0 = {
     source_ext = "moon",
     ext = "html",
-    render = function(self, text, page)
-      local scopes = { }
-      local meta = { }
-      local context = setmetatable({ }, {
-        __index = function(self, key)
-          for i = #scopes, 1, -1 do
-            local val = scopes[i][key]
-            if val then
-              return val
+    load = function(self, source)
+      local content_fn, meta = _parent_0.load(self, source)
+      local render
+      render = function(page)
+        local scopes = { }
+        local fn = assert(moonscript.loadstring(content_fn()))
+        local context = setmetatable({ }, {
+          __index = function(self, key)
+            for i = #scopes, 1, -1 do
+              local val = scopes[i][key]
+              if val then
+                return val
+              end
             end
           end
-        end
-      })
-      local base_scope = setmetatable({
-        _context = function()
-          return context
-        end,
-        set = function(name, value)
-          meta[name] = value
-        end,
-        get = function(name)
-          return meta[name]
-        end,
-        format = function(name)
-          local formatter
-          if type(name) == "string" then
-            formatter = require(name)
-          else
-            formatter = name
+        })
+        local base_scope = setmetatable({
+          _context = function()
+            return context
+          end,
+          self = page.tpl_scope,
+          page = page,
+          format = function(formatter)
+            if type(formatter) == "string" then
+              formatter = require(formatter)
+            end
+            return insert(scopes, formatter.make_context(page, context))
           end
-          return insert(scopes, formatter.make_context(page, context))
-        end
-      }, {
-        __index = _G
-      })
-      insert(scopes, base_scope)
-      context.format("sitegen.formatters.default")
-      local fn = moonscript.loadstring(text)
-      setfenv(fn, context)
-      fn()
-      return context.render(), meta
+        }, {
+          __index = _G
+        })
+        insert(scopes, base_scope)
+        context.format("sitegen.formatters.default")
+        setfenv(fn, context)
+        fn()
+        return context.render()
+      end
+      return render, meta
     end
   }
   _base_0.__index = _base_0

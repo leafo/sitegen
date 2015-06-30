@@ -28,7 +28,7 @@ class Site
   @default_renderers: {
     "sitegen.renderers.markdown"
     "sitegen.renderers.html"
-    -- "sitegen.renderers.moon"
+    "sitegen.renderers.moon"
   }
 
   __tostring: => "<Site>"

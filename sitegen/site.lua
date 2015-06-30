@@ -280,7 +280,8 @@ do
   local self = _class_0
   self.default_renderers = {
     "sitegen.renderers.markdown",
-    "sitegen.renderers.html"
+    "sitegen.renderers.html",
+    "sitegen.renderers.moon"
   }
   Site = _class_0
   return _class_0
