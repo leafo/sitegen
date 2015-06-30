@@ -165,7 +165,8 @@ class Thinger extends Widget
 <head>
   <meta charset="UTF-8">
   <title>cool stuff</title>
-
+  
+  
 </head>
 <body>
   <div class="hi">Hello world</div><div>cool stuff</div>
