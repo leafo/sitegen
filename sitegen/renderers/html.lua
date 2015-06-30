@@ -8,9 +8,10 @@ do
   fill_ignoring_pre, throw_error, flatten_args, pass_error = _obj_0.fill_ignoring_pre, _obj_0.throw_error, _obj_0.flatten_args, _obj_0.pass_error
 end
 local render_until_complete
-render_until_complete = function(tpl_scope, render_fn)
+render_until_complete = function(tpl_scope, render_fn, reset_fn)
   local out = nil
   while true do
+    reset_fn()
     local co = coroutine.create(function()
       out = render_fn()
       return nil
@@ -33,6 +34,7 @@ do
     ext = "html",
     cosmo_helpers = {
       render = function(self, args)
+        error("needs to be updated")
         local name = unpack(args)
         return self.site:Templates("."):fill(name, self.tpl_scope)
       end,
@@ -115,9 +117,14 @@ do
       render = function(page)
         local cosmo_scope = self:helpers(page)
         page.tpl_scope.render_source = content_fn()
-        local out = render_until_complete(page.tpl_scope, function()
+        local init_stack = #page.template_stack
+        local out = render_until_complete(page.tpl_scope, (function()
           return fill_ignoring_pre(page.tpl_scope.render_source, cosmo_scope)
-        end)
+        end), (function()
+          while #page.template_stack > init_stack do
+            page.template_stack:pop()
+          end
+        end))
         page.tpl_scope.render_source = nil
         return out
       end

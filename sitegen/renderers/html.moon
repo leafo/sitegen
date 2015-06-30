@@ -13,9 +13,10 @@ import
 -- entire source. This triggers the render to happen again
 -- with the updated tpl_scope.
 -- see indexer
-render_until_complete = (tpl_scope, render_fn) ->
+render_until_complete = (tpl_scope, render_fn, reset_fn) ->
   out = nil
   while true
+    reset_fn!
     co = coroutine.create ->
       out = render_fn!
       nil
@@ -37,6 +38,7 @@ class HTMLRenderer extends Renderer
   -- all of these receive the page as the first argument
   cosmo_helpers: {
     render: (args) => -- render another page in current scope
+      error "needs to be updated"
       name = unpack args
       @site\Templates"."\fill name, @tpl_scope
 
@@ -45,8 +47,6 @@ class HTMLRenderer extends Renderer
       res = MarkdownRenderer\render args[1] or ""
       fill_ignoring_pre res, @tpl_scope
 
-    -- TODO: render_until_complete will cause stack to be pushed multiple
-    -- times
     wrap: (args) =>
       tpl_name = unpack args
       throw_error "missing template name" if not tpl_name
@@ -97,8 +97,13 @@ class HTMLRenderer extends Renderer
       cosmo_scope = @helpers page
       page.tpl_scope.render_source = content_fn!
 
-      out = render_until_complete page.tpl_scope, ->
-        fill_ignoring_pre page.tpl_scope.render_source, cosmo_scope
+      -- stack size is remembered so re-renders don't continue to grow the
+      -- template stack
+      init_stack = #page.template_stack
+
+      out = render_until_complete page.tpl_scope,
+        (-> fill_ignoring_pre page.tpl_scope.render_source, cosmo_scope),
+        (-> while #page.template_stack > init_stack do page.template_stack\pop!)
 
       page.tpl_scope.render_source = nil
 
