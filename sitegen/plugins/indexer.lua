@@ -94,7 +94,7 @@ build_from_html = function(body, meta, opts)
       '>'
     })
   end
-  require("lpeg")
+  lpeg = require("lpeg")
   local P, R, Cmt, Cs, Cg, Cb, C
   P, R, Cmt, Cs, Cg, Cb, C = lpeg.P, lpeg.R, lpeg.Cmt, lpeg.Cs, lpeg.Cg, lpeg.Cb, lpeg.C
   local nums = R("19")
@@ -120,9 +120,10 @@ do
       "index"
     },
     index = function(self)
-      if not self.current_index then
+      if not (self.current_index) then
+        assert(self.page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
-        body, self.current_index = build_from_html(self.tpl_scope.body)
+        body, self.current_index = build_from_html(self.page.tpl_scope.render_source)
         coroutine.yield(body)
       end
       return render_index(self.current_index)
@@ -131,8 +132,8 @@ do
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, tpl_scope)
-      self.tpl_scope = tpl_scope
+    __init = function(self, page)
+      self.page = page
       self.current_index = nil
     end,
     __base = _base_0,

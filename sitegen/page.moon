@@ -13,36 +13,29 @@ import
   escape_patt
   from require "sitegen.common"
 
--- template_helpers can yield if they decide to change the
--- entire body. This triggers the render to happen again
--- with the updated tpl_scope.
--- see indexer
-render_until_complete = (tpl_scope, render_fn) ->
-  out = nil
-  while true
-    co = coroutine.create ->
-      out = render_fn!
-      nil
-
-    success, altered_body = assert coroutine.resume co
-    pass_error altered_body
-
-    if altered_body
-      tpl_scope.body = altered_body
-    else
-      break
-  out
 
 -- an individual page
+-- source: the subpath for the page's source
+-- target: where the output of the page is written
+-- meta: the parsed header merged with any additional page options
 class Page
   __tostring: => table.concat { "<Page '",@source,"'>" }
 
   new: (@site, @source) =>
     @renderer = @site\renderer_for @source
 
+    source_text = @read!
+    filter = @site\filter_for @source
+    filter_opts = {}
+
+    if filter
+       source_text = filter(filter_opts, source_text) or source_text
+
     -- extract metadata
-    @raw_text, @meta = @renderer\render @_read!, self
+    @render_fn, @meta = @renderer\load source_text, @
     @meta = @meta or {}
+
+    @merge_meta filter_opts
 
     if override_meta = @site.scope.meta[@source]
       @merge_meta override_meta
@@ -51,15 +44,6 @@ class Page
       Path.join @site.config.out_dir, @meta.target .. "." .. @renderer.ext
     else
       @site\output_path_for @source, @renderer.ext
-
-    filter = @site\filter_for @source
-    if filter
-      @raw_text = filter(@meta, @raw_text) or @raw_text
-
-    -- expose meta in self
-    cls = getmetatable self
-    extend self, (key) => cls[key] or @meta[key]
-    getmetatable(self).__tostring = Page.__tostring
 
   merge_meta: (tbl) =>
     for k,v in pairs tbl
@@ -80,8 +64,7 @@ class Page
 
   -- write the file, return path to written file
   write: =>
-    content = @_render!
-
+    content = @render!
     assert @site.io.write_file_safe @target, content
 
     source = @site.io.full_path @source
@@ -91,51 +74,51 @@ class Page
     @target
 
   -- read the source
-  _read: =>
+  read: =>
     text = nil
     with out = @site.io.read_file @source
       unless out
         throw_error "failed to read input file: " .. @source
 
-  _render: =>
-    return @_content if @_content
-    tpl_scope = {
-      body: @raw_text
-      generate_date: os.date!
-    }
+  plugin_template_helpers: =>
+    helpers = {}
 
-    helpers = @site\template_helpers tpl_scope, @
+    for plugin in @site.plugins\each!
+      continue unless plugin.tpl_helpers
+      p = plugin @
+      for helper_name in *plugin.tpl_helpers
+        helpers[helper_name] = (...) ->
+          p[helper_name] p, ...
+
+    helpers
+
+  render: =>
+    return @_content if @_content
 
     base = Path.basepath @target
     parts = for i = 1, #split(base, "/") - 1 do ".."
     root = table.concat parts, "/"
     root = "." if root == ""
-    helpers.root = root
 
-    -- templates
     @template_stack = Stack!
 
-    tpl_scope = extend tpl_scope, @meta, @site.user_vars, helpers
-    @tpl_scope = tpl_scope
+    @tpl_scope = extend {
+      generate_date: os.date!
+      :root
+    }, @meta, @site.user_vars, @plugin_template_helpers!
 
-    tpl_scope.body = render_until_complete tpl_scope, ->
-      fill_ignoring_pre tpl_scope.body, tpl_scope
+    @_content = assert @render_fn(@), "failed to get content from renderer"
 
-    -- find the wrapping template
+    -- wrap the page in template
     if @meta.template != false
       @template_stack\push @meta.template or @site.config.default_template
 
     while #@template_stack > 0
       tpl_name = @template_stack\pop!
-      stack_height = #@template_stack
-      tpl_scope.body = render_until_complete tpl_scope, ->
-        -- unroll any templates pushed from previous render attempt
-        while #@template_stack > stack_height
-          @template_stack\pop!
+      if template = @site.templates\find_by_name tpl_name
+        @tpl_scope.body = @_content
+        @_content = template @
 
-        @site.templates\fill tpl_name, tpl_scope
-
-    @_content = tpl_scope.body
     @_content
 
 {

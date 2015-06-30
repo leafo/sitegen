@@ -1,8 +1,3 @@
-local default_renderers = {
-  "sitegen.renderers.markdown",
-  "sitegen.renderers.html",
-  "sitegen.renderers.moon"
-}
 local concat
 concat = table.concat
 local extend, run_with_scope, bind_methods
@@ -79,7 +74,7 @@ do
       local _list_0 = self.renderers
       for _index_0 = 1, #_list_0 do
         local renderer = _list_0[_index_0]
-        if renderer:can_render(path) then
+        if renderer:can_load(path) then
           return renderer
         end
       end
@@ -133,7 +128,7 @@ do
       end
       return nil
     end,
-    template_helpers = function(self, tpl_scope, page)
+    plugin_template_helpers = function(self, page)
       local helpers = { }
       for plugin in self.plugins:each() do
         if plugin.tpl_helpers then
@@ -147,18 +142,6 @@ do
           end
         end
       end
-      local base = setmetatable({ }, {
-        __index = function(_, name)
-          local fn = self.templates.base_helpers[name]
-          if type(fn) ~= "function" then
-            return fn
-          else
-            return function(...)
-              return fn(page, ...)
-            end
-          end
-        end
-      })
       return extend(helpers, base)
     end,
     write = function(self, filter_files)
@@ -257,7 +240,17 @@ do
       self.cache = Cache(self)
       self.user_vars = { }
       self.written_files = { }
-      self.renderers = self.__class:load_renderers()
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = self.__class.default_renderers
+        for _index_0 = 1, #_list_0 do
+          local rmod = _list_0[_index_0]
+          _accum_0[_len_0] = require(rmod)(self)
+          _len_0 = _len_0 + 1
+        end
+        self.renderers = _accum_0
+      end
       self.plugins = OrderSet(require("sitegen").plugins)
       self.aggregators = { }
       for plugin in self.plugins:each() do
@@ -285,16 +278,9 @@ do
   })
   _base_0.__class = _class_0
   local self = _class_0
-  self.load_renderers = function(self)
-    local _accum_0 = { }
-    local _len_0 = 1
-    for _index_0 = 1, #default_renderers do
-      local rname = default_renderers[_index_0]
-      _accum_0[_len_0] = require(rname)
-      _len_0 = _len_0 + 1
-    end
-    return _accum_0
-  end
+  self.default_renderers = {
+    "sitegen.renderers.html"
+  }
   Site = _class_0
   return _class_0
 end

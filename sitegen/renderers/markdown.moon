@@ -1,12 +1,11 @@
 import Renderer from require "sitegen.renderer"
-
-import convert_pattern from require "sitegen.common"
-
+ 
 amp_temp = "#{os.time!}amp#{os.time!}"
 
 class MarkdownRenderer extends Renderer
+  source_ext: "md"
   ext: "html"
-  pattern: convert_pattern "*.md"
+
   pre_render: {}
 
   render: (text, page) =>

@@ -58,7 +58,7 @@ build_from_html = (body, meta, opts={}) ->
       '<h', i, '><a name="',slug,'"></a>', body, '</h', i, '>'
     }
 
-  require "lpeg"
+  lpeg = require "lpeg"
   import P, R, Cmt, Cs, Cg, Cb, C from lpeg
 
   nums = R("19")
@@ -82,12 +82,15 @@ class IndexerPlugin extends Plugin
 
   tpl_helpers: { "index" }
 
-  new: (@tpl_scope) =>
+  -- TODO: plugins should all be instantiated on the site, not the page
+  new: (@page) =>
     @current_index = nil
 
   index: =>
-    if not @current_index
-      body, @current_index = build_from_html @tpl_scope.body
+    unless @current_index
+      assert @page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)"
+      body, @current_index = build_from_html @page.tpl_scope.render_source
       coroutine.yield body
+
     render_index @current_index
 

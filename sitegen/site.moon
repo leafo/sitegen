@@ -1,10 +1,4 @@
 
-default_renderers = {
-  "sitegen.renderers.markdown"
-  "sitegen.renderers.html"
-  "sitegen.renderers.moon"
-}
-
 import concat from table
 
 import
@@ -31,8 +25,11 @@ import Page from require "sitegen.page"
 
 -- a webpage
 class Site
-  @load_renderers: =>
-    [require rname for rname in *default_renderers]
+  @default_renderers: {
+    -- "sitegen.renderers.markdown"
+    "sitegen.renderers.html"
+    -- "sitegen.renderers.moon"
+  }
 
   __tostring: => "<Site>"
 
@@ -58,7 +55,7 @@ class Site
     @user_vars = {}
     @written_files = {}
 
-    @renderers = @@load_renderers!
+    @renderers = [require(rmod) @ for rmod in *@@default_renderers]
 
     @plugins = OrderSet require("sitegen").plugins
 
@@ -101,7 +98,7 @@ class Site
 
   renderer_for: (path) =>
     for renderer in *@renderers
-      if renderer\can_render path
+      if renderer\can_load path
         return renderer
 
     throw_error "don't know how to render: " .. path
@@ -147,7 +144,7 @@ class Site
 
   -- get template helpers from plugins
   -- template plugins instances with tpl_scope
-  template_helpers: (tpl_scope, page) =>
+  plugin_template_helpers: (page) =>
     helpers = {}
     for plugin in @plugins\each!
       if plugin.tpl_helpers
@@ -155,16 +152,6 @@ class Site
         for helper_name in *plugin.tpl_helpers
           helpers[helper_name] = (...) ->
             p[helper_name] p, ...
-
-    -- give the page to base helpers as first arg
-    base = setmetatable {}, {
-      __index: (_, name) ->
-        fn = @templates.base_helpers[name]
-        if type(fn) != "function"
-          fn
-        else
-          (...) -> fn page, ...
-    }
 
     extend helpers, base
 

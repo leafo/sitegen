@@ -1,16 +1,14 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
 local moonscript = require("moonscript.base")
-local convert_pattern
-convert_pattern = require("sitegen.common").convert_pattern
 local insert
 insert = table.insert
 local MoonRenderer
 do
   local _parent_0 = Renderer
   local _base_0 = {
+    source_ext = "moon",
     ext = "html",
-    pattern = convert_pattern("*.moon"),
     render = function(self, text, page)
       local scopes = { }
       local meta = { }

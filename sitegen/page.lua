@@ -7,24 +7,6 @@ do
   local _obj_0 = require("sitegen.common")
   Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt = _obj_0.Stack, _obj_0.fill_ignoring_pre, _obj_0.split, _obj_0.throw_error, _obj_0.pass_error, _obj_0.escape_patt
 end
-local render_until_complete
-render_until_complete = function(tpl_scope, render_fn)
-  local out = nil
-  while true do
-    local co = coroutine.create(function()
-      out = render_fn()
-      return nil
-    end)
-    local success, altered_body = assert(coroutine.resume(co))
-    pass_error(altered_body)
-    if altered_body then
-      tpl_scope.body = altered_body
-    else
-      break
-    end
-  end
-  return out
-end
 local Page
 do
   local _base_0 = {
@@ -65,14 +47,14 @@ do
       end)
     end,
     write = function(self)
-      local content = self:_render()
+      local content = self:render()
       assert(self.site.io.write_file_safe(self.target, content))
       local source = self.site.io.full_path(self.source)
       local target = self.site.io.full_path(self.target)
       self.site.logger:render(source, target)
       return self.target
     end,
-    _read = function(self)
+    read = function(self)
       local text = nil
       do
         local out = self.site.io.read_file(self.source)
@@ -82,15 +64,35 @@ do
         return out
       end
     end,
-    _render = function(self)
+    plugin_template_helpers = function(self)
+      local helpers = { }
+      for plugin in self.site.plugins:each() do
+        local _continue_0 = false
+        repeat
+          if not (plugin.tpl_helpers) then
+            _continue_0 = true
+            break
+          end
+          local p = plugin(self)
+          local _list_0 = plugin.tpl_helpers
+          for _index_0 = 1, #_list_0 do
+            local helper_name = _list_0[_index_0]
+            helpers[helper_name] = function(...)
+              return p[helper_name](p, ...)
+            end
+          end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
+        end
+      end
+      return helpers
+    end,
+    render = function(self)
       if self._content then
         return self._content
       end
-      local tpl_scope = {
-        body = self.raw_text,
-        generate_date = os.date()
-      }
-      local helpers = self.site:template_helpers(tpl_scope, self)
       local base = Path.basepath(self.target)
       local parts
       do
@@ -106,27 +108,25 @@ do
       if root == "" then
         root = "."
       end
-      helpers.root = root
       self.template_stack = Stack()
-      tpl_scope = extend(tpl_scope, self.meta, self.site.user_vars, helpers)
-      self.tpl_scope = tpl_scope
-      tpl_scope.body = render_until_complete(tpl_scope, function()
-        return fill_ignoring_pre(tpl_scope.body, tpl_scope)
-      end)
+      self.tpl_scope = extend({
+        generate_date = os.date(),
+        root = root
+      }, self.meta, self.site.user_vars, self:plugin_template_helpers())
+      self._content = assert(self:render_fn(self), "failed to get content from renderer")
       if self.meta.template ~= false then
         self.template_stack:push(self.meta.template or self.site.config.default_template)
       end
       while #self.template_stack > 0 do
         local tpl_name = self.template_stack:pop()
-        local stack_height = #self.template_stack
-        tpl_scope.body = render_until_complete(tpl_scope, function()
-          while #self.template_stack > stack_height do
-            self.template_stack:pop()
+        do
+          local template = self.site.templates:find_by_name(tpl_name)
+          if template then
+            self.tpl_scope.body = self._content
+            self._content = template(self)
           end
-          return self.site.templates:fill(tpl_name, tpl_scope)
-        end)
+        end
       end
-      self._content = tpl_scope.body
       return self._content
     end
   }
@@ -135,8 +135,15 @@ do
     __init = function(self, site, source)
       self.site, self.source = site, source
       self.renderer = self.site:renderer_for(self.source)
-      self.raw_text, self.meta = self.renderer:render(self:_read(), self)
+      local source_text = self:read()
+      local filter = self.site:filter_for(self.source)
+      local filter_opts = { }
+      if filter then
+        source_text = filter(filter_opts, source_text) or source_text
+      end
+      self.render_fn, self.meta = self.renderer:load(source_text, self)
       self.meta = self.meta or { }
+      self:merge_meta(filter_opts)
       do
         local override_meta = self.site.scope.meta[self.source]
         if override_meta then
@@ -148,15 +155,6 @@ do
       else
         self.target = self.site:output_path_for(self.source, self.renderer.ext)
       end
-      local filter = self.site:filter_for(self.source)
-      if filter then
-        self.raw_text = filter(self.meta, self.raw_text) or self.raw_text
-      end
-      local cls = getmetatable(self)
-      extend(self, function(self, key)
-        return cls[key] or self.meta[key]
-      end)
-      getmetatable(self).__tostring = Page.__tostring
     end,
     __base = _base_0,
     __name = "Page"

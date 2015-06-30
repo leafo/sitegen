@@ -33,6 +33,9 @@ do
     consumes_pages = false,
     type_name = "blog_post",
     on_site = function(self, site)
+      do
+        return 
+      end
       site.templates.plugin_helpers.blog = {
         query = function(arg)
           local _list_0 = self:query()

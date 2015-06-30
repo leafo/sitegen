@@ -2,12 +2,11 @@ import Renderer from require "sitegen.renderer"
 
 moonscript = require "moonscript.base"
 
-import convert_pattern from require "sitegen.common"
 import insert from table
 
 class MoonRenderer extends Renderer
+  source_ext: "moon"
   ext: "html"
-  pattern: convert_pattern "*.moon"
 
   -- this does some crazy chaining
   render: (text, page) =>

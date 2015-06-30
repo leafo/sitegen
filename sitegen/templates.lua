@@ -13,141 +13,31 @@ local Templates
 do
   local _base_0 = {
     defaults = require("sitegen.default.templates"),
-    base_helpers = {
-      render = function(self, args)
-        local name = unpack(args)
-        return self.site:Templates("."):fill(name, self.tpl_scope)
-      end,
-      markdown = function(self, args)
-        local MarkdownRenderer = require("sitegen.renderers.markdown")
-        local res = MarkdownRenderer:render(args[1] or "")
-        return fill_ignoring_pre(res, self.tpl_scope)
-      end,
-      wrap = function(self, args)
-        local tpl_name = unpack(args)
-        if not tpl_name then
-          throw_error("missing template name")
-        end
-        self.template_stack:push(tpl_name)
-        return ""
-      end,
-      neq = function(self, args)
-        if args[1] ~= args[2] then
-          cosmo.yield({ })
-        else
-          cosmo.yield({
-            _template = 2
-          })
-        end
-        return nil
-      end,
-      eq = function(self, args)
-        if args[1] == args[2] then
-          cosmo.yield({ })
-        else
-          cosmo.yield({
-            _template = 2
-          })
-        end
-        return nil
-      end,
-      ["if"] = function(self, args)
-        if self.tpl_scope[args[1]] then
-          cosmo.yield({ })
-        end
-        return nil
-      end,
-      each = function(self, args)
-        local list, name = unpack(args)
-        if list then
-          list = flatten_args(list)
-          for _index_0 = 1, #list do
-            local item = list[_index_0]
-            cosmo.yield({
-              [(name)] = item
-            })
-          end
-        end
-        return nil
-      end,
-      is_page = function(self, args)
-        local page_pattern = unpack(args)
-        if self.source:match(page_pattern) then
-          cosmo.yield({ })
-        end
-        return nil
-      end
-    },
-    fill = function(self, name, context)
-      local tpl = self:get_template(name)
-      return tpl(context)
-    end,
     templates_path = function(self, subpath)
       return Path.join(self.site.config.template_dir, subpath)
     end,
-    load_html = function(self, name)
-      local full_name = self:templates_path(name .. ".html")
-      if not (self.io.exists(full_name)) then
-        return 
+    find_by_name = function(self, name)
+      if self.template_cache[name] then
+        return self.template_cache[name]
       end
-      return cosmo.f(self.io.read_file(full_name))
-    end,
-    load_moon = function(self, name)
-      local full_name = self:templates_path(name .. ".moon")
-      if not (self.io.exists(full_name)) then
-        return 
-      end
-      local fn = moonscript.loadstring(self.io.read_file(full_name), name)
-      return function(scope)
-        local tpl_fn = loadstring(string.dump(fn))
-        local source_env = getfenv(tpl_fn)
-        setfenv(tpl_fn, {
-          scope = scope
-        })
-        return html.build(tpl_fn)
-      end
-    end,
-    load_md = function(self, name)
-      local full_name = self:templates_path(name .. ".md")
-      if not (self.io.exists(full_name)) then
-        return 
-      end
-      local MarkdownRenderer = require("sitegen.renderers.markdown")
-      html = MarkdownRenderer:render(self.io.read_file(full_name))
-      return function(scope)
-        return fill_ignoring_pre(html, scope)
-      end
-    end,
-    get_template = function(self, name)
-      if not self.template_cache[name] then
-        local tpl
-        local base, ext = name:match("^(.-)%.([^/]*)$")
-        if ext then
-          local fn = self["load_" .. ext]
-          tpl = fn and fn(self, base)
-        end
-        if not tpl then
-          local _list_0 = {
-            "html",
-            "moon",
-            "md"
-          }
-          for _index_0 = 1, #_list_0 do
-            local kind = _list_0[_index_0]
-            tpl = self["load_" .. kind](self, name)
-            if tpl then
-              break
-            end
+      local _list_0 = self.site.renderers
+      for _index_0 = 1, #_list_0 do
+        local _continue_0 = false
+        repeat
+          local renderer = _list_0[_index_0]
+          if not (renderer.source_ext) then
+            _continue_0 = true
+            break
           end
-        end
-        if tpl then
-          self.template_cache[name] = tpl
-        else
-          if self.defaults[name] then
-            self.template_cache[name] = cosmo.f(self.defaults[name])
-          else
-            self.template_cache[name] = throw_error("can't find template: " .. name)
+          local fname = self:templates_path(tostring(name) .. "." .. tostring(renderer.source_ext))
+          if self.io.exists(fname) then
+            self.template_cache[name] = renderer:load(self.io.read_file(fname))
+            break
           end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
         end
       end
       return self.template_cache[name]
@@ -159,8 +49,6 @@ do
       self.site = site
       self.io = assert(self.site.io, "site missing io")
       self.template_cache = { }
-      self.plugin_helpers = { }
-      self.base_helpers = extend(self.plugin_helpers, self.base_helpers)
     end,
     __base = _base_0,
     __name = "Templates"

@@ -25,6 +25,7 @@ class BlogPlugin extends Plugin
   type_name: "blog_post"
 
   on_site: (site) =>
+    do return
     -- register template scope
     site.templates.plugin_helpers.blog = {
       query: (arg) ->
