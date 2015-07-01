@@ -18,9 +18,10 @@ class Templates
   new: (@site) =>
     @io = assert @site.io, "site missing io"
     @template_cache = {}
+    @search_dir = @site.config.template_dir
 
   templates_path: (subpath) =>
-    Path.join @site.config.template_dir, subpath
+    Path.join @search_dir, subpath
 
   find_by_name: (name) =>
     if @template_cache[name]

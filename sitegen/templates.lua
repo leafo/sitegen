@@ -14,7 +14,7 @@ do
   local _base_0 = {
     defaults = require("sitegen.default.templates"),
     templates_path = function(self, subpath)
-      return Path.join(self.site.config.template_dir, subpath)
+      return Path.join(self.search_dir, subpath)
     end,
     find_by_name = function(self, name)
       if self.template_cache[name] then
@@ -56,6 +56,7 @@ do
       self.site = site
       self.io = assert(self.site.io, "site missing io")
       self.template_cache = { }
+      self.search_dir = self.site.config.template_dir
     end,
     __base = _base_0,
     __name = "Templates"

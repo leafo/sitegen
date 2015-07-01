@@ -34,9 +34,11 @@ do
     ext = "html",
     cosmo_helpers = {
       render = function(self, args)
-        error("needs to be updated")
-        local name = unpack(args)
-        return self.site:Templates("."):fill(name, self.tpl_scope)
+        local name = assert(unpack(args), "missing template name for render")
+        local templates = self.site:Templates()
+        templates.search_dir = "."
+        templates.defaults = { }
+        return assert(templates:find_by_name(args[1]), "failed to find template: " .. tostring(name))(self)
       end,
       markdown = function(self, args)
         local md = self.site:get_renderer("sitegen.renderers.markdown")
@@ -112,6 +114,7 @@ do
     end,
     render = function(self, page, html_source)
       local cosmo_scope = self:helpers(page)
+      local old_render_source = page.tpl_scope.render_source
       page.tpl_scope.render_source = html_source
       local init_stack = #page.template_stack
       local out = render_until_complete(page.tpl_scope, (function()
@@ -121,7 +124,7 @@ do
           page.template_stack:pop()
         end
       end))
-      page.tpl_scope.render_source = nil
+      page.tpl_scope.render_source = old_render_source
       return out
     end,
     load = function(self, source)

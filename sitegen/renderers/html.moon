@@ -38,9 +38,13 @@ class HTMLRenderer extends Renderer
   -- all of these receive the page as the first argument
   cosmo_helpers: {
     render: (args) => -- render another page in current scope
-      error "needs to be updated"
-      name = unpack args
-      @site\Templates"."\fill name, @tpl_scope
+      name = assert unpack(args), "missing template name for render"
+
+      templates = @site\Templates!
+      templates.search_dir = "."
+      templates.defaults = {}
+
+      assert(templates\find_by_name(args[1]), "failed to find template: #{name}") @
 
     markdown: (args) =>
       md = @site\get_renderer "sitegen.renderers.markdown"
@@ -91,6 +95,7 @@ class HTMLRenderer extends Renderer
 
   render: (page, html_source) =>
     cosmo_scope = @helpers page
+    old_render_source = page.tpl_scope.render_source
     page.tpl_scope.render_source = html_source
 
     -- stack size is remembered so re-renders don't continue to grow the
@@ -101,8 +106,7 @@ class HTMLRenderer extends Renderer
       (-> fill_ignoring_pre page.tpl_scope.render_source, cosmo_scope),
       (-> while #page.template_stack > init_stack do page.template_stack\pop!)
 
-    page.tpl_scope.render_source = nil
-
+    page.tpl_scope.render_source = old_render_source
     out
 
   load: (source) =>
