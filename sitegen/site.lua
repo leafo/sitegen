@@ -37,6 +37,18 @@ do
     Page = function(self, ...)
       return Page(self, ...)
     end,
+    get_renderer = function(self, cls)
+      if type(cls) == "string" then
+        cls = require(cls)
+      end
+      local _list_0 = self.renderers
+      for _index_0 = 1, #_list_0 do
+        local r = _list_0[_index_0]
+        if cls == r.__class then
+          return r
+        end
+      end
+    end,
     plugin_scope = function(self)
       local scope = { }
       for plugin in self.plugins:each() do

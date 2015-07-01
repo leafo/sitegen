@@ -72,6 +72,11 @@ class Site
   Templates: => Templates @
   Page: (...) => Page self, ...
 
+  get_renderer: (cls) =>
+    cls = require cls if type(cls) == "string"
+    for r in *@renderers
+      return r if cls == r.__class
+
   plugin_scope: =>
     scope = {}
     for plugin in @plugins\each!

@@ -43,9 +43,8 @@ class HTMLRenderer extends Renderer
       @site\Templates"."\fill name, @tpl_scope
 
     markdown: (args) =>
-      MarkdownRenderer = require "sitegen.renderers.markdown"
-      res = MarkdownRenderer\render args[1] or ""
-      fill_ignoring_pre res, @tpl_scope
+      md = @site\get_renderer "sitegen.renderers.markdown"
+      md\render @, assert args[1], "missing markdown string"
 
     wrap: (args) =>
       tpl_name = unpack args

@@ -47,7 +47,7 @@ describe "sitegen", ->
         "www/.gitignore"
       }, get_files prefix
 
-    it "builds site with html renderer #ddd", ->
+    it "builds site with html renderer", ->
       write "test.html", "hello I an html file"
       site\init_from_fn =>
         add "test.html"
@@ -190,4 +190,15 @@ write "TEMPLATE BOTTOM"]]
 TEMPLATE TOP
 this is the inside
 TEMPLATE BOTTOM]], read "www/index.html"
+
+    it "builds site with markdown helper", ->
+      write "index.html", [==[$markdown{[[hello *world*]]}]==]
+      site\init_from_fn =>
+        add "index.html", template: false
+
+      site\write!
+
+      read "www/index.html"
+      assert.same "<p>hello <em>world</em></p>\n", read "www/index.html"
+
 

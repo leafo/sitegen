@@ -39,9 +39,8 @@ do
         return self.site:Templates("."):fill(name, self.tpl_scope)
       end,
       markdown = function(self, args)
-        local MarkdownRenderer = require("sitegen.renderers.markdown")
-        local res = MarkdownRenderer:render(args[1] or "")
-        return fill_ignoring_pre(res, self.tpl_scope)
+        local md = self.site:get_renderer("sitegen.renderers.markdown")
+        return md:render(self, assert(args[1], "missing markdown string"))
       end,
       wrap = function(self, args)
         local tpl_name = unpack(args)
