@@ -31,6 +31,17 @@ class Site
     "sitegen.renderers.moon"
   }
 
+  @default_plugins: {
+    "sitegen.plugins.feed"
+    "sitegen.plugins.blog"
+    "sitegen.plugins.deploy"
+    "sitegen.plugins.indexer"
+    "sitegen.plugins.analytics"
+    "sitegen.plugins.coffee_script"
+    "sitegen.plugins.pygments"
+    "sitegen.plugins.dump"
+  }
+
   __tostring: => "<Site>"
 
   config: {
@@ -56,18 +67,14 @@ class Site
     @written_files = {}
 
     @renderers = [require(rmod) @ for rmod in *@@default_renderers]
-
-    @plugins = OrderSet require("sitegen").plugins
+    @plugins = [require(pmod) @ for pmod in *@@default_plugins]
 
     -- extract aggregators from plugins
     @aggregators = {}
-    for plugin in @plugins\each!
+    for plugin in *@plugins
       if plugin.type_name
         for name in *make_list plugin.type_name
           @aggregators[name] = plugin
-
-      if plugin.on_site
-        plugin\on_site self
 
   Templates: => Templates @
   Page: (...) => Page self, ...
@@ -77,9 +84,14 @@ class Site
     for r in *@renderers
       return r if cls == r.__class
 
+  get_plugin: (cls) =>
+    cls = require cls if type(cls) == "string"
+    for p in *@plugins
+      return p if cls == p.__class
+
   plugin_scope: =>
     scope = {}
-    for plugin in @plugins\each!
+    for plugin in *@plugins
       if plugin.mixin_funcs
         for fn_name in *plugin.mixin_funcs
           scope[fn_name] = bound_fn plugin, fn_name
@@ -151,7 +163,7 @@ class Site
   -- template plugins instances with tpl_scope
   plugin_template_helpers: (page) =>
     helpers = {}
-    for plugin in @plugins\each!
+    for plugin in *@plugins
       if plugin.tpl_helpers
         p = plugin tpl_scope
         for helper_name in *plugin.tpl_helpers
@@ -189,7 +201,7 @@ class Site
         Path.copy path, target
 
       -- write plugins
-      for plugin in @plugins\each!
+      for plugin in *@plugins
         plugin\write self if plugin.write
 
       -- gitignore

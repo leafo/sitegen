@@ -7,7 +7,7 @@ do
     tpl_helpers = {
       "analytics"
     },
-    analytics = function(self, arg)
+    analytics = function(self, page, arg)
       local code = arg[1]
       return [[<script type="text/javascript">
   if (window.location.hostname != "localhost") {

@@ -4,7 +4,7 @@ import Plugin from require "sitegen.plugin"
 class AnalyticsPlugin extends Plugin
   tpl_helpers: { "analytics" }
 
-  analytics: (arg) =>
+  analytics: (page, arg) =>
     code = arg[1]
     [[<script type="text/javascript">
   if (window.location.hostname != "localhost") {

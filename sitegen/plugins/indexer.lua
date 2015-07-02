@@ -119,11 +119,11 @@ do
     tpl_helpers = {
       "index"
     },
-    index = function(self)
+    index = function(self, page)
       if not (self.current_index) then
-        assert(self.page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
+        assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
-        body, self.current_index = build_from_html(self.page.tpl_scope.render_source)
+        body, self.current_index = build_from_html(page.tpl_scope.render_source)
         coroutine.yield(body)
       end
       return render_index(self.current_index)
@@ -132,8 +132,8 @@ do
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, page)
-      self.page = page
+    __init = function(self, site)
+      self.site = site
       self.current_index = nil
     end,
     __base = _base_0,

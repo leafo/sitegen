@@ -32,20 +32,6 @@ do
     posts = { },
     consumes_pages = false,
     type_name = "blog_post",
-    on_site = function(self, site)
-      do
-        return 
-      end
-      site.templates.plugin_helpers.blog = {
-        query = function(arg)
-          local _list_0 = self:query()
-          for _index_0 = 1, #_list_0 do
-            local page = _list_0[_index_0]
-            cosmo.yield(bind_methods(page))
-          end
-        end
-      }
-    end,
     on_aggregate = function(self, page)
       table.insert(self.posts, page)
       return self.consumes_pages
@@ -108,8 +94,8 @@ do
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
+    __init = function(self, site)
+      self.site = site
     end,
     __base = _base_0,
     __name = "BlogPlugin",

@@ -66,19 +66,20 @@ do
     end,
     plugin_template_helpers = function(self)
       local helpers = { }
-      for plugin in self.site.plugins:each() do
+      local _list_0 = self.site.plugins
+      for _index_0 = 1, #_list_0 do
         local _continue_0 = false
         repeat
+          local plugin = _list_0[_index_0]
           if not (plugin.tpl_helpers) then
             _continue_0 = true
             break
           end
-          local p = plugin(self)
-          local _list_0 = plugin.tpl_helpers
-          for _index_0 = 1, #_list_0 do
-            local helper_name = _list_0[_index_0]
+          local _list_1 = plugin.tpl_helpers
+          for _index_1 = 1, #_list_1 do
+            local helper_name = _list_1[_index_1]
             helpers[helper_name] = function(...)
-              return p[helper_name](p, ...)
+              return plugin[helper_name](plugin, self, ...)
             end
           end
           _continue_0 = true

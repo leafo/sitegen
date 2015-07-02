@@ -24,15 +24,7 @@ class BlogPlugin extends Plugin
   consumes_pages: false
   type_name: "blog_post"
 
-  on_site: (site) =>
-    do return
-    -- register template scope
-    site.templates.plugin_helpers.blog = {
-      query: (arg) ->
-        -- print moon.dump arg
-        for page in *@query!
-          cosmo.yield bind_methods page
-    }
+  new: (@site) =>
 
   -- return true if it consumes page
   on_aggregate: (page) =>

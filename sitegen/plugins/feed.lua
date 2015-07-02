@@ -70,9 +70,6 @@ do
     mixin_funcs = {
       "feed"
     },
-    on_site = function(self)
-      self.feeds = { }
-    end,
     feed = function(self, source, dest)
       local moonscript = require("moonscript.base")
       local fn = assert(moonscript.loadfile(source))
@@ -109,8 +106,9 @@ do
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
+    __init = function(self, site)
+      self.site = site
+      self.feeds = { }
     end,
     __base = _base_0,
     __name = "FeedPlugin",

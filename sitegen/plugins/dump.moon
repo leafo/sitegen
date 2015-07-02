@@ -4,5 +4,5 @@ import Plugin from require "sitegen.plugin"
 
 class DumpPlugin extends Plugin
   tpl_helpers: { "dump" }
-  dump: (args) =>
+  dump: (page, args) =>
     dump args

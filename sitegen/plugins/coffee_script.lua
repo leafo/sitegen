@@ -12,7 +12,7 @@ do
       local p = io.popen(("coffee -c -p %s"):format(fname))
       return p:read("*a")
     end,
-    render_coffee = function(self, arg)
+    render_coffee = function(self, page, arg)
       local fname = unpack(arg)
       return html.build(function()
         return script({

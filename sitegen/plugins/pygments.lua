@@ -85,30 +85,30 @@ do
       end
       local document = Cs(code_block + (nl * code_block + 1) ^ 0)
       return assert(document:match(text))
-    end,
-    on_site = function(self, site)
-      self.lang_cache = site.cache:get("highlight")
-      self.keep_cache = CacheTable()
-      return table.insert(site.cache.finalize, function()
-        return site.cache:set("highlight", self.keep_cache)
-      end)
-    end,
-    on_register = function(self)
-      local MarkdownRenderer = require("sitegen.renderers.markdown")
-      return table.insert(MarkdownRenderer.pre_render, (function()
-        local _base_1 = self
-        local _fn_0 = _base_1.filter
-        return function(...)
-          return _fn_0(_base_1, ...)
-        end
-      end)())
     end
   }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   local _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _parent_0.__init(self, ...)
+    __init = function(self, site)
+      self.site = site
+      self.lang_cache = self.site.cache:get("highlight")
+      self.keep_cache = CacheTable()
+      table.insert(self.site.cache.finalize, function()
+        return self.site.cache:set("highlight", self.keep_cache)
+      end)
+      do
+        local renderer = self.site:get_renderer("sitegen.renderers.markdown")
+        if renderer then
+          return table.insert(renderer.pre_render, (function()
+            local _base_1 = self
+            local _fn_0 = _base_1.filter
+            return function(...)
+              return _fn_0(_base_1, ...)
+            end
+          end)())
+        end
+      end
     end,
     __base = _base_0,
     __name = "PygmentsPlugin",

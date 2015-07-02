@@ -9,7 +9,7 @@ do
     tpl_helpers = {
       "dump"
     },
-    dump = function(self, args)
+    dump = function(self, page, args)
       return dump(args)
     end
   }

@@ -3,8 +3,8 @@ do
   local _base_0 = { }
   _base_0.__index = _base_0
   local _class_0 = setmetatable({
-    __init = function(self, tpl_scope)
-      self.tpl_scope = tpl_scope
+    __init = function(self, site)
+      self.site = site
     end,
     __base = _base_0,
     __name = "Plugin"

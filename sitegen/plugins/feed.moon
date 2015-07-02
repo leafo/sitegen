@@ -47,7 +47,7 @@ class FeedPlugin extends Plugin
 
   mixin_funcs: { "feed" }
 
-  on_site: =>
+  new: (@site) =>
     @feeds = {}
 
   feed: (source, dest) =>

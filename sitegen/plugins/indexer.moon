@@ -82,14 +82,13 @@ class IndexerPlugin extends Plugin
 
   tpl_helpers: { "index" }
 
-  -- TODO: plugins should all be instantiated on the site, not the page
-  new: (@page) =>
+  new: (@site) =>
     @current_index = nil
 
-  index: =>
+  index: (page) =>
     unless @current_index
-      assert @page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)"
-      body, @current_index = build_from_html @page.tpl_scope.render_source
+      assert page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)"
+      body, @current_index = build_from_html page.tpl_scope.render_source
       coroutine.yield body
 
     render_index @current_index

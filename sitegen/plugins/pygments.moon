@@ -83,15 +83,12 @@ class PygmentsPlugin extends Plugin
 
     assert document\match text
 
-  -- prepare the cache
-  on_site: (site) =>
-    @lang_cache = site.cache\get"highlight"
+  new: (@site) =>
+    @lang_cache = @site.cache\get"highlight"
     @keep_cache = CacheTable!
-    table.insert site.cache.finalize, ->
-      site.cache\set "highlight", @keep_cache
+    table.insert @site.cache.finalize, ->
+      @site.cache\set "highlight", @keep_cache
 
-  on_register: =>
-    MarkdownRenderer = require "sitegen.renderers.markdown"
-    table.insert MarkdownRenderer.pre_render, @\filter
-
+    if renderer = @site\get_renderer "sitegen.renderers.markdown"
+      table.insert renderer.pre_render, @\filter
 

@@ -1,6 +1,6 @@
 
 class Plugin
-  new: (@tpl_scope) =>
+  new: (@site) =>
 
 {
   :Plugin

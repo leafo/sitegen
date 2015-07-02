@@ -83,12 +83,11 @@ class Page
   plugin_template_helpers: =>
     helpers = {}
 
-    for plugin in @site.plugins\each!
+    for plugin in *@site.plugins
       continue unless plugin.tpl_helpers
-      p = plugin @
       for helper_name in *plugin.tpl_helpers
         helpers[helper_name] = (...) ->
-          p[helper_name] p, ...
+          plugin[helper_name] plugin, @, ...
 
     helpers
 

@@ -49,13 +49,27 @@ do
         end
       end
     end,
+    get_plugin = function(self, cls)
+      if type(cls) == "string" then
+        cls = require(cls)
+      end
+      local _list_0 = self.plugins
+      for _index_0 = 1, #_list_0 do
+        local p = _list_0[_index_0]
+        if cls == p.__class then
+          return p
+        end
+      end
+    end,
     plugin_scope = function(self)
       local scope = { }
-      for plugin in self.plugins:each() do
+      local _list_0 = self.plugins
+      for _index_0 = 1, #_list_0 do
+        local plugin = _list_0[_index_0]
         if plugin.mixin_funcs then
-          local _list_0 = plugin.mixin_funcs
-          for _index_0 = 1, #_list_0 do
-            local fn_name = _list_0[_index_0]
+          local _list_1 = plugin.mixin_funcs
+          for _index_1 = 1, #_list_1 do
+            local fn_name = _list_1[_index_1]
             scope[fn_name] = bound_fn(plugin, fn_name)
           end
         end
@@ -142,12 +156,14 @@ do
     end,
     plugin_template_helpers = function(self, page)
       local helpers = { }
-      for plugin in self.plugins:each() do
+      local _list_0 = self.plugins
+      for _index_0 = 1, #_list_0 do
+        local plugin = _list_0[_index_0]
         if plugin.tpl_helpers then
           local p = plugin(tpl_scope)
-          local _list_0 = plugin.tpl_helpers
-          for _index_0 = 1, #_list_0 do
-            local helper_name = _list_0[_index_0]
+          local _list_1 = plugin.tpl_helpers
+          for _index_1 = 1, #_list_1 do
+            local helper_name = _list_1[_index_1]
             helpers[helper_name] = function(...)
               return p[helper_name](p, ...)
             end
@@ -217,15 +233,17 @@ do
           table.insert(written_files, target)
           Path.copy(path, target)
         end
-        for plugin in self.plugins:each() do
+        local _list_1 = self.plugins
+        for _index_0 = 1, #_list_1 do
+          local plugin = _list_1[_index_0]
           if plugin.write then
             plugin:write(self)
           end
         end
         if self.config.write_gitignore then
-          local _list_1 = self.written_files
-          for _index_0 = 1, #_list_1 do
-            local file = _list_1[_index_0]
+          local _list_2 = self.written_files
+          for _index_0 = 1, #_list_2 do
+            local file = _list_2[_index_0]
             table.insert(written_files, file)
           end
           self:write_gitignore(written_files)
@@ -263,18 +281,27 @@ do
         end
         self.renderers = _accum_0
       end
-      self.plugins = OrderSet(require("sitegen").plugins)
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = self.__class.default_plugins
+        for _index_0 = 1, #_list_0 do
+          local pmod = _list_0[_index_0]
+          _accum_0[_len_0] = require(pmod)(self)
+          _len_0 = _len_0 + 1
+        end
+        self.plugins = _accum_0
+      end
       self.aggregators = { }
-      for plugin in self.plugins:each() do
+      local _list_0 = self.plugins
+      for _index_0 = 1, #_list_0 do
+        local plugin = _list_0[_index_0]
         if plugin.type_name then
-          local _list_0 = make_list(plugin.type_name)
-          for _index_0 = 1, #_list_0 do
-            local name = _list_0[_index_0]
+          local _list_1 = make_list(plugin.type_name)
+          for _index_1 = 1, #_list_1 do
+            local name = _list_1[_index_1]
             self.aggregators[name] = plugin
           end
-        end
-        if plugin.on_site then
-          plugin:on_site(self)
         end
       end
     end,
@@ -294,6 +321,16 @@ do
     "sitegen.renderers.markdown",
     "sitegen.renderers.html",
     "sitegen.renderers.moon"
+  }
+  self.default_plugins = {
+    "sitegen.plugins.feed",
+    "sitegen.plugins.blog",
+    "sitegen.plugins.deploy",
+    "sitegen.plugins.indexer",
+    "sitegen.plugins.analytics",
+    "sitegen.plugins.coffee_script",
+    "sitegen.plugins.pygments",
+    "sitegen.plugins.dump"
   }
   Site = _class_0
   return _class_0
