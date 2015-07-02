@@ -154,24 +154,6 @@ do
       end
       return nil
     end,
-    plugin_template_helpers = function(self, page)
-      local helpers = { }
-      local _list_0 = self.plugins
-      for _index_0 = 1, #_list_0 do
-        local plugin = _list_0[_index_0]
-        if plugin.tpl_helpers then
-          local p = plugin(tpl_scope)
-          local _list_1 = plugin.tpl_helpers
-          for _index_1 = 1, #_list_1 do
-            local helper_name = _list_1[_index_1]
-            helpers[helper_name] = function(...)
-              return p[helper_name](p, ...)
-            end
-          end
-        end
-      end
-      return extend(helpers, base)
-    end,
     write = function(self, filter_files)
       if filter_files == nil then
         filter_files = false

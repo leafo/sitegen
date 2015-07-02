@@ -159,19 +159,6 @@ class Site
         return fn
     nil
 
-  -- get template helpers from plugins
-  -- template plugins instances with tpl_scope
-  plugin_template_helpers: (page) =>
-    helpers = {}
-    for plugin in *@plugins
-      if plugin.tpl_helpers
-        p = plugin tpl_scope
-        for helper_name in *plugin.tpl_helpers
-          helpers[helper_name] = (...) ->
-            p[helper_name] p, ...
-
-    extend helpers, base
-
   -- write the entire website
   write: (filter_files=false) =>
     pages = for path in @scope.files\each!

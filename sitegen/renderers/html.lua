@@ -1,5 +1,6 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
+local cosmo = require("cosmo")
 local extend
 extend = require("moon").extend
 local fill_ignoring_pre, throw_error, flatten_args, pass_error
@@ -100,7 +101,6 @@ do
       end
     },
     helpers = function(self, page)
-      local cosmo
       do
         local _tbl_0 = { }
         for k, v in pairs(self.cosmo_helpers) do

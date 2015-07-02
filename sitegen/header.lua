@@ -18,7 +18,7 @@ parse_yaml_header = function(text)
     local header = text:sub(1, s - 1)
     text = text:sub(e)
     header = trim_leading_white(header)
-    header = yaml.load(header)
+    header = get_yaml().load(header)
     return text, header
   end
   return nil, "no header found"

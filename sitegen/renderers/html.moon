@@ -1,5 +1,7 @@
 import Renderer from require "sitegen.renderer"
 
+cosmo = require "cosmo"
+
 import extend from require "moon"
 
 import

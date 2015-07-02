@@ -16,7 +16,7 @@ parse_yaml_header = (text) ->
     text = text\sub e
 
     header = trim_leading_white header
-    header = yaml.load header
+    header = get_yaml!.load header
     return text, header
 
   nil, "no header found"
