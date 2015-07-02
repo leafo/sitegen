@@ -120,13 +120,13 @@ do
       "index"
     },
     index = function(self, page)
-      if not (self.current_index) then
+      if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
-        body, self.current_index = build_from_html(page.tpl_scope.render_source)
+        body, self.current_index[page] = build_from_html(page.tpl_scope.render_source)
         coroutine.yield(body)
       end
-      return render_index(self.current_index)
+      return render_index(self.current_index[page])
     end
   }
   _base_0.__index = _base_0
@@ -134,7 +134,7 @@ do
   local _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
-      self.current_index = nil
+      self.current_index = { }
     end,
     __base = _base_0,
     __name = "IndexerPlugin",

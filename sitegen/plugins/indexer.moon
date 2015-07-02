@@ -83,13 +83,13 @@ class IndexerPlugin extends Plugin
   tpl_helpers: { "index" }
 
   new: (@site) =>
-    @current_index = nil
+    @current_index = {}
 
   index: (page) =>
-    unless @current_index
+    unless @current_index[page]
       assert page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)"
-      body, @current_index = build_from_html page.tpl_scope.render_source
+      body, @current_index[page] = build_from_html page.tpl_scope.render_source
       coroutine.yield body
 
-    render_index @current_index
+    render_index @current_index[page]
 

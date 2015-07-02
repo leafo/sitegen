@@ -189,7 +189,7 @@ class Site
 
       -- write plugins
       for plugin in *@plugins
-        plugin\write self if plugin.write
+        plugin\write! if plugin.write
 
       -- gitignore
       if @config.write_gitignore

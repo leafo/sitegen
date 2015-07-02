@@ -219,7 +219,7 @@ do
         for _index_0 = 1, #_list_1 do
           local plugin = _list_1[_index_0]
           if plugin.write then
-            plugin:write(self)
+            plugin:write()
           end
         end
         if self.config.write_gitignore then
