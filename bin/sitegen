@@ -152,17 +152,20 @@ tasks = {
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
+  -- TODO: this should be implemented in the plugin, not here
   deploy: (host, path) ->
-    get_site!
+    site = get_site!
+    deploy = site\get_plugin "sitegen.plugins.deploy"
+    throw_error "deploy plugin not initialized" unless deploy
 
-    DeployPlugin = require "sitegen.plugins.deploy"
-    host, path = host or DeployPlugin.host, path or DeployPlugin.path
+    {:host, :path} = deploy
 
-    throw_error "need host" if not host
-    throw_error "need path" if not path
+    throw_error "need host" unless host
+    throw_error "need path" unless path
 
     log "uploading to:", host, path
-    DeployPlugin\sync host, path
+
+    deploy\sync!
 
   build: (...) ->
     files = {...}
