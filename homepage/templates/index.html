@@ -8,8 +8,24 @@
   $analytics{"UA-136625-1"}
 </head>
 <body>
-  <div class="responsive_column">$body
-  </div>
+  <section class="page_columns">
+    <div class="navigation">
+      <ul>
+        <li>
+          <a href="$root">Overview</a>
+        </li>
+        <li>
+          <a href="$root/doc/plugins.html">Plugins</a>
+        </li>
+        <li>
+          <a href="$root/doc/creating-a-plugin.html">Creating a plugin</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="responsive_column">$body
+    </div>
+  </section>
 
   <div class="footer">
     Generated on $generate_date &middot; <a

@@ -113,7 +113,7 @@ There are a couple variables that are always available, here they are:
 * `$root` -- a relative path prefix that points back to the top level directory of your site. For example, if the current page is `wwww/hello/world.html`, the `$root` would be `../`. This make it easy to built URLs to other pages without being concerned about where your page is being rendered to.
 * `$generate_date` -- a timestamp of when the page is being generated. Good for displaying on your page, and also adding to URLs of assets as a cache buster.
 
-[Plugins][3] may also new built in variables.
+[Plugins][3] may also introduce variables, in addition to functions, that can be accessed from a page.
 
 ### Templates
 

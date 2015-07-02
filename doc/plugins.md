@@ -1,6 +1,10 @@
-    target: doc/plugins
-    title: Sitegen - Plugins
---
+{
+  target: "doc/plugins"
+  title: "Plugins - Sitegen"
+}
+
+# Plugins
+
 $index
 
 ## Method Types
@@ -8,17 +12,15 @@ $index
 Plugins provide methods to different parts of the site generation pipeline. The
 method types are:
 
-* **template helpers**: available in any template file (html, markdown, etc).
- Typically cosmo functions.
-
+* **template helpers**: Method made available in any template file (html, markdown, etc)
 * **site helpers**: available in the `site.moon` initialization function.
-
-* **command line helper**: available as an action in the command line tool,
- `sitegen`.
+* **command line tool**: available as an action in the command line tool, `sitegen`.
 
 Plugins can also change other aspects of the pipeline, for example, the
 [Pygments](#pygments) plugin adds a pre-renderer to all markdown files which
 let's you specify code blocks in a special syntax.
+
+You can create your own plugins, see the [Creating a Plugin]($root/doc/creating-a-plugin.html) guide.
 
 ## Available Plugins
 
@@ -69,9 +71,9 @@ Provides site helper `deploy_to` and a command line helper `deploy`.
 two arguments, a host and a path. This can be done in the initialization
 function:
 
-    ```moon
-    deploy_to "leaf@leafo.net", "www/mysite"
-    ```
+```moon
+deploy_to "leaf@leafo.net", "www/mysite"
+```
 
 Deploying is done over ssh with rsync. It uses the command `rsync -arvuz www/
 $host:$path`.
@@ -79,9 +81,9 @@ $host:$path`.
 Assuming everything is configured correctly, the site can be deployed from the
 command line:
 
-    ```bash
-    $ sitegen deploy
-    ```
+```bash
+$ sitegen deploy
+```
 
 The deploy command line helper will only deploy, it will not build. Make sure
 you build the site first.
@@ -94,7 +96,7 @@ anchors inside of them. It then renders the tree of headers to a list, with
 links to the anchors.
 
 An example page with a header hierarchy. The index rendered at the top:
-    
+
     $index
 
     # My Title
@@ -111,14 +113,13 @@ code block that should be highlighted according to a specified language.
 
 For example, to highlight Lua code in a page:
 
-    ```lua   
-    local test = function(...) 
-      print("hello world", ...)
-    end
+```lua
+local test = function(...)
+  print("hello world", ...)
+end
 
-    test("moon", 1, 2, 3)
-
-    ```
+test("moon", 1, 2, 3)
+```
 
 The generated code does not have the colors embedded, only html tags with class
 names. Colors can be added in a stylesheet.
@@ -133,6 +134,7 @@ CoffeeScript into the page from an external file. CoffeeScript must be
 installed on the system for this plugin to work.
 
 In some page:
+
 
     $render_coffee{[[my_script.coffee]]}
 
@@ -156,40 +158,3 @@ In some page
 
     $dump{title}
 
-## Plugin Lifespan
-
-The lifespan of a plugin is started by registering a plugin using
-`sitegen.register_plugin()`
-
-* The plugin is registered...
-  * `on_register` class method called if exists
-* The site is created...
-  * If the *plugin class* has field `type_name`, plugin is saved as an
-    aggregator for that type. (may be a list of types)
-  * `on_site` class method called if exists, passed in site instance
-* The site is prepared to be initialized from function...
-  * The *plugin class* is checked for field `mixin_funcs`, which is an optional
-    list of function names in the class that are inserted into the site scope.
-    The functions are guaranteed to be called with *plugin class* as first
-    argument
-* `write` is called on the site...
-  * for every page...
-  * Page is checked for an `is_a` meta field, if it exists and matches one
-    of the aggregator types mentioned above, `on_aggregate` is called on the
-    corresponding *plugin class* with the page instance as the argument
-  * The page is written (rendered)...
-    * template helpers are extracted from the plugin if it has a
-    `tpl_helpers` field. If there are helpers, the plugin is instanced. The
-    constructor is passed the `tpl_scope`. All the `tpl_helpers` inserted
-    into site scope automatically, and are guaranteed to be called with
-    *plugin instance* as first object
-  * `write` class method is called if exists
-
-### Terminology
-
-**site scope**: the object that represents the function environment that is used
-when running the initialize function.
-
-**template scope**: the object that holds all the fields available to any
-template rendered for that page. It is made of, in order, the page meta data,
-the site's user vars, and finally the template helpers.
