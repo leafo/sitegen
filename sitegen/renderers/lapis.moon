@@ -10,6 +10,6 @@ class LapisRenderer extends Renderer
     fn = assert moonscript.loadstring source
     widget = fn!
     ((page) ->
-      w = widget(:page)
+      w = widget(:page, site: page.site)
       w\include_helper page.tpl_scope
       w\render_to_string!), widget.options

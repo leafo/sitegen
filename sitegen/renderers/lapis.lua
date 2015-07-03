@@ -12,7 +12,8 @@ do
       local widget = fn()
       return (function(page)
         local w = widget({
-          page = page
+          page = page,
+          site = page.site
         })
         w:include_helper(page.tpl_scope)
         return w:render_to_string()
