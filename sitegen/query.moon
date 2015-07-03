@@ -26,12 +26,8 @@ query_pages = (pages, query={}, opts={}) ->
     continue unless query_page_match page, query
     page
 
-  -- sort..
-  if opts.sort
-    nil
-
+  table.sort out, opts.sort if opts.sort
   out
-
 
 cmp = {
   date: (dir="desc") ->
@@ -50,4 +46,10 @@ filter = {
     (page_val) -> array_includes page_val, val
 }
 
-{ :query_pages, :cmp, :filter }
+sort = {
+  date: (key="date", dir) ->
+   (p1, p2) ->
+     cmp.date(dir) p1.meta[key], p2.meta[key]
+}
+
+{ :query_pages, :cmp, :filter, :sort }

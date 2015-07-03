@@ -1,8 +1,8 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
 local html = require("sitegen.html")
-local date = require("date")
 local cosmo = require("cosmo")
+local query = require("sitegen.query")
 local copy, bind_methods
 do
   local _obj_0 = require("moon")
@@ -11,31 +11,15 @@ end
 local insert
 insert = table.insert
 local FeedPlugin = require("sitegen.plugins.feed")
-local cmp = {
-  date = function(dir)
-    if dir == nil then
-      dir = "desc"
-    end
-    return function(a, b)
-      if dir == "asc" then
-        return date(a) < date(b)
-      else
-        return date(a) > date(b)
-      end
-    end
-  end
-}
 local BlogPlugin
 do
   local _parent_0 = Plugin
   local _base_0 = {
     write = function(self)
       self.posts = self.site:query_pages({
-        is_a = "blog_post"
+        is_a = query.filter.contains("blog_post")
       }, {
-        sort = function(p1, p2)
-          return cmp.date()(p1.meta.date, p2.meta.date)
-        end
+        sort = query.sort.date()
       })
       if not (self.posts[1]) then
         return 

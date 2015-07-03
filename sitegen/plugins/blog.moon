@@ -14,8 +14,7 @@ class BlogPlugin extends Plugin
   new: (@site) =>
 
   write: =>
-    @posts = @site\query_pages { is_a: "blog_post" }, sort: (p1, p2) ->
-      cmp.date! p1.meta.date, p2.meta.date
+    @posts = @site\query_pages { is_a: query.filter.contains "blog_post" }, sort: query.sort.date!
 
     return unless @posts[1]
 
