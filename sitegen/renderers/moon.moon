@@ -25,7 +25,9 @@ class MoonRenderer extends Renderer
       base_scope = setmetatable {
         _context: -> context
         self: page.tpl_scope
+
         page: page
+        site: page.site
 
         -- appends a scope to __index of the context
         format: (formatter) ->

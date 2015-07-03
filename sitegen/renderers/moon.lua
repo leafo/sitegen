@@ -31,6 +31,7 @@ do
           end,
           self = page.tpl_scope,
           page = page,
+          site = page.site,
           format = function(formatter)
             if type(formatter) == "string" then
               formatter = require(formatter)
