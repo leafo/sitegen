@@ -199,6 +199,7 @@ do
           break
         end
       end
+      return true
     end,
     query_pages = function(self, query, opts)
       if query == nil then

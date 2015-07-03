@@ -19,8 +19,18 @@ describe "page", ->
       }
 
       site.pages = {
-        create_page!
-        create_page!
+        create_page {
+          meta: {
+            is_a: {"blog_post", "article"}
+          }
+        }
+        create_page {
+          meta: {
+            is_a: "article"
+            tags: {"cool"}
+          }
+        }
+        create_page { }
       }
 
     it "queries with empty result", ->
@@ -30,6 +40,12 @@ describe "page", ->
 
     it "queries all with empty query", ->
       pages = site\query_pages { }
+      assert.same 3, #pages
+
+    it "queries", ->
+      pages = site\query_pages { is_a: "article" }
       assert.same 2, #pages
 
-
+    it "queries", ->
+      pages = site\query_pages { tags: "cool" }
+      assert.same 1, #pages

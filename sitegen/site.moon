@@ -26,9 +26,7 @@ import Page from require "sitegen.page"
 array_includes = (array, val) ->
   for array_val in *array
     return true if array_val == val
-
   false
-
 
 -- a webpage
 class Site
@@ -183,6 +181,8 @@ class Site
 
       if page_val != query_val
         return false
+
+    true
 
   query_pages: (query={}, opts={}) =>
     @load_pages!
