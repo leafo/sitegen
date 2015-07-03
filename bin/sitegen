@@ -14,15 +14,17 @@ args = {...}
 default = {
   sitefile: "site.moon"
   files:
-    page: [==[
-    date: $eval{"require('date')()"}
-    $if{"title"}[[title: $title]]
---
+    page: [==[{
+  date: "$eval{"require('date')()"}"
+  $if{"title"}[[title: "$title"]]
+}
+
+Hello world!
 
 ]==]
     sitefile: [==[
 sitegen = require "sitegen"
-sitegen.create_site =>
+sitegen.create =>
   @title = $title
 ]==]
 }
