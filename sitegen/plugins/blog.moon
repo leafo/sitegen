@@ -2,22 +2,13 @@
 import Plugin from require "sitegen.plugin"
 
 html = require "sitegen.html"
-date = require "date"
 cosmo = require "cosmo"
+query = require "sitegen.query"
 
 import copy, bind_methods from require "moon"
 import insert from table
 
 FeedPlugin = require "sitegen.plugins.feed"
-
-cmp = {
-  date: (dir="desc") ->
-    (a, b) ->
-      if dir == "asc"
-        date(a) < date(b)
-      else
-        date(a) > date(b)
-}
 
 class BlogPlugin extends Plugin
   new: (@site) =>

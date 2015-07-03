@@ -3,6 +3,8 @@ Site = require "sitegen.site"
 import Page from require "sitegen.page"
 import SiteFile from require "sitegen.site_file"
 
+query = require "sitegen.query"
+
 describe "page", ->
   create_page = (t={}) ->
     t.meta or= {}
@@ -37,15 +39,18 @@ describe "page", ->
       pages = site\query_pages { tag: "hello" }
       assert.same {}, pages
 
-
     it "queries all with empty query", ->
       pages = site\query_pages { }
       assert.same 3, #pages
 
-    it "queries", ->
+    it "queries raw", ->
       pages = site\query_pages { is_a: "article" }
+      assert.same 1, #pages
+
+    it "queries filter contains", ->
+      pages = site\query_pages { is_a: query.filter.contains "article" }
       assert.same 2, #pages
 
-    it "queries", ->
-      pages = site\query_pages { tags: "cool" }
+    it "queries filter contains", ->
+      pages = site\query_pages { tags: query.filter.contains "cool" }
       assert.same 1, #pages
