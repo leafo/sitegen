@@ -1,5 +1,4 @@
 
-
 describe "html", ->
   it "renders some html", ->
     html = require "sitegen.html"

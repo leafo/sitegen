@@ -23,6 +23,13 @@ import SiteScope from require "sitegen.site_scope"
 import Templates from require "sitegen.templates"
 import Page from require "sitegen.page"
 
+array_includes = (array, val) ->
+  for array_val in *array
+    return true if array_val == val
+
+  false
+
+
 -- a webpage
 class Site
   @default_renderers: {
@@ -159,43 +166,71 @@ class Site
         return fn
     nil
 
-  -- write the entire website
-  write: (filter_files=false) =>
-    pages = for path in @scope.files\each!
-      continue if filter_files and not filter_files[path]
-      page = @Page path
-      -- TODO: check dont_write
-      for t in *make_list page.meta.is_a
-        plugin = @aggregators[t]
-        throw_error "unknown `is_a` type: " .. t if not plugin
-        plugin\on_aggregate page
+  load_pages: =>
+    @pages or= [@Page path for path in @scope.files\each!]
+    @pages
+
+  query_page_match: (page, query) =>
+    -- empty query matches all
+    return true if not query or not next query
+
+    for k,query_val in pairs query
+      page_val = page.meta[k]
+
+      if type(page_val) == "table"
+        if array_includes page_val, query_val
+          continue
+
+      if page_val != query_val
+        return false
+
+  query_pages: (query={}, opts={}) =>
+    @load_pages!
+
+    out = for page in *@pages
+      continue unless @query_page_match page, query
       page
 
-    if filter_files and #pages == 0
-      throw_error "no pages found for rendering"
+    -- sort..
+    if opts.sort
+      nil
+
+    return out
+
+
+  -- write the entire website
+  write: (filter_files=false) =>
+    @load_pages!
+    pages = @pages
+
+    if filter_files
+      pages = [p for p in *pages when filter_files[p.source]]
+      throw_error "no pages found for rendering" if #pages == 0
 
     written_files = for page in *pages
       page\write!
 
+    return if filter_files -- don't do anything else when rendering subset
+
     for buildset in *@scope.builds
       @run_build buildset
 
-    if not filter_files
-      -- copy files
-      for path in @scope.copy_files\each!
-        target = Path.join @config.out_dir, path
-        table.insert written_files, target
-        Path.copy path, target
+    -- copy files
+    for path in @scope.copy_files\each!
+      target = Path.join @config.out_dir, path
+      table.insert written_files, target
+      Path.copy path, target
 
-      -- write plugins
-      for plugin in *@plugins
-        plugin\write! if plugin.write
+    -- write plugins
+    for plugin in *@plugins
+      plugin\write! if plugin.write
 
-      -- gitignore
-      if @config.write_gitignore
-        -- add other written files
-        table.insert written_files, file for file in *@written_files
-        @write_gitignore written_files
+    -- gitignore
+    if @config.write_gitignore
+      -- add other written files
+      table.insert written_files, file for file in *@written_files
+      @write_gitignore written_files
 
-    @cache\write! if not filter_files
+    -- save the cache if updated
+    @cache\write!
 

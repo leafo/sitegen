@@ -19,6 +19,16 @@ local Templates
 Templates = require("sitegen.templates").Templates
 local Page
 Page = require("sitegen.page").Page
+local array_includes
+array_includes = function(array, val)
+  for _index_0 = 1, #array do
+    local array_val = array[_index_0]
+    if array_val == val then
+      return true
+    end
+  end
+  return false
+end
 local Site
 do
   local _base_0 = {
@@ -154,30 +164,62 @@ do
       end
       return nil
     end,
-    write = function(self, filter_files)
-      if filter_files == nil then
-        filter_files = false
-      end
-      local pages
-      do
+    load_pages = function(self)
+      self.pages = self.pages or (function()
         local _accum_0 = { }
         local _len_0 = 1
         for path in self.scope.files:each() do
-          local _continue_0 = false
-          repeat
-            if filter_files and not filter_files[path] then
+          _accum_0[_len_0] = self:Page(path)
+          _len_0 = _len_0 + 1
+        end
+        return _accum_0
+      end)()
+      return self.pages
+    end,
+    query_page_match = function(self, page, query)
+      if not query or not next(query) then
+        return true
+      end
+      for k, query_val in pairs(query) do
+        local _continue_0 = false
+        repeat
+          local page_val = page.meta[k]
+          if type(page_val) == "table" then
+            if array_includes(page_val, query_val) then
               _continue_0 = true
               break
             end
-            local page = self:Page(path)
-            local _list_0 = make_list(page.meta.is_a)
-            for _index_0 = 1, #_list_0 do
-              local t = _list_0[_index_0]
-              local plugin = self.aggregators[t]
-              if not plugin then
-                throw_error("unknown `is_a` type: " .. t)
-              end
-              plugin:on_aggregate(page)
+          end
+          if page_val ~= query_val then
+            return false
+          end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
+        end
+      end
+    end,
+    query_pages = function(self, query, opts)
+      if query == nil then
+        query = { }
+      end
+      if opts == nil then
+        opts = { }
+      end
+      self:load_pages()
+      local out
+      do
+        local _accum_0 = { }
+        local _len_0 = 1
+        local _list_0 = self.pages
+        for _index_0 = 1, #_list_0 do
+          local _continue_0 = false
+          repeat
+            local page = _list_0[_index_0]
+            if not (self:query_page_match(page, query)) then
+              _continue_0 = true
+              break
             end
             local _value_0 = page
             _accum_0[_len_0] = _value_0
@@ -188,10 +230,35 @@ do
             break
           end
         end
-        pages = _accum_0
+        out = _accum_0
       end
-      if filter_files and #pages == 0 then
-        throw_error("no pages found for rendering")
+      if opts.sort then
+        local _ = nil
+      end
+      return out
+    end,
+    write = function(self, filter_files)
+      if filter_files == nil then
+        filter_files = false
+      end
+      self:load_pages()
+      local pages = self.pages
+      if filter_files then
+        do
+          local _accum_0 = { }
+          local _len_0 = 1
+          for _index_0 = 1, #pages do
+            local p = pages[_index_0]
+            if filter_files[p.source] then
+              _accum_0[_len_0] = p
+              _len_0 = _len_0 + 1
+            end
+          end
+          pages = _accum_0
+        end
+        if #pages == 0 then
+          throw_error("no pages found for rendering")
+        end
       end
       local written_files
       do
@@ -204,36 +271,35 @@ do
         end
         written_files = _accum_0
       end
+      if filter_files then
+        return 
+      end
       local _list_0 = self.scope.builds
       for _index_0 = 1, #_list_0 do
         local buildset = _list_0[_index_0]
         self:run_build(buildset)
       end
-      if not filter_files then
-        for path in self.scope.copy_files:each() do
-          local target = Path.join(self.config.out_dir, path)
-          table.insert(written_files, target)
-          Path.copy(path, target)
-        end
-        local _list_1 = self.plugins
-        for _index_0 = 1, #_list_1 do
-          local plugin = _list_1[_index_0]
-          if plugin.write then
-            plugin:write()
-          end
-        end
-        if self.config.write_gitignore then
-          local _list_2 = self.written_files
-          for _index_0 = 1, #_list_2 do
-            local file = _list_2[_index_0]
-            table.insert(written_files, file)
-          end
-          self:write_gitignore(written_files)
+      for path in self.scope.copy_files:each() do
+        local target = Path.join(self.config.out_dir, path)
+        table.insert(written_files, target)
+        Path.copy(path, target)
+      end
+      local _list_1 = self.plugins
+      for _index_0 = 1, #_list_1 do
+        local plugin = _list_1[_index_0]
+        if plugin.write then
+          plugin:write()
         end
       end
-      if not filter_files then
-        return self.cache:write()
+      if self.config.write_gitignore then
+        local _list_2 = self.written_files
+        for _index_0 = 1, #_list_2 do
+          local file = _list_2[_index_0]
+          table.insert(written_files, file)
+        end
+        self:write_gitignore(written_files)
       end
+      return self.cache:write()
     end
   }
   _base_0.__index = _base_0
