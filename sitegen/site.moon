@@ -1,4 +1,3 @@
-
 import concat from table
 
 import
@@ -22,11 +21,6 @@ import Cache from require "sitegen.cache"
 import SiteScope from require "sitegen.site_scope"
 import Templates from require "sitegen.templates"
 import Page from require "sitegen.page"
-
-array_includes = (array, val) ->
-  for array_val in *array
-    return true if array_val == val
-  false
 
 -- a webpage
 class Site
@@ -161,34 +155,10 @@ class Site
     @pages or= [@Page path for path in @scope.files\each!]
     @pages
 
-  query_page_match: (page, query) =>
-    -- empty query matches all
-    return true if not query or not next query
-
-    for k,query_val in pairs query
-      page_val = page.meta[k]
-
-      if type(page_val) == "table"
-        if array_includes page_val, query_val
-          continue
-
-      if page_val != query_val
-        return false
-
-    true
-
-  query_pages: (query={}, opts={}) =>
+  query_pages: (...) =>
     @load_pages!
-
-    out = for page in *@pages
-      continue unless @query_page_match page, query
-      page
-
-    -- sort..
-    if opts.sort
-      nil
-
-    return out
+    import query_pages from require "sitegen.query"
+    query_pages @pages, ...
 
   -- write the entire website
   write: (filter_files=false) =>
