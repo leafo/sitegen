@@ -54,8 +54,8 @@ class Page
     path = @target\gsub front, ""
 
     if absolute
-      if base = @site.user_vars.base_url or @site.user_vars.url
-        path = Path.join base, path
+      base = @site.user_vars.base_url or @site.user_vars.url or "/"
+      path = Path.join base, path
 
     path
 
@@ -91,19 +91,22 @@ class Page
 
     helpers
 
-  render: =>
-    return @_content if @_content
 
+  get_root: =>
     base = Path.basepath @target
     parts = for i = 1, #split(base, "/") - 1 do ".."
     root = table.concat parts, "/"
     root = "." if root == ""
+    root
+
+  render: =>
+    return @_content if @_content
 
     @template_stack = Stack!
 
     @tpl_scope = extend {
       generate_date: os.date!
-      :root
+      root: @get_root!
     }, @meta, @site.user_vars, @plugin_template_helpers!
 
     @_content = assert @render_fn(@), "failed to get content from renderer"

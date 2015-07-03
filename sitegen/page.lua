@@ -29,12 +29,8 @@ do
       local front = "^" .. escape_patt(self.site.config.out_dir)
       local path = self.target:gsub(front, "")
       if absolute then
-        do
-          local base = self.site.user_vars.base_url or self.site.user_vars.url
-          if base then
-            path = Path.join(base, path)
-          end
-        end
+        local base = self.site.user_vars.base_url or self.site.user_vars.url or "/"
+        path = Path.join(base, path)
       end
       return path
     end,
@@ -90,10 +86,7 @@ do
       end
       return helpers
     end,
-    render = function(self)
-      if self._content then
-        return self._content
-      end
+    get_root = function(self)
       local base = Path.basepath(self.target)
       local parts
       do
@@ -109,10 +102,16 @@ do
       if root == "" then
         root = "."
       end
+      return root
+    end,
+    render = function(self)
+      if self._content then
+        return self._content
+      end
       self.template_stack = Stack()
       self.tpl_scope = extend({
         generate_date = os.date(),
-        root = root
+        root = self:get_root()
       }, self.meta, self.site.user_vars, self:plugin_template_helpers())
       self._content = assert(self:render_fn(self), "failed to get content from renderer")
       if self.meta.template ~= false then
