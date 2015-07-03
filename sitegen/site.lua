@@ -341,18 +341,6 @@ do
         end
         self.plugins = _accum_0
       end
-      self.aggregators = { }
-      local _list_0 = self.plugins
-      for _index_0 = 1, #_list_0 do
-        local plugin = _list_0[_index_0]
-        if plugin.type_name then
-          local _list_1 = make_list(plugin.type_name)
-          for _index_1 = 1, #_list_1 do
-            local name = _list_1[_index_1]
-            self.aggregators[name] = plugin
-          end
-        end
-      end
     end,
     __base = _base_0,
     __name = "Site"

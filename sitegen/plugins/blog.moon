@@ -20,30 +20,29 @@ cmp = {
 }
 
 class BlogPlugin extends Plugin
-  posts: {}
-  consumes_pages: false
-  type_name: "blog_post"
-
   new: (@site) =>
 
-  -- return true if it consumes page
-  on_aggregate: (page) =>
-    table.insert @posts, page
-    @consumes_pages
+  write: =>
+    @posts = @site\query_pages { is_a: "blog_post" }, sort: (p1, p2) ->
+      cmp.date! p1.meta.date, p2.meta.date
 
-  write: (site) =>
     return unless @posts[1]
-    site.logger\plain "blog posts:", #@posts
 
-    import title, url, description from site.user_vars
+    @site.logger\plain "blog posts:", #@posts
 
-    feed_posts = for page in *@query!
-      print "*", page.title, page.date
+    import title, url, description from @site.user_vars
+
+    feed_posts = for page in *@posts
+      meta = page.meta
+
+      print "*", meta.title, meta.date
       {
-        title: page.title
-        date: page.date
+        title: meta.title
+        date: meta.date
         link: page\url_for true
-        description: rawget page.meta, "description"
+
+        -- to avoid getting description of page from chained meta
+        description: rawget meta, "description"
       }
 
     rss_text = FeedPlugin.render_feed {
@@ -51,15 +50,4 @@ class BlogPlugin extends Plugin
       unpack feed_posts
     }
 
-    site\write_file "feed.xml", rss_text
-
-  query: (filter={}) =>
-    filter.sort = {"date", cmp.date! }
-    posts = copy @posts
-
-    if filter.sort
-      col, c = unpack filter.sort
-      table.sort posts, (a, b) ->
-        c a[col], b[col]
-
-    posts
+    @site\write_file "feed.xml", rss_text

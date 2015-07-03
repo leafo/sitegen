@@ -55,9 +55,9 @@ class FeedPlugin extends Plugin
     fn = assert moonscript.loadfile source
     table.insert @feeds, { dest, fn! }
 
-  write: (site) =>
+  write: =>
     return unless @feeds[1]
-    site.logger\plain "feeds:", #@feeds
+    @site.logger\plain "feeds:", #@feeds
 
     for feed in *@feeds
       dest, root = unpack feed
@@ -75,5 +75,5 @@ class FeedPlugin extends Plugin
           else
             entry.description
 
-      site\write_file dest, render_feed root
+      @site\write_file dest, render_feed root
 

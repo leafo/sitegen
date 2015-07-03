@@ -78,11 +78,11 @@ do
         fn()
       })
     end,
-    write = function(self, site)
+    write = function(self)
       if not (self.feeds[1]) then
         return 
       end
-      site.logger:plain("feeds:", #self.feeds)
+      self.site.logger:plain("feeds:", #self.feeds)
       local _list_0 = self.feeds
       for _index_0 = 1, #_list_0 do
         local feed = _list_0[_index_0]
@@ -99,7 +99,7 @@ do
             entry.description = entry.description
           end
         end
-        site:write_file(dest, render_feed(root))
+        self.site:write_file(dest, render_feed(root))
       end
     end
   }

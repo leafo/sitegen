@@ -29,36 +29,37 @@ local BlogPlugin
 do
   local _parent_0 = Plugin
   local _base_0 = {
-    posts = { },
-    consumes_pages = false,
-    type_name = "blog_post",
-    on_aggregate = function(self, page)
-      table.insert(self.posts, page)
-      return self.consumes_pages
-    end,
-    write = function(self, site)
+    write = function(self)
+      self.posts = self.site:query_pages({
+        is_a = "blog_post"
+      }, {
+        sort = function(p1, p2)
+          return cmp.date()(p1.meta.date, p2.meta.date)
+        end
+      })
       if not (self.posts[1]) then
         return 
       end
-      site.logger:plain("blog posts:", #self.posts)
+      self.site.logger:plain("blog posts:", #self.posts)
       local title, url, description
       do
-        local _obj_0 = site.user_vars
+        local _obj_0 = self.site.user_vars
         title, url, description = _obj_0.title, _obj_0.url, _obj_0.description
       end
       local feed_posts
       do
         local _accum_0 = { }
         local _len_0 = 1
-        local _list_0 = self:query()
+        local _list_0 = self.posts
         for _index_0 = 1, #_list_0 do
           local page = _list_0[_index_0]
-          print("*", page.title, page.date)
+          local meta = page.meta
+          print("*", meta.title, meta.date)
           local _value_0 = {
-            title = page.title,
-            date = page.date,
+            title = meta.title,
+            date = meta.date,
             link = page:url_for(true),
-            description = rawget(page.meta, "description")
+            description = rawget(meta, "description")
           }
           _accum_0[_len_0] = _value_0
           _len_0 = _len_0 + 1
@@ -71,24 +72,7 @@ do
         link = url,
         unpack(feed_posts)
       })
-      return site:write_file("feed.xml", rss_text)
-    end,
-    query = function(self, filter)
-      if filter == nil then
-        filter = { }
-      end
-      filter.sort = {
-        "date",
-        cmp.date()
-      }
-      local posts = copy(self.posts)
-      if filter.sort then
-        local col, c = unpack(filter.sort)
-        table.sort(posts, function(a, b)
-          return c(a[col], b[col])
-        end)
-      end
-      return posts
+      return self.site:write_file("feed.xml", rss_text)
     end
   }
   _base_0.__index = _base_0

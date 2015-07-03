@@ -74,13 +74,6 @@ class Site
     @renderers = [require(rmod) @ for rmod in *@@default_renderers]
     @plugins = [require(pmod) @ for pmod in *@@default_plugins]
 
-    -- extract aggregators from plugins
-    @aggregators = {}
-    for plugin in *@plugins
-      if plugin.type_name
-        for name in *make_list plugin.type_name
-          @aggregators[name] = plugin
-
   Templates: => Templates @
   Page: (...) => Page self, ...
 
@@ -196,7 +189,6 @@ class Site
       nil
 
     return out
-
 
   -- write the entire website
   write: (filter_files=false) =>
