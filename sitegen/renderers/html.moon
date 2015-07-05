@@ -92,8 +92,9 @@ class HTMLRenderer extends Renderer
   }
 
   helpers: (page) =>
-    cosmo = { k, ((...) -> v page, ...) for k,v in pairs @cosmo_helpers}
-    extend {}, cosmo, page.tpl_scope
+    extend {},
+      { k, ((...) -> v page, ...) for k,v in pairs @cosmo_helpers},
+      page.tpl_scope
 
   render: (page, html_source) =>
     cosmo_scope = @helpers page

@@ -101,16 +101,15 @@ do
       end
     },
     helpers = function(self, page)
-      do
+      return extend({ }, (function()
         local _tbl_0 = { }
         for k, v in pairs(self.cosmo_helpers) do
           _tbl_0[k] = (function(...)
             return v(page, ...)
           end)
         end
-        cosmo = _tbl_0
-      end
-      return extend({ }, cosmo, page.tpl_scope)
+        return _tbl_0
+      end)(), page.tpl_scope)
     end,
     render = function(self, page, html_source)
       local cosmo_scope = self:helpers(page)
