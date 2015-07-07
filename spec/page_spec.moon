@@ -5,35 +5,30 @@ import SiteFile from require "sitegen.site_file"
 
 query = require "sitegen.query"
 
-describe "page", ->
-  create_page = (t={}) ->
-    t.meta or= {}
-    t.source or= "some_page.md"
-    t.target or= "www/some_page.html"
-    t.render_fn or= ->
-    setmetatable t, Page
+factory = require "spec.factory"
 
+describe "page", ->
   describe "with site & pages", ->
     local site
     before_each ->
-      site = Site SiteFile {
-        rel_path: "."
+      site = factory.Site!
+
+      factory.Page {
+        :site
+        meta: {
+          is_a: {"blog_post", "article"}
+        }
       }
 
-      site.pages = {
-        create_page {
-          meta: {
-            is_a: {"blog_post", "article"}
-          }
+      factory.Page {
+        :site
+        meta: {
+          is_a: "article"
+          tags: {"cool"}
         }
-        create_page {
-          meta: {
-            is_a: "article"
-            tags: {"cool"}
-          }
-        }
-        create_page { }
       }
+
+      factory.Page { :site }
 
     it "queries with empty result", ->
       pages = site\query_pages { tag: "hello" }

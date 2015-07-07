@@ -37,7 +37,7 @@ class HTMLRenderer extends Renderer
   source_ext: "html"
   ext: "html"
 
-  -- all of these receive the page as the first argument
+  -- all of these receive the page as the first argument, not the renderer instance
   cosmo_helpers: {
     render: (args) => -- render another page in current scope
       name = assert unpack(args), "missing template name for render"
