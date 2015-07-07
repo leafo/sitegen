@@ -31,7 +31,7 @@ Page = (opts={}) ->
   opts.read = -> error "read disabled"
   opts.write = -> error "read disabled"
 
-  setmetatable opts, page.Page
+  setmetatable opts, page.Page.__base
 
   opts.site.pages or= {}
   table.insert opts.site.pages, opts

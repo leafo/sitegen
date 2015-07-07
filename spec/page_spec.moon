@@ -1,10 +1,4 @@
-Site = require "sitegen.site"
-
-import Page from require "sitegen.page"
-import SiteFile from require "sitegen.site_file"
-
 query = require "sitegen.query"
-
 factory = require "spec.factory"
 
 describe "page", ->
