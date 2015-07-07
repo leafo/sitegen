@@ -135,6 +135,11 @@ actions = {
     print!
 }
 
-{:actions}
+find_action = (name) ->
+  return actions[name] if actions[name]
+  site = get_site!
+  site\plugin_actions![name]
+
+{:actions, :find_action}
 
 

@@ -90,6 +90,15 @@ class Site
 
     scope
 
+  plugin_actions: =>
+    actions = {}
+    for plugin in *@plugins
+      continue unless plugin.command_actions
+      for fn_name in *plugin.command_actions
+        actions[fn_name] = bound_fn plugin, fn_name
+
+    actions
+
   init_from_fn: (fn) =>
     bound = bind_methods @scope
     bound = extend @plugin_scope!, bound

@@ -3,16 +3,17 @@
 action = ... or "build"
 args = {...}
 
-import actions from require "sitegen.cmd.actions"
-import catch_error from require "sitegen.common"
+import find_action from require "sitegen.cmd.actions"
+import catch_error, throw_error from require "sitegen.common"
 
 -- potential commands:
 -- plugins: sitegen blog:post "Hello World" -- did I already do this?
 
 catch_error ->
-  if not actions[action]
+  fn = find_action action
+  unless fn
     throw_error "unknown task: " .. action
 
-  actions[action] unpack args, 2
+  fn unpack args, 2
 
 -- vim: set filetype=moon:

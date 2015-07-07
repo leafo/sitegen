@@ -76,6 +76,30 @@ do
       end
       return scope
     end,
+    plugin_actions = function(self)
+      local actions = { }
+      local _list_0 = self.plugins
+      for _index_0 = 1, #_list_0 do
+        local _continue_0 = false
+        repeat
+          local plugin = _list_0[_index_0]
+          if not (plugin.command_actions) then
+            _continue_0 = true
+            break
+          end
+          local _list_1 = plugin.command_actions
+          for _index_1 = 1, #_list_1 do
+            local fn_name = _list_1[_index_1]
+            actions[fn_name] = bound_fn(plugin, fn_name)
+          end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
+        end
+      end
+      return actions
+    end,
     init_from_fn = function(self, fn)
       local bound = bind_methods(self.scope)
       bound = extend(self:plugin_scope(), bound)

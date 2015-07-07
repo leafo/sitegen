@@ -187,6 +187,15 @@ local actions = {
     return print()
   end
 }
+local find_action
+find_action = function(name)
+  if actions[name] then
+    return actions[name]
+  end
+  local site = get_site()
+  return site:plugin_actions()[name]
+end
 return {
-  actions = actions
+  actions = actions,
+  find_action = find_action
 }
