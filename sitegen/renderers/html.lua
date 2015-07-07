@@ -98,6 +98,18 @@ do
           cosmo.yield({ })
         end
         return nil
+      end,
+      url_for = function(self, query)
+        local query_pages
+        query_pages = require("sitegen.query").query_pages
+        local res = query_pages(self.site.pages, query)
+        if #res == 0 then
+          return error("failed to find any pages matching: " .. tostring(require("moon").dump(query)))
+        elseif #res > 1 then
+          return error("found more than 1 page matching: " .. tostring(require("moon").dump(query)))
+        else
+          return tostring(self.tpl_scope.root) .. "/" .. tostring(res[1]:url_for())
+        end
       end
     },
     helpers = function(self, page)

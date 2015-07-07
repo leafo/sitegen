@@ -89,6 +89,16 @@ class HTMLRenderer extends Renderer
       page_pattern = unpack args
       cosmo.yield {} if @source\match page_pattern
       nil
+
+    url_for: (query) =>
+      import query_pages from require "sitegen.query"
+      res = query_pages @site.pages, query
+      if #res == 0
+        error "failed to find any pages matching: #{require("moon").dump query}"
+      elseif #res > 1
+        error "found more than 1 page matching: #{require("moon").dump query}"
+      else
+        "#{@tpl_scope.root}/#{res[1]\url_for!}"
   }
 
   helpers: (page) =>

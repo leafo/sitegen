@@ -9,8 +9,8 @@ describe "renderers", ->
       site = factory.Site!
       renderer = HTMLRenderer site
 
-    render = (str, meta={}) ->
-      page = factory.Page(:site)
+    render = (str, meta={}, page) ->
+      page or= factory.Page(:site)
       page.render_fn, page.meta = renderer\load str
       page.meta.template = false
       for k,v in pairs meta
@@ -35,6 +35,20 @@ describe "renderers", ->
         assert.same "no yes ",
           render '$eq{1,2}[[yes]][[no]] $eq{2,2}[[yes]][[no]] $eq{1,2}[[yes]]'
 
+      it "renders url_for", ->
+        factory.Page(:site, meta: {id: "cool"})
+        p = factory.Page {
+          :site
+          target: "www/other_cool.html"
+          meta: {id: "other_cool"}
+        }
 
+        assert.same "./other_cool.html",
+          render '$url_for{id = "other_cool"}'
 
-
+        -- does relative url correctly
+        assert.same "../../other_cool.html",
+          render '$url_for{id = "other_cool"}', {}, factory.Page {
+            :site
+            target: "www/yeah/good/stuff.html"
+          }
