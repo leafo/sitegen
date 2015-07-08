@@ -1,6 +1,14 @@
 factory = require "spec.factory"
 
 describe "renderers", ->
+  render_for_site = (site, renderer, str, meta={}, page) ->
+    page or= factory.Page(:site)
+    page.render_fn, page.meta = renderer\load str
+    page.meta.template = false
+    for k,v in pairs meta
+      page.meta[k] = v
+    page\render!
+
   describe "renderers.html", ->
     local site, renderer
 
@@ -9,13 +17,7 @@ describe "renderers", ->
       site = factory.Site!
       renderer = HTMLRenderer site
 
-    render = (str, meta={}, page) ->
-      page or= factory.Page(:site)
-      page.render_fn, page.meta = renderer\load str
-      page.meta.template = false
-      for k,v in pairs meta
-        page.meta[k] = v
-      page\render!
+    render = (...) -> render_for_site site, renderer, ...
 
     it "renders basic string", ->
       assert.same "hello!", render "hello!"
@@ -52,3 +54,7 @@ describe "renderers", ->
             :site
             target: "www/yeah/good/stuff.html"
           }
+
+
+
+
