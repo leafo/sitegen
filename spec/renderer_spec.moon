@@ -55,6 +55,17 @@ describe "renderers", ->
             target: "www/yeah/good/stuff.html"
           }
 
+  describe "renderers.markdown", ->
+    local site, renderer
 
+    before_each ->
+      MarkdownRenderer = require "sitegen.renderers.markdown"
+      site = factory.Site!
+      renderer = MarkdownRenderer site
 
+    render = (...) -> render_for_site site, renderer, ...
+
+    it "renders preserves cosmo", ->
+      assert.same "<p>yes</p>\n",
+        render '$if{"val"}[[yes]]', { val: "yes" }
 
