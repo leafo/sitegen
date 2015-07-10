@@ -90,6 +90,13 @@ class HTMLRenderer extends Renderer
       cosmo.yield {} if @source\match page_pattern
       nil
 
+    query_pages: (query) =>
+      import query_pages from require "sitegen.query"
+      for page in *query_pages @site.pages, query
+        -- cosmo helpers should already be available from parent scope
+        cosmo.yield page\get_tpl_scope!
+      nil
+
     url_for: (query) =>
       import query_pages from require "sitegen.query"
       res = query_pages @site.pages, query

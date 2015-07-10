@@ -99,6 +99,14 @@ do
         end
         return nil
       end,
+      query_pages = function(self, query)
+        local query_pages
+        query_pages = require("sitegen.query").query_pages
+        for page in query_pages(self.site.pages, query) do
+          cosmo.yield(page:get_tpl_scope())
+        end
+        return nil
+      end,
       url_for = function(self, query)
         local query_pages
         query_pages = require("sitegen.query").query_pages

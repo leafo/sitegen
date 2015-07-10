@@ -55,6 +55,15 @@ describe "renderers", ->
             target: "www/yeah/good/stuff.html"
           }
 
+      it "renders query_pages", ->
+        factory.Page(:site, meta: {type: "1", title: "Interesting page title"})
+        factory.Page(:site, meta: {type: "1", title: "Another page title"})
+        factory.Page(:site, meta: {type: "3", title: "Not interesting post"})
+
+        assert.same "Interesting page title,Another page title,",
+          render '$query_pages{type = "1"}[[$title,]]'
+
+
   describe "renderers.markdown", ->
     local site, renderer
 
