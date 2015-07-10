@@ -99,15 +99,18 @@ class Page
     root = "." if root == ""
     root
 
+  get_tpl_scope: =>
+    extend {
+      generate_date: os.date!
+      root: @get_root!
+    }, @meta, @site.user_vars, @plugin_template_helpers!
+
   render: =>
     return @_content if @_content
 
     @template_stack = Stack!
 
-    @tpl_scope = extend {
-      generate_date: os.date!
-      root: @get_root!
-    }, @meta, @site.user_vars, @plugin_template_helpers!
+    @tpl_scope = @get_tpl_scope!
 
     @_content = assert @render_fn(@), "failed to get content from renderer"
 

@@ -104,15 +104,18 @@ do
       end
       return root
     end,
+    get_tpl_scope = function(self)
+      return extend({
+        generate_date = os.date(),
+        root = self:get_root()
+      }, self.meta, self.site.user_vars, self:plugin_template_helpers())
+    end,
     render = function(self)
       if self._content then
         return self._content
       end
       self.template_stack = Stack()
-      self.tpl_scope = extend({
-        generate_date = os.date(),
-        root = self:get_root()
-      }, self.meta, self.site.user_vars, self:plugin_template_helpers())
+      self.tpl_scope = self:get_tpl_scope()
       self._content = assert(self:render_fn(self), "failed to get content from renderer")
       if self.meta.template ~= false then
         self.template_stack:push(self.meta.template or self.site.config.default_template)
