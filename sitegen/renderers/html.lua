@@ -102,9 +102,19 @@ do
       query_pages = function(self, query)
         local query_pages
         query_pages = require("sitegen.query").query_pages
-        for page in query_pages(self.site.pages, query) do
+        local _list_0 = query_pages(self.site.pages, query)
+        for _index_0 = 1, #_list_0 do
+          local page = _list_0[_index_0]
           cosmo.yield(page:get_tpl_scope())
         end
+        return nil
+      end,
+      query_page = function(self, query)
+        local query_pages
+        query_pages = require("sitegen.query").query_pages
+        local res = query_pages(self.site.pages, query)
+        assert(#res == 1, "expected to find one page for `query_page`, found " .. tostring(#res))
+        cosmo.yield(res[1]:get_tpl_scope())
         return nil
       end,
       url_for = function(self, query)

@@ -97,6 +97,13 @@ class HTMLRenderer extends Renderer
         cosmo.yield page\get_tpl_scope!
       nil
 
+    query_page: (query) =>
+      import query_pages from require "sitegen.query"
+      res = query_pages @site.pages, query
+      assert #res == 1, "expected to find one page for `query_page`, found #{#res}"
+      cosmo.yield res[1]\get_tpl_scope!
+      nil
+
     url_for: (query) =>
       import query_pages from require "sitegen.query"
       res = query_pages @site.pages, query

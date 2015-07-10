@@ -63,6 +63,13 @@ describe "renderers", ->
         assert.same "Interesting page title,Another page title,",
           render '$query_pages{type = "1"}[[$title,]]'
 
+      it "renders query_pages", ->
+        factory.Page(:site, meta: {id: "1", title: "A"})
+        factory.Page(:site, meta: {id: "2", title: "B"})
+        factory.Page(:site, meta: {id: "3", title: "C"})
+
+        assert.same "B", render '$query_pages{id = "2"}[[$title]]'
+
 
   describe "renderers.markdown", ->
     local site, renderer
