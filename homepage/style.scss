@@ -16,7 +16,7 @@ body {
 
 .navigation {
     @include border_box;
-    line-height: 1.5;
+    line-height: 1.2;
     width: 200px;
     padding: 10px;
     border: 1px solid lighten(#333, 10%);
@@ -30,7 +30,7 @@ body {
     }
 
     li {
-        margin-bottom: 5px;
+        margin-bottom: 10px;
         &:last-child {
             margin-bottom: 0;
         }
