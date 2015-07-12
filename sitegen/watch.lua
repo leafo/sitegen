@@ -5,6 +5,8 @@ do
   local _base_0 = {
     page_handler = function(self, fname)
       return function()
+        self.site.pages = nil
+        self.site:load_pages()
         return self.site:Page(fname):write()
       end
     end,

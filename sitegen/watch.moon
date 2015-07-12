@@ -12,7 +12,12 @@ class Watcher
     @handle = inotify.init!
 
   page_handler: (fname) =>
-    -> @site\Page(fname)\write!
+    ->
+      -- refresh all the pages
+      @site.pages = nil
+      @site\load_pages!
+
+      @site\Page(fname)\write!
 
   build_handler: (buildset) =>
     -> @site\run_build buildset
