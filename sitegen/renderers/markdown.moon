@@ -11,7 +11,7 @@ escape_cosmo = (str) ->
   alphanum = R "az", "AZ", "09", "__"
   -- TODO: this doesn't support nesting
   -- TODO: this doesn't escape the blocks
-  cosmo = P"$" * alphanum^1 * P"{" * (P(1) - "}")^0 * P"}" / (tpl) ->
+  cosmo = P"$" * alphanum^1 * (P"{" * (P(1) - "}")^0 * P"}")^-1 / (tpl) ->
     counter += 1
     key = "#{dollar_temp}.#{counter}"
     escapes[key] = tpl

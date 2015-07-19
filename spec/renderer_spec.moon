@@ -37,6 +37,28 @@ describe "renderers", ->
         assert.same "no yes ",
           render '$eq{1,2}[[yes]][[no]] $eq{2,2}[[yes]][[no]] $eq{1,2}[[yes]]'
 
+      it "renders markdown via helper #ddd", ->
+        out = render [==[<h2>All Guides</h2>
+$markdown{[[
+* [Getting Started]($root/reference/getting_started.html)
+  * [Getting Started With MoonScript]($root/reference/moon_getting_started.html)
+  * [Getting Started With Lua]($root/reference/lua_getting_started.html)
+]]}]==]
+
+        assert.same out, [[<h2>All Guides</h2>
+<ul>
+<li><a href="./reference/getting_started.html">Getting Started</a>
+
+<ul>
+<li><a href="./reference/moon_getting_started.html">Getting Started With MoonScript</a></li>
+<li><a href="./reference/lua_getting_started.html">Getting Started With Lua</a></li>
+</ul>
+</li>
+</ul>
+
+]]
+
+
       it "renders url_for", ->
         factory.Page(:site, meta: {id: "cool"})
         p = factory.Page {
