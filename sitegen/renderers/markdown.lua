@@ -11,7 +11,7 @@ escape_cosmo = function(str)
   end
   local counter = 0
   local alphanum = R("az", "AZ", "09", "__")
-  local cosmo = P("$") * alphanum ^ 1 * P("{") * (P(1) - "}") ^ 0 * P("}") / function(tpl)
+  local cosmo = P("$") * alphanum ^ 1 * (P("{") * (P(1) - "}") ^ 0 * P("}")) ^ -1 / function(tpl)
     counter = counter + 1
     local key = tostring(dollar_temp) .. "." .. tostring(counter)
     escapes[key] = tpl
