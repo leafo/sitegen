@@ -84,21 +84,6 @@ actions = {
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
-  -- TODO: this should be implemented in the plugin, not here
-  deploy: (host, path) ->
-    site = get_site!
-    deploy = site\get_plugin "sitegen.plugins.deploy"
-    throw_error "deploy plugin not initialized" unless deploy
-
-    {:host, :path} = deploy
-
-    throw_error "need host" unless host
-    throw_error "need path" unless path
-
-    log "uploading to:", host, path
-
-    deploy\sync!
-
   build: (...) ->
     files = {...}
     site = get_site!
@@ -129,6 +114,7 @@ actions = {
       {"new", "Create a new site in the current directory"}
       {"build [input-files]", "Build (or rebuild) all pages, or only files"}
       {"page <path> [title]", "Create a new markdown page at path"}
+      -- TODO: this should come from plugin
       {"deploy [host] [path]", "Deploy site to host over ssh (rsync)"}
       {"watch", "Compile pages automatically when inputs change (needs inotify)"}
     }

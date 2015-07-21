@@ -7,6 +7,9 @@ do
     mixin_funcs = {
       "deploy_to"
     },
+    command_actions = {
+      "deploy"
+    },
     deploy_to = function(self, host, path)
       if host == nil then
         host = error("need host")
@@ -15,6 +18,20 @@ do
         path = error("need path")
       end
       self.host, self.path = host, path
+    end,
+    deploy = function(self)
+      local throw_error
+      throw_error = require("sitegen.common").throw_error
+      local log
+      log = require("sitegen.cmd.util").log
+      if not (self.host) then
+        throw_error("need host")
+      end
+      if not (self.path) then
+        throw_error("need path")
+      end
+      log("uploading to:", self.host, self.path)
+      return self:sync()
     end,
     sync = function(self)
       assert(self.host, "missing host for deploy")

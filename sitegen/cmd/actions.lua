@@ -117,22 +117,6 @@ local actions = {
       title = title
     })))
   end,
-  deploy = function(host, path)
-    local site = get_site()
-    local deploy = site:get_plugin("sitegen.plugins.deploy")
-    if not (deploy) then
-      throw_error("deploy plugin not initialized")
-    end
-    host, path = deploy.host, deploy.path
-    if not (host) then
-      throw_error("need host")
-    end
-    if not (path) then
-      throw_error("need path")
-    end
-    log("uploading to:", host, path)
-    return deploy:sync()
-  end,
   build = function(...)
     local files = {
       ...
