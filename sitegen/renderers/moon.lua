@@ -3,6 +3,8 @@ Renderer = require("sitegen.renderer").Renderer
 local moonscript = require("moonscript.base")
 local insert
 insert = table.insert
+local setfenv
+setfenv = require("sitegen.common").setfenv
 local MoonRenderer
 do
   local _parent_0 = Renderer

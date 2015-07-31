@@ -2,7 +2,7 @@
 import concat from table
 import run_with_scope, defaultbl from require "moon"
 
-import escape_patt from require "sitegen.common"
+import escape_patt, getfenv from require "sitegen.common"
 
 local *
 

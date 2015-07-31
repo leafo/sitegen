@@ -5,8 +5,11 @@ do
   local _obj_0 = require("moon")
   run_with_scope, defaultbl = _obj_0.run_with_scope, _obj_0.defaultbl
 end
-local escape_patt
-escape_patt = require("sitegen.common").escape_patt
+local escape_patt, getfenv
+do
+  local _obj_0 = require("sitegen.common")
+  escape_patt, getfenv = _obj_0.escape_patt, _obj_0.getfenv
+end
 local sort_attributes, set_sort_attributes, html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
 sort_attributes = false
 set_sort_attributes = function(v)

@@ -4,6 +4,8 @@ moonscript = require "moonscript.base"
 
 import insert from table
 
+import setfenv from require "sitegen.common"
+
 class MoonRenderer extends Renderer
   source_ext: "moon"
   ext: "html"

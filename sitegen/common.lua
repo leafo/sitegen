@@ -2,7 +2,7 @@ local socket = nil
 pcall(function()
   socket = require("socket")
 end)
-local timed_call, throw_error, pass_error, catch_error, get_local, trim_leading_white, make_list, bound_fn, punct, escape_patt, convert_pattern, slugify, flatten_args, split, trim, OrderSet, Stack, fill_ignoring_pre
+local timed_call
 timed_call = function(fn)
   local start = socket and socket.gettime()
   local res = {
@@ -10,6 +10,7 @@ timed_call = function(fn)
   }
   return socket and (socket.gettime() - start), unpack(res)
 end
+local throw_error
 throw_error = function(...)
   if coroutine.running() then
     return coroutine.yield({
@@ -20,12 +21,14 @@ throw_error = function(...)
     return error(...)
   end
 end
+local pass_error
 pass_error = function(obj, ...)
   if type(obj) == "table" and obj[1] == "error" then
     throw_error(unpack(obj, 2))
   end
   return obj, ...
 end
+local catch_error
 catch_error = function(fn)
   local Logger
   Logger = require("sitegen.output").Logger
@@ -42,6 +45,7 @@ catch_error = function(fn)
   end
   return false
 end
+local get_local
 get_local = function(name, level)
   if level == nil then
     level = 4
@@ -66,6 +70,25 @@ get_local = function(name, level)
     return locals[name]
   end
 end
+local punct = "[%^$()%.%[%]*+%-?]"
+local escape_patt
+escape_patt = function(str)
+  return (str:gsub(punct, function(p)
+    return "%" .. p
+  end))
+end
+local split
+split = function(str, delim)
+  str = str .. delim
+  local _accum_0 = { }
+  local _len_0 = 1
+  for part in str:gmatch("(.-)" .. escape_patt(delim)) do
+    _accum_0[_len_0] = part
+    _len_0 = _len_0 + 1
+  end
+  return _accum_0
+end
+local trim_leading_white
 trim_leading_white = function(str, leading)
   local lines = split(str, "\n")
   if #lines > 0 then
@@ -80,34 +103,33 @@ trim_leading_white = function(str, leading)
   end
   return table.concat(lines, "\n")
 end
+local make_list
 make_list = function(item)
   return type(item) == "table" and item or {
     item
   }
 end
+local bound_fn
 bound_fn = function(cls, fn_name)
   return function(...)
     return cls[fn_name](cls, ...)
   end
 end
-punct = "[%^$()%.%[%]*+%-?]"
-escape_patt = function(str)
-  return (str:gsub(punct, function(p)
-    return "%" .. p
-  end))
-end
+local convert_pattern
 convert_pattern = function(patt)
   patt = patt:gsub("([.])", function(item)
     return "%" .. item
   end)
   return patt:gsub("[*]", ".*")
 end
+local slugify
 slugify = function(text)
   local html = require("sitegen.html")
   text = html.strip_tags(text)
   text = text:gsub("[&+]", " and ")
   return (text:lower():gsub("%s+", "_"):gsub("[^%w_]", ""))
 end
+local flatten_args
 flatten_args = function(...)
   local accum = { }
   local options = { }
@@ -130,19 +152,11 @@ flatten_args = function(...)
   })
   return accum, options
 end
-split = function(str, delim)
-  str = str .. delim
-  local _accum_0 = { }
-  local _len_0 = 1
-  for part in str:gmatch("(.-)" .. escape_patt(delim)) do
-    _accum_0[_len_0] = part
-    _len_0 = _len_0 + 1
-  end
-  return _accum_0
-end
+local trim
 trim = function(str)
   return str:match("^%s*(.-)%s*$")
 end
+local OrderSet
 do
   local _base_0 = {
     add = function(self, item)
@@ -189,6 +203,7 @@ do
   _base_0.__class = _class_0
   OrderSet = _class_0
 end
+local Stack
 do
   local _base_0 = {
     push = function(self, item)
@@ -219,6 +234,7 @@ do
   _base_0.__class = _class_0
   Stack = _class_0
 end
+local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
   local cosmo = require("cosmo")
   local P, R, S, V, Ct, C
@@ -271,6 +287,37 @@ fill_ignoring_pre = function(text, context)
   end
   return table.concat(filled)
 end
+local setfenv = setfenv or function(fn, env)
+  local name
+  local i = 1
+  while true do
+    name = debug.getupvalue(fn, i)
+    if not name or name == "_ENV" then
+      break
+    end
+    i = i + 1
+  end
+  if name then
+    debug.upvaluejoin(fn, i, (function()
+      return env
+    end), 1)
+  end
+  return fn
+end
+local getfenv = getfenv or function(fn)
+  local i = 1
+  while true do
+    local name, val = debug.getupvalue(fn, i)
+    if not (name) then
+      break
+    end
+    if name == "_ENV" then
+      return val
+    end
+    i = i + 1
+  end
+  return _G
+end
 return {
   timed_call = timed_call,
   throw_error = throw_error,
@@ -287,6 +334,8 @@ return {
   split = split,
   trim = trim,
   fill_ignoring_pre = fill_ignoring_pre,
+  setfenv = setfenv,
+  getfenv = getfenv,
   OrderSet = OrderSet,
   Stack = Stack
 }

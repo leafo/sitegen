@@ -3,8 +3,6 @@ socket = nil
 pcall ->
   socket = require "socket"
 
-local *
-
 timed_call = (fn) ->
   start = socket and socket.gettime!
   res = {fn!}
@@ -56,6 +54,14 @@ get_local = (name, level=4) ->
   print "locals:", table.concat names, ", "
   locals[name] if name
 
+punct = "[%^$()%.%[%]*+%-?]"
+escape_patt = (str) ->
+  (str\gsub punct, (p) -> "%"..p)
+
+split = (str, delim) ->
+  str ..= delim
+  [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
+
 trim_leading_white = (str, leading) ->
   lines = split str, "\n"
   if #lines > 0
@@ -75,10 +81,6 @@ make_list = (item) ->
 
 bound_fn = (cls, fn_name) ->
   (...) -> cls[fn_name] cls, ...
-
-punct = "[%^$()%.%[%]*+%-?]"
-escape_patt = (str) ->
-  (str\gsub punct, (p) -> "%"..p)
 
 convert_pattern = (patt) ->
   patt = patt\gsub "([.])", (item) ->
@@ -108,9 +110,6 @@ flatten_args = (...) ->
   flatten {...}
   accum, options
 
-split = (str, delim) ->
-  str ..= delim
-  [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
 
 trim = (str) -> str\match "^%s*(.-)%s*$"
 
@@ -180,6 +179,29 @@ fill_ignoring_pre = (text, context) ->
 
   table.concat filled
 
+setfenv = setfenv or (fn, env) ->
+  local name
+  i = 1
+  while true
+    name = debug.getupvalue fn, i
+    break if not name or name == "_ENV"
+    i += 1
+
+  if name
+    debug.upvaluejoin fn, i, (-> env), 1
+
+  fn
+
+getfenv = getfenv or (fn) ->
+  i = 1
+  while true
+    name, val = debug.getupvalue fn, i
+    break unless name
+    return val if name == "_ENV"
+    i += 1
+  _G
+
+
 {
   :timed_call
   :throw_error
@@ -196,6 +218,7 @@ fill_ignoring_pre = (text, context) ->
   :split
   :trim
   :fill_ignoring_pre
+  :setfenv, :getfenv
 
   :OrderSet
   :Stack
