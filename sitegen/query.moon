@@ -44,6 +44,10 @@ filter = {
   -- { tag: contains "hello" } --> tag == "hello", tag = {"hello", ...}
   contains: (val) ->
     (page_val) -> array_includes page_val, val
+
+  -- sees if key is set
+  is_set: ->
+    (page_val) -> page_val != nil
 }
 
 sort = {

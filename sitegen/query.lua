@@ -89,6 +89,11 @@ local filter = {
     return function(page_val)
       return array_includes(page_val, val)
     end
+  end,
+  is_set = function()
+    return function(page_val)
+      return page_val ~= nil
+    end
   end
 }
 local sort = {
