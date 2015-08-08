@@ -8,13 +8,29 @@ query = require "sitegen.query"
 import copy, bind_methods from require "moon"
 import insert from table
 
-FeedPlugin = require "sitegen.plugins.feed"
+import render_feed from require "sitegen.plugins.feed"
 
 class BlogPlugin extends Plugin
   new: (@site) =>
+    @opts = {
+      out_file: "feed.xml"
+      filter: { is_a: query.filter.contains "blog_post" }
+      prepare: (page, ...) -> ...
+    }
+
+
+  mixin_funcs: { "blog_feed" }
+
+  blog_feed: (opts={}) =>
+    @create_feed = true
+
+    for k,v in pairs opts
+      @opts[k] = v
+
 
   write: =>
-    @posts = @site\query_pages { is_a: query.filter.contains "blog_post" }, sort: query.sort.date!
+    return unless @create_feed
+    @posts = @site\query_pages @opts.filter, sort: query.sort.date!
 
     return unless @posts[1]
 
@@ -25,8 +41,7 @@ class BlogPlugin extends Plugin
     feed_posts = for page in *@posts
       meta = page.meta
 
-      print "*", meta.title, meta.date
-      {
+      @opts.prepare page, {
         title: meta.title
         date: meta.date
         link: page\url_for true
@@ -35,9 +50,12 @@ class BlogPlugin extends Plugin
         description: rawget meta, "description"
       }
 
-    rss_text = FeedPlugin.render_feed {
-      :title, :description, link: url
+    rss_text = render_feed {
+      title: @opts.title or title
+      description: @opts.description or description
+      link: @opts.url or url
+
       unpack feed_posts
     }
 
-    @site\write_file "feed.xml", rss_text
+    @site\write_file @opts.out_file, rss_text

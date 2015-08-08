@@ -10,15 +10,29 @@ do
 end
 local insert
 insert = table.insert
-local FeedPlugin = require("sitegen.plugins.feed")
+local render_feed
+render_feed = require("sitegen.plugins.feed").render_feed
 local BlogPlugin
 do
   local _parent_0 = Plugin
   local _base_0 = {
+    mixin_funcs = {
+      "blog_feed"
+    },
+    blog_feed = function(self, opts)
+      if opts == nil then
+        opts = { }
+      end
+      self.create_feed = true
+      for k, v in pairs(opts) do
+        self.opts[k] = v
+      end
+    end,
     write = function(self)
-      self.posts = self.site:query_pages({
-        is_a = query.filter.contains("blog_post")
-      }, {
+      if not (self.create_feed) then
+        return 
+      end
+      self.posts = self.site:query_pages(self.opts.filter, {
         sort = query.sort.date()
       })
       if not (self.posts[1]) then
@@ -38,25 +52,24 @@ do
         for _index_0 = 1, #_list_0 do
           local page = _list_0[_index_0]
           local meta = page.meta
-          print("*", meta.title, meta.date)
-          local _value_0 = {
+          local _value_0 = self.opts.prepare(page, {
             title = meta.title,
             date = meta.date,
             link = page:url_for(true),
             description = rawget(meta, "description")
-          }
+          })
           _accum_0[_len_0] = _value_0
           _len_0 = _len_0 + 1
         end
         feed_posts = _accum_0
       end
-      local rss_text = FeedPlugin.render_feed({
-        title = title,
-        description = description,
-        link = url,
+      local rss_text = render_feed({
+        title = self.opts.title or title,
+        description = self.opts.description or description,
+        link = self.opts.url or url,
         unpack(feed_posts)
       })
-      return self.site:write_file("feed.xml", rss_text)
+      return self.site:write_file(self.opts.out_file, rss_text)
     end
   }
   _base_0.__index = _base_0
@@ -64,6 +77,15 @@ do
   local _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
+      self.opts = {
+        out_file = "feed.xml",
+        filter = {
+          is_a = query.filter.contains("blog_post")
+        },
+        prepare = function(page, ...)
+          return ...
+        end
+      }
     end,
     __base = _base_0,
     __name = "BlogPlugin",

@@ -117,6 +117,7 @@ do
       self.template_stack = Stack()
       self.tpl_scope = self:get_tpl_scope()
       self._content = assert(self:render_fn(self), "failed to get content from renderer")
+      self._inner_content = self._content
       if self.meta.template ~= false then
         self.template_stack:push(self.meta.template or self.site.config.default_template)
       end

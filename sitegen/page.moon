@@ -113,6 +113,7 @@ class Page
     @tpl_scope = @get_tpl_scope!
 
     @_content = assert @render_fn(@), "failed to get content from renderer"
+    @_inner_content = @_content
 
     -- wrap the page in template
     if @meta.template != false
