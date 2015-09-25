@@ -9,7 +9,7 @@ get_yaml = ->
   yaml
 
 parse_yaml_header = (text) ->
-  s, e = text\find "%-%-\n"
+  s, e = text\find "\n%s*%-%-\n"
 
   if s
     header = text\sub 1, s - 1

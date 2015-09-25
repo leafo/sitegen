@@ -13,7 +13,7 @@ get_yaml = function()
 end
 local parse_yaml_header
 parse_yaml_header = function(text)
-  local s, e = text:find("%-%-\n")
+  local s, e = text:find("\n%s*%-%-\n")
   if s then
     local header = text:sub(1, s - 1)
     text = text:sub(e)
