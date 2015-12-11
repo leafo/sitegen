@@ -2,6 +2,7 @@ local Path = require("sitegen.path")
 local inotify
 local Watcher
 do
+  local _class_0
   local _base_0 = {
     page_handler = function(self, fname)
       return function()
@@ -59,7 +60,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
       inotify = require("inotify")

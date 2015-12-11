@@ -11,6 +11,7 @@ do
 end
 local Templates
 do
+  local _class_0
   local _base_0 = {
     defaults = require("sitegen.default.templates"),
     templates_path = function(self, subpath)
@@ -51,7 +52,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
       self.io = assert(self.site.io, "site missing io")

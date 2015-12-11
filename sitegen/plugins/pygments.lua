@@ -7,6 +7,7 @@ local Plugin
 Plugin = require("sitegen.plugin").Plugin
 local PygmentsPlugin
 do
+  local _class_0
   local _parent_0 = Plugin
   local _base_0 = {
     custom_highlighters = { },
@@ -89,7 +90,7 @@ do
   }
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
       self.lang_cache = self.site.cache:get("highlight")
@@ -117,7 +118,10 @@ do
     __index = function(cls, name)
       local val = rawget(_base_0, name)
       if val == nil then
-        return _parent_0[name]
+        local parent = rawget(cls, "__parent")
+        if parent then
+          return parent[name]
+        end
       else
         return val
       end

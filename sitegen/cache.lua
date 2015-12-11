@@ -11,6 +11,7 @@ unserialize = function(text)
 end
 local CacheTable
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return "<CacheTable>"
@@ -38,7 +39,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function() end,
     __base = _base_0,
     __name = "CacheTable"
@@ -59,6 +60,7 @@ do
 end
 local Cache
 do
+  local _class_0
   local _base_0 = {
     load_cache = function(self)
       if self.loaded then
@@ -99,7 +101,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site, fname)
       if fname == nil then
         fname = ".sitegen_cache"

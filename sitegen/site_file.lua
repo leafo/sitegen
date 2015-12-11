@@ -18,6 +18,7 @@ local Logger
 Logger = require("sitegen.output").Logger
 local SiteFile
 do
+  local _class_0
   local _base_0 = {
     find_root = function(self)
       local dir = lfs.currentdir()
@@ -86,7 +87,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, opts)
       if opts == nil then
         opts = { }

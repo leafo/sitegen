@@ -9,6 +9,7 @@ do
 end
 local Page
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return table.concat({
@@ -135,7 +136,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site, source)
       self.site, self.source = site, source
       self.renderer = self.site:renderer_for(self.source)

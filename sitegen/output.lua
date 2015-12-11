@@ -1,6 +1,7 @@
 local colors = require("ansicolors")
 local Logger
 do
+  local _class_0
   local _base_0 = {
     _flatten = function(self, ...)
       return table.concat((function(...)
@@ -49,7 +50,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, opts)
       if opts == nil then
         opts = { }

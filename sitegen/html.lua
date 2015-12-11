@@ -124,13 +124,14 @@ render_tag = function(name, inner, attributes)
   return open .. inner .. close
 end
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return self.text
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, text)
       self.text = text
       self.type = "tag"
@@ -149,13 +150,14 @@ do
   Text = _class_0
 end
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return "<![CDATA[" .. self.text .. "]]>"
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, text)
       self.text = text
       self.type = "tag"
@@ -174,6 +176,7 @@ do
   CData = _class_0
 end
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return render_tag(self.name, self.inner, self.attributes)
@@ -201,7 +204,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, name, inner, attributes)
       self.name, self.inner, self.attributes = name, inner, attributes
       self.type = "tag"

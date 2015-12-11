@@ -21,6 +21,7 @@ local Page
 Page = require("sitegen.page").Page
 local Site
 do
+  local _class_0
   local _base_0 = {
     __tostring = function(self)
       return "<Site>"
@@ -262,7 +263,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, sitefile)
       if sitefile == nil then
         sitefile = nil

@@ -7,6 +7,7 @@ do
 end
 local SiteScope
 do
+  local _class_0
   local _base_0 = {
     set = function(self, name, value)
       self[name] = value
@@ -122,7 +123,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
       self.files = OrderSet()

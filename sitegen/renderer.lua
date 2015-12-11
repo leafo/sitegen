@@ -1,5 +1,6 @@
 local Renderer
 do
+  local _class_0
   local _base_0 = {
     extract_header = function(self, text)
       local extract_header
@@ -23,7 +24,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
     end,

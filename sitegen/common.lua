@@ -158,6 +158,7 @@ trim = function(str)
 end
 local OrderSet
 do
+  local _class_0
   local _base_0 = {
     add = function(self, item)
       if self.list[item] == nil then
@@ -179,7 +180,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function(self, items)
       self.list = { }
       self.set = { }
@@ -205,6 +206,7 @@ do
 end
 local Stack
 do
+  local _class_0
   local _base_0 = {
     push = function(self, item)
       self[#self + 1] = item
@@ -219,7 +221,7 @@ do
     end
   }
   _base_0.__index = _base_0
-  local _class_0 = setmetatable({
+  _class_0 = setmetatable({
     __init = function() end,
     __base = _base_0,
     __name = "Stack"
