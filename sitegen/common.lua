@@ -239,7 +239,7 @@ do
 end
 local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
-  local cosmo = require("cosmo")
+  local cosmo = require("sitegen.cosmo")
   local P, R, S, V, Ct, C
   do
     local _obj_0 = require("lpeg")

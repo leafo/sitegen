@@ -147,7 +147,7 @@ class Stack
 -- replace all template vars in text not contained in a
 -- code block
 fill_ignoring_pre = (text, context) ->
-  cosmo = require "cosmo"
+  cosmo = require "sitegen.cosmo"
   import P, R, S, V, Ct, C from require "lpeg"
 
   string_patt = (delim) ->

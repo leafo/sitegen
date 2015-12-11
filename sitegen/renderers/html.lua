@@ -1,6 +1,6 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
-local cosmo = require("cosmo")
+local cosmo = require("sitegen.cosmo")
 local extend
 extend = require("moon").extend
 local fill_ignoring_pre, throw_error, flatten_args, pass_error, unpack

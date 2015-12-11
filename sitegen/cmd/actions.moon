@@ -1,5 +1,5 @@
 moonscript = require "moonscript"
-cosmo = require "cosmo"
+cosmo = require "sitegen.cosmo"
 
 import throw_error, slugify from require "sitegen.common"
 import log, get_site, get_site, columnize, Path from require "sitegen.cmd.util"

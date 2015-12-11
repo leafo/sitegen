@@ -14,7 +14,7 @@ description = {
 
 dependencies = {
 	"lua >= 5.1",
-	"cosmo",
+	"cosmo", -- doesn't work with lua 5.2+
 	"luasocket",
 	"lua-discount",
 	"luafilesystem >= 1.5",
@@ -32,6 +32,7 @@ build = {
 		["sitegen.cmd.actions"] = "sitegen/cmd/actions.lua",
 		["sitegen.cmd.util"] = "sitegen/cmd/util.lua",
 		["sitegen.common"] = "sitegen/common.lua",
+		["sitegen.cosmo"] = "sitegen/cosmo.lua",
 		["sitegen.default.templates"] = "sitegen/default/templates.lua",
 		["sitegen.formatters.default"] = "sitegen/formatters/default.lua",
 		["sitegen.header"] = "sitegen/header.lua",

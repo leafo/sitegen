@@ -1,7 +1,7 @@
 
 require "sitegen.common"
 html = require "sitegen.html"
-cosmo = require "cosmo"
+cosmo = require "sitegen.cosmo"
 lpeg = require "lpeg"
 
 import insert, concat from table

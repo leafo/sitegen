@@ -1,5 +1,5 @@
 local moonscript = require("moonscript")
-local cosmo = require("cosmo")
+local cosmo = require("sitegen.cosmo")
 local throw_error, slugify
 do
   local _obj_0 = require("sitegen.common")

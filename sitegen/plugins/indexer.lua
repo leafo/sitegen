@@ -1,6 +1,6 @@
 require("sitegen.common")
 local html = require("sitegen.html")
-local cosmo = require("cosmo")
+local cosmo = require("sitegen.cosmo")
 local lpeg = require("lpeg")
 local insert, concat
 do
