@@ -3,10 +3,10 @@ Renderer = require("sitegen.renderer").Renderer
 local cosmo = require("cosmo")
 local extend
 extend = require("moon").extend
-local fill_ignoring_pre, throw_error, flatten_args, pass_error
+local fill_ignoring_pre, throw_error, flatten_args, pass_error, unpack
 do
   local _obj_0 = require("sitegen.common")
-  fill_ignoring_pre, throw_error, flatten_args, pass_error = _obj_0.fill_ignoring_pre, _obj_0.throw_error, _obj_0.flatten_args, _obj_0.pass_error
+  fill_ignoring_pre, throw_error, flatten_args, pass_error, unpack = _obj_0.fill_ignoring_pre, _obj_0.throw_error, _obj_0.flatten_args, _obj_0.pass_error, _obj_0.unpack
 end
 local render_until_complete
 render_until_complete = function(tpl_scope, render_fn, reset_fn)

@@ -2,6 +2,7 @@ local socket = nil
 pcall(function()
   socket = require("socket")
 end)
+local unpack = unpack or table.unpack
 local timed_call
 timed_call = function(fn)
   local start = socket and socket.gettime()
@@ -338,6 +339,7 @@ return {
   fill_ignoring_pre = fill_ignoring_pre,
   setfenv = setfenv,
   getfenv = getfenv,
+  unpack = unpack,
   OrderSet = OrderSet,
   Stack = Stack
 }

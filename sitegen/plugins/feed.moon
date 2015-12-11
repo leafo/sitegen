@@ -3,6 +3,7 @@ import Plugin from require "sitegen.plugin"
 
 import
   trim_leading_white
+  unpack
   from require "sitegen.common"
 
 html = require "sitegen.html"

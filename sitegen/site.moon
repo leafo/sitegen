@@ -15,6 +15,7 @@ import
   escape_patt
   timed_call
   bound_fn
+  unpack
   from require "sitegen.common"
 
 import Cache from require "sitegen.cache"

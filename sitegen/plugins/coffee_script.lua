@@ -1,6 +1,8 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
 local html = require("sitegen.html")
+local unpack
+unpack = require("sitegen.common").unpack
 local CoffeeScriptPlugin
 do
   local _class_0

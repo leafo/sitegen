@@ -1,7 +1,10 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
-local trim_leading_white
-trim_leading_white = require("sitegen.common").trim_leading_white
+local trim_leading_white, unpack
+do
+  local _obj_0 = require("sitegen.common")
+  trim_leading_white, unpack = _obj_0.trim_leading_white, _obj_0.unpack
+end
 local html = require("sitegen.html")
 local discount = require("discount")
 local date = require("date")

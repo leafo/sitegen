@@ -8,6 +8,8 @@ do
 end
 local insert
 insert = table.insert
+local unpack
+unpack = require("sitegen.common").unpack
 local render_feed
 render_feed = require("sitegen.plugins.feed").render_feed
 local BlogPlugin

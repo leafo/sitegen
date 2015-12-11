@@ -3,11 +3,12 @@ socket = nil
 pcall ->
   socket = require "socket"
 
+unpack = unpack or table.unpack
+
 timed_call = (fn) ->
   start = socket and socket.gettime!
   res = {fn!}
   socket and (socket.gettime! - start), unpack res
-
 
 throw_error = (...) ->
   if coroutine.running()
@@ -219,6 +220,7 @@ getfenv = getfenv or (fn) ->
   :trim
   :fill_ignoring_pre
   :setfenv, :getfenv
+  :unpack
 
   :OrderSet
   :Stack

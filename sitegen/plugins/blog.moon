@@ -5,6 +5,7 @@ query = require "sitegen.query"
 
 import copy, bind_methods from require "moon"
 import insert from table
+import unpack from require "sitegen.common"
 
 import render_feed from require "sitegen.plugins.feed"
 

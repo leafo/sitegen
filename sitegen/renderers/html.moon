@@ -9,6 +9,7 @@ import
   throw_error
   flatten_args
   pass_error
+  unpack
   from require "sitegen.common"
 
 -- template_helpers can yield if they decide to change the

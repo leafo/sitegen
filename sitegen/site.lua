@@ -6,10 +6,10 @@ do
   extend, run_with_scope, bind_methods = _obj_0.extend, _obj_0.run_with_scope, _obj_0.bind_methods
 end
 local Path = require("sitegen.path")
-local OrderSet, make_list, throw_error, escape_patt, timed_call, bound_fn
+local OrderSet, make_list, throw_error, escape_patt, timed_call, bound_fn, unpack
 do
   local _obj_0 = require("sitegen.common")
-  OrderSet, make_list, throw_error, escape_patt, timed_call, bound_fn = _obj_0.OrderSet, _obj_0.make_list, _obj_0.throw_error, _obj_0.escape_patt, _obj_0.timed_call, _obj_0.bound_fn
+  OrderSet, make_list, throw_error, escape_patt, timed_call, bound_fn, unpack = _obj_0.OrderSet, _obj_0.make_list, _obj_0.throw_error, _obj_0.escape_patt, _obj_0.timed_call, _obj_0.bound_fn, _obj_0.unpack
 end
 local Cache
 Cache = require("sitegen.cache").Cache
