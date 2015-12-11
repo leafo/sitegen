@@ -6,7 +6,6 @@ import escape_patt, getfenv from require "sitegen.common"
 
 local *
 
-sort_attributes = false
 set_sort_attributes = (v) -> sort_attributes = v
 
 html_encode_entities = {
@@ -141,4 +140,6 @@ build = (fn, delim="\n") ->
 {
   :encode, :decode, :strip_tags, :build, :builders, :escape, :unescape, :tag,
   :sort_attributes
+
+  sort_attributes: set_sort_attributes
 }

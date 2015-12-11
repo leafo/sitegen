@@ -10,10 +10,9 @@ do
   local _obj_0 = require("sitegen.common")
   escape_patt, getfenv = _obj_0.escape_patt, _obj_0.getfenv
 end
-local sort_attributes, set_sort_attributes, html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
-sort_attributes = false
+local set_sort_attributes, html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
 set_sort_attributes = function(v)
-  sort_attributes = v
+  local sort_attributes = v
 end
 html_encode_entities = {
   ['&'] = '&amp;',
@@ -276,5 +275,6 @@ return {
   escape = escape,
   unescape = unescape,
   tag = tag,
-  sort_attributes = sort_attributes
+  sort_attributes = sort_attributes,
+  sort_attributes = set_sort_attributes
 }

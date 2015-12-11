@@ -13,7 +13,7 @@ describe "html", ->
     setup ->
       package.loaded.html = nil
       html = require "sitegen.html"
-      html.set_sort_attributes = true
+      html.sort_attributes true
 
     teardown ->
       package.loaded.html = nil
