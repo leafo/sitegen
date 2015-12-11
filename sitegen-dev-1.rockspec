@@ -21,7 +21,6 @@ dependencies = {
 	"luafilesystem >= 1.5",
 	"lua-cjson",
 	"date",
-	"yaml", -- remove me
 	"ansicolors",
 }
 

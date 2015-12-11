@@ -1,28 +1,5 @@
 local trim_leading_white
 trim_leading_white = require("sitegen.common").trim_leading_white
-local get_yaml
-get_yaml = function()
-  local yaml
-  pcall(function()
-    yaml = require("yaml")
-  end)
-  get_yaml = function()
-    return yaml
-  end
-  return yaml
-end
-local parse_yaml_header
-parse_yaml_header = function(text)
-  local s, e = text:find("\n%s*%-%-\n")
-  if s then
-    local header = text:sub(1, s - 1)
-    text = text:sub(e)
-    header = trim_leading_white(header)
-    header = get_yaml().load(header)
-    return text, header
-  end
-  return nil, "no header found"
-end
 local parse_moonscript_header
 parse_moonscript_header = function(text)
   if text:match("^%s*{") then
@@ -45,12 +22,6 @@ parse_moonscript_header = function(text)
 end
 local extract_header
 extract_header = function(text)
-  if get_yaml() then
-    local remaining, header = parse_yaml_header(text)
-    if remaining then
-      return remaining, header
-    end
-  end
   local remaining, header = parse_moonscript_header(text)
   if remaining then
     return remaining, header
