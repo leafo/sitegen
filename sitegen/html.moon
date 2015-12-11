@@ -4,7 +4,7 @@ import run_with_scope, defaultbl from require "moon"
 
 import escape_patt, getfenv from require "sitegen.common"
 
-local *
+local sort_attributes, build
 
 set_sort_attributes = (v) -> sort_attributes = v
 
@@ -97,13 +97,12 @@ class Tag
   new: (@name, @inner, @attributes) => @type = "tag"
   __tostring: => render_tag @name, @inner, @attributes
   __call: (arg) =>
-    t = type arg
-    if not is_list arg then arg = {arg}
+    arg = {arg} unless is_list arg
+
     attributes = {}
     inner = {}
 
     if is_list arg
-      len = #arg
       for k,v in pairs arg
         if type(k) == "number"
           table.insert inner, v
@@ -139,7 +138,5 @@ build = (fn, delim="\n") ->
 
 {
   :encode, :decode, :strip_tags, :build, :builders, :escape, :unescape, :tag,
-  :sort_attributes
-
   sort_attributes: set_sort_attributes
 }

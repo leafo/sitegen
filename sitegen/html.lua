@@ -10,22 +10,23 @@ do
   local _obj_0 = require("sitegen.common")
   escape_patt, getfenv = _obj_0.escape_patt, _obj_0.getfenv
 end
-local set_sort_attributes, html_encode_entities, html_decode_entities, html_encode_pattern, encode, escape, decode, unescape, strip_tags, is_list, render_list, render_tag, Text, CData, Tag, tag, builders, build
+local sort_attributes, build
+local set_sort_attributes
 set_sort_attributes = function(v)
-  local sort_attributes = v
+  sort_attributes = v
 end
-html_encode_entities = {
+local html_encode_entities = {
   ['&'] = '&amp;',
   ['<'] = '&lt;',
   ['>'] = '&gt;',
   ['"'] = '&quot;',
   ["'"] = '&#039;'
 }
-html_decode_entities = { }
+local html_decode_entities = { }
 for key, value in pairs(html_encode_entities) do
   html_decode_entities[value] = key
 end
-html_encode_pattern = "[" .. concat((function()
+local html_encode_pattern = "[" .. concat((function()
   local _accum_0 = { }
   local _len_0 = 1
   for char in pairs(html_encode_entities) do
@@ -34,10 +35,12 @@ html_encode_pattern = "[" .. concat((function()
   end
   return _accum_0
 end)()) .. "]"
+local encode
 encode = function(text)
   return (text:gsub(html_encode_pattern, html_encode_entities))
 end
-escape = encode
+local escape = encode
+local decode
 decode = function(text)
   return (text:gsub("(&[^&]-;)", function(enc)
     local decoded = html_decode_entities[enc]
@@ -48,13 +51,16 @@ decode = function(text)
     end
   end))
 end
-unescape = decode
+local unescape = decode
+local strip_tags
 strip_tags = function(html)
   return html:gsub("<[^>]+>", "")
 end
+local is_list
 is_list = function(t)
   return type(t) == "table" and t.type ~= "tag"
 end
+local render_list
 render_list = function(list, delim)
   local escaped
   do
@@ -79,6 +85,7 @@ render_list = function(list, delim)
   end
   return table.concat(escaped, delim)
 end
+local render_tag
 render_tag = function(name, inner, attributes)
   if inner == nil then
     inner = ""
@@ -122,6 +129,7 @@ render_tag = function(name, inner, attributes)
   end
   return open .. inner .. close
 end
+local Text
 do
   local _class_0
   local _base_0 = {
@@ -148,6 +156,7 @@ do
   _base_0.__class = _class_0
   Text = _class_0
 end
+local CData
 do
   local _class_0
   local _base_0 = {
@@ -174,6 +183,7 @@ do
   _base_0.__class = _class_0
   CData = _class_0
 end
+local Tag
 do
   local _class_0
   local _base_0 = {
@@ -181,8 +191,7 @@ do
       return render_tag(self.name, self.inner, self.attributes)
     end,
     __call = function(self, arg)
-      local t = type(arg)
-      if not is_list(arg) then
+      if not (is_list(arg)) then
         arg = {
           arg
         }
@@ -190,7 +199,6 @@ do
       local attributes = { }
       local inner = { }
       if is_list(arg) then
-        local len = #arg
         for k, v in pairs(arg) do
           if type(k) == "number" then
             table.insert(inner, v)
@@ -221,8 +229,8 @@ do
   _base_0.__class = _class_0
   Tag = _class_0
 end
-tag = nil
-builders = defaultbl({
+local tag = nil
+local builders = defaultbl({
   text = function()
     return function(str)
       return Text(str)
@@ -275,6 +283,5 @@ return {
   escape = escape,
   unescape = unescape,
   tag = tag,
-  sort_attributes = sort_attributes,
   sort_attributes = set_sort_attributes
 }

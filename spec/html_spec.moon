@@ -20,8 +20,8 @@ describe "html", ->
 
     it "renders some html with attributes", ->
       out = html.build ->
-        div class: "yeah", id: "okay"
-      assert.same [[<div class="yeah" id="okay"></div>]], out
+        div class: "yeah", good: "world", id: "okay", one: "two", three: "yeah"
+      assert.same [[<div class="yeah" good="world" id="okay" one="two" three="yeah"></div>]], out
 
     it "renders nested html", ->
       out = html.build ->
