@@ -9,6 +9,25 @@ describe "renderers", ->
       page.meta[k] = v
     page\render!
 
+  describe "renderers.moon", ->
+    local site, renderer
+
+    render = (...) -> render_for_site site, renderer, ...
+
+    before_each ->
+      MoonRenderer = require "sitegen.renderers.moon"
+      site = factory.Site!
+      renderer = MoonRenderer site
+
+    it "renders some raw text", ->
+      assert.same 'what the heck', render "write 'what the heck'"
+
+    it "renders with html helper from default formatter", ->
+      assert.same '<div color="blue">you smell</div>', render [[
+html ->
+  div { color: "blue", "you smell" }
+]]
+
   describe "renderers.html", ->
     local site, renderer
 
