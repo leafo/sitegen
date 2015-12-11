@@ -23,7 +23,7 @@ render_until_complete = (tpl_scope, render_fn, reset_fn) ->
       out = render_fn!
       nil
 
-    success, altered_source = assert coroutine.resume co
+    _, altered_source = assert coroutine.resume co
     pass_error altered_source
 
     if altered_source

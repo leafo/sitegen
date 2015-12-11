@@ -1,7 +1,3 @@
-cosmo = require "cosmo"
-html = require "sitegen.html"
-moonscript = require "moonscript.base"
-
 import extend from require "moon"
 
 Path = require "sitegen.path"

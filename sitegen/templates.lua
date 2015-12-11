@@ -1,6 +1,3 @@
-local cosmo = require("cosmo")
-local html = require("sitegen.html")
-local moonscript = require("moonscript.base")
 local extend
 extend = require("moon").extend
 local Path = require("sitegen.path")

@@ -34,7 +34,7 @@ parse_moonscript_header = function(text)
       V, Cp, Ct = _obj_0.V, _obj_0.Cp, _obj_0.Ct
     end
     local g = assert(build_grammar(V("TableLit") * Cp()))
-    local res, pos = assert(g:match(text))
+    local _, pos = assert(g:match(text))
     if type(pos) == "number" then
       local loadstring
       loadstring = require("moonscript.base").loadstring

@@ -26,7 +26,7 @@ parse_moonscript_header = (text) ->
     import build_grammar from require "moonscript.parse"
     import V, Cp, Ct from require "lpeg"
     g = assert build_grammar V"TableLit" * Cp!
-    res, pos = assert g\match(text)
+    _, pos = assert g\match(text)
 
     if type(pos) == "number"
       import loadstring from require "moonscript.base"

@@ -1,7 +1,5 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
-local html = require("sitegen.html")
-local cosmo = require("cosmo")
 local query = require("sitegen.query")
 local copy, bind_methods
 do

@@ -1,8 +1,6 @@
 
 import Plugin from require "sitegen.plugin"
 
-html = require "sitegen.html"
-cosmo = require "cosmo"
 query = require "sitegen.query"
 
 import copy, bind_methods from require "moon"

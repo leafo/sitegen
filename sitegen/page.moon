@@ -75,7 +75,6 @@ class Page
 
   -- read the source
   read: =>
-    text = nil
     with out = @site.io.read_file @source
       unless out
         throw_error "failed to read input file: " .. @source

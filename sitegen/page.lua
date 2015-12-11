@@ -52,7 +52,6 @@ do
       return self.target
     end,
     read = function(self)
-      local text = nil
       do
         local out = self.site.io.read_file(self.source)
         if not (out) then

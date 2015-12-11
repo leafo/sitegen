@@ -78,7 +78,7 @@ do
         local old_master = self.__class.master
         self.__class.master = self
         site = run_with_scope(fn, {
-          sitegen = require("sitegen")
+          sitegen = sitegen
         })
         self.__class.master = old_master
       end

@@ -92,7 +92,7 @@ class SiteFile
       @@master = @
       site = run_with_scope fn, {
         -- for legacy pages that doesn't reference module
-        sitegen: require "sitegen"
+        :sitegen
       }
       @@master = old_master
 

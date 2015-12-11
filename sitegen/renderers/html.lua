@@ -17,7 +17,7 @@ render_until_complete = function(tpl_scope, render_fn, reset_fn)
       out = render_fn()
       return nil
     end)
-    local success, altered_source = assert(coroutine.resume(co))
+    local _, altered_source = assert(coroutine.resume(co))
     pass_error(altered_source)
     if altered_source then
       tpl_scope.render_source = altered_source
