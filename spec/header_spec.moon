@@ -17,17 +17,6 @@ hello world
   another test
 test]], trim_leading_white indented
 
-  it "extracts yaml header", ->
-    import extract_header from require "sitegen.header"
-    body, header = extract_header [[
-      color: blue
-      --
-      Hello!
-    ]]
-
-    assert.same "Hello!", trim body
-    assert.same { color: "blue" }, header
-
   it "extracts empty moonscript header", ->
     import extract_header from require "sitegen.header"
     body, header = extract_header [[{}hello world]]
