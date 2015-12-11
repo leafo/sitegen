@@ -40,7 +40,9 @@ class Page
     if override_meta = @site.scope.meta[@source]
       @merge_meta override_meta
 
-    @target = if @meta.target
+    @target = if @meta.target_fname
+      Path.join @site.config.out_dir, @meta.target_fname
+    elseif @meta.target
       Path.join @site.config.out_dir, @meta.target .. "." .. @renderer.ext
     else
       @site\output_path_for @source, @renderer.ext

@@ -154,7 +154,9 @@ do
           self:merge_meta(override_meta)
         end
       end
-      if self.meta.target then
+      if self.meta.target_fname then
+        self.target = Path.join(self.site.config.out_dir, self.meta.target_fname)
+      elseif self.meta.target then
         self.target = Path.join(self.site.config.out_dir, self.meta.target .. "." .. self.renderer.ext)
       else
         self.target = self.site:output_path_for(self.source, self.renderer.ext)
