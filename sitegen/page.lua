@@ -113,6 +113,9 @@ do
         root = self:get_root()
       }, self.meta, self.site.user_vars, self:plugin_template_helpers())
     end,
+    set_content = function(self, _content)
+      self._content = _content
+    end,
     render = function(self)
       if self._content then
         return self._content

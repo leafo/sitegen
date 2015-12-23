@@ -110,6 +110,8 @@ class Page
       root: @get_root!
     }, @meta, @site.user_vars, @plugin_template_helpers!
 
+  set_content: (@_content) =>
+
   render: =>
     return @_content if @_content
     @trigger "page.before_render"
