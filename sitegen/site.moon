@@ -52,6 +52,7 @@ class Site
   }
 
   new: (sitefile=nil) =>
+    import Dispatch from require "sitegen.dispatch"
     import SiteFile from require "sitegen.site_file"
     @sitefile = assert sitefile or SiteFile.master, "missing sitefile"
 
@@ -63,11 +64,14 @@ class Site
     @scope = SiteScope self
     @cache = Cache self
 
+    @events = Dispatch!
+
     @user_vars = {}
     @written_files = {}
 
     @renderers = [require(rmod) @ for rmod in *@@default_renderers]
     @plugins = [require(pmod) @ for pmod in *@@default_plugins]
+    @events\trigger "site.new", @
 
   Templates: => Templates @
   Page: (...) => Page self, ...
@@ -162,7 +166,11 @@ class Site
     nil
 
   load_pages: =>
-    @pages or= [@Page path for path in @scope.files\each!]
+    unless @pages
+      @pages = for path in @scope.files\each!
+        with page = @Page path
+          @events\trigger "site.load_page", @, page
+
     @pages
 
   query_pages: (...) =>

@@ -47,6 +47,11 @@ class Page
     else
       @site\output_path_for @source, @renderer.ext
 
+    @trigger "page.new"
+
+  trigger: (event, ...) =>
+    @site.events\trigger event, @, ...
+
   merge_meta: (tbl) =>
     for k,v in pairs tbl
       @meta[k] = v
@@ -92,7 +97,6 @@ class Page
 
     helpers
 
-
   get_root: =>
     base = Path.basepath @target
     parts = for i = 1, #split(base, "/") - 1 do ".."
@@ -108,6 +112,7 @@ class Page
 
   render: =>
     return @_content if @_content
+    @trigger "page.before_render"
 
     @template_stack = Stack!
 
@@ -115,6 +120,8 @@ class Page
 
     @_content = assert @render_fn(@), "failed to get content from renderer"
     @_inner_content = @_content
+
+    @trigger "page.content_rendered"
 
     -- wrap the page in template
     if @meta.template != false
@@ -125,6 +132,8 @@ class Page
       if template = @site.templates\find_by_name tpl_name
         @tpl_scope.body = @_content
         @_content = template @
+
+    @trigger "page.rendered"
 
     @_content
 

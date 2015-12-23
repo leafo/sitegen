@@ -180,15 +180,21 @@ do
       return nil
     end,
     load_pages = function(self)
-      self.pages = self.pages or (function()
-        local _accum_0 = { }
-        local _len_0 = 1
-        for path in self.scope.files:each() do
-          _accum_0[_len_0] = self:Page(path)
-          _len_0 = _len_0 + 1
+      if not (self.pages) then
+        do
+          local _accum_0 = { }
+          local _len_0 = 1
+          for path in self.scope.files:each() do
+            do
+              local page = self:Page(path)
+              self.events:trigger("site.load_page", self, page)
+              _accum_0[_len_0] = page
+            end
+            _len_0 = _len_0 + 1
+          end
+          self.pages = _accum_0
         end
-        return _accum_0
-      end)()
+      end
       return self.pages
     end,
     query_pages = function(self, ...)
@@ -268,6 +274,8 @@ do
       if sitefile == nil then
         sitefile = nil
       end
+      local Dispatch
+      Dispatch = require("sitegen.dispatch").Dispatch
       local SiteFile
       SiteFile = require("sitegen.site_file").SiteFile
       self.sitefile = assert(sitefile or SiteFile.master, "missing sitefile")
@@ -276,6 +284,7 @@ do
       self.templates = self:Templates(self.config.template_dir)
       self.scope = SiteScope(self)
       self.cache = Cache(self)
+      self.events = Dispatch()
       self.user_vars = { }
       self.written_files = { }
       do
@@ -300,6 +309,7 @@ do
         end
         self.plugins = _accum_0
       end
+      return self.events:trigger("site.new", self)
     end,
     __base = _base_0,
     __name = "Site"

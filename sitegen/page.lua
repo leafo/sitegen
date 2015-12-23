@@ -18,6 +18,9 @@ do
         "'>"
       })
     end,
+    trigger = function(self, event, ...)
+      return self.site.events:trigger(event, self, ...)
+    end,
     merge_meta = function(self, tbl)
       for k, v in pairs(tbl) do
         self.meta[k] = v
@@ -114,10 +117,12 @@ do
       if self._content then
         return self._content
       end
+      self:trigger("page.before_render")
       self.template_stack = Stack()
       self.tpl_scope = self:get_tpl_scope()
       self._content = assert(self:render_fn(self), "failed to get content from renderer")
       self._inner_content = self._content
+      self:trigger("page.content_rendered")
       if self.meta.template ~= false then
         self.template_stack:push(self.meta.template or self.site.config.default_template)
       end
@@ -131,6 +136,7 @@ do
           end
         end
       end
+      self:trigger("page.rendered")
       return self._content
     end
   }
@@ -161,6 +167,7 @@ do
       else
         self.target = self.site:output_path_for(self.source, self.renderer.ext)
       end
+      return self:trigger("page.new")
     end,
     __base = _base_0,
     __name = "Page"
