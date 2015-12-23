@@ -81,6 +81,10 @@ class Site
     for r in *@renderers
       return r if cls == r.__class
 
+  add_plugin: (mod) =>
+    p = require(mod) @
+    table.insert @plugins, p
+
   get_plugin: (cls) =>
     cls = require cls if type(cls) == "string"
     for p in *@plugins

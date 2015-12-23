@@ -50,6 +50,10 @@ do
         end
       end
     end,
+    add_plugin = function(self, mod)
+      local p = require(mod)(self)
+      return table.insert(self.plugins, p)
+    end,
     get_plugin = function(self, cls)
       if type(cls) == "string" then
         cls = require(cls)
