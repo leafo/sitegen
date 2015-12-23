@@ -6,6 +6,13 @@ do
   _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
+      if self.events then
+        for event_name, func in pairs(self.events) do
+          self.site.events:on(event_name, function(...)
+            return func(self, ...)
+          end)
+        end
+      end
     end,
     __base = _base_0,
     __name = "Plugin"
