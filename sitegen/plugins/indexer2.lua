@@ -68,6 +68,36 @@ do
         current = current.parent
       end
       return out, headers
+    end,
+    render_index = function(self, headers)
+      local html = require("sitegen.html")
+      return html.build(function()
+        local render
+        render = function(headers)
+          return ul((function()
+            local _accum_0 = { }
+            local _len_0 = 1
+            for _index_0 = 1, #headers do
+              local item = headers[_index_0]
+              if item.depth then
+                _accum_0[_len_0] = render(item)
+              else
+                local title, slug
+                title, slug = item[1], item[2]
+                _accum_0[_len_0] = li({
+                  a({
+                    title,
+                    href = "#" .. tostring(slug)
+                  })
+                })
+              end
+              _len_0 = _len_0 + 1
+            end
+            return _accum_0
+          end)())
+        end
+        return render(headers)
+      end)
     end
   }
   _base_0.__index = _base_0

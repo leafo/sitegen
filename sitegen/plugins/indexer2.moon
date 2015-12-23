@@ -56,4 +56,28 @@ class Indexer2Plugin extends Plugin
       insert current.parent, current
       current = current.parent
 
+    -- print @render_index headers
     out, headers
+  
+  render_index: (headers) =>
+    html = require "sitegen.html"
+    html.build ->
+      render = (headers) ->
+        ul for item in *headers
+          if item.depth
+            render item
+          else
+            {title, slug} = item
+
+            li {
+              a {
+                title
+                href: "##{slug}"
+              }
+            }
+
+
+      render headers
+
+
+
