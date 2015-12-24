@@ -7,10 +7,27 @@ import slugify from require "sitegen.common"
 import insert from table
 
 class Indexer2Plugin extends Plugin
+  tpl_helpers: { "index2" }
+
   events: {
     "page.content_rendered": (e, page, content) =>
       page\set_content @parse_headers content
   }
+
+  new: (@site) =>
+    super @site
+    @current_index = {}
+
+  -- renders index from within template
+  index2: (page) =>
+    unless @current_index[page]
+      assert page.tpl_scope.render_source,
+        "attempting to render index with no body available (are you in cosmo?)"
+
+      body, @current_index[page] = @parse_headers page.tpl_scope.render_source
+      coroutine.yield body
+
+    @render_index @current_index[page]
 
   parse_headers: (content) =>
     headers = {}

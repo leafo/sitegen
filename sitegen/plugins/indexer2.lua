@@ -11,11 +11,23 @@ do
   local _class_0
   local _parent_0 = Plugin
   local _base_0 = {
+    tpl_helpers = {
+      "index2"
+    },
     events = {
       ["page.content_rendered"] = function(self, e, page, content)
         return page:set_content(self:parse_headers(content))
       end
     },
+    index2 = function(self, page)
+      if not (self.current_index[page]) then
+        assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
+        local body
+        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source)
+        coroutine.yield(body)
+      end
+      return self:render_index(self.current_index[page])
+    end,
     parse_headers = function(self, content)
       local headers = { }
       local current = headers
@@ -103,8 +115,10 @@ do
   _base_0.__index = _base_0
   setmetatable(_base_0, _parent_0.__base)
   _class_0 = setmetatable({
-    __init = function(self, ...)
-      return _class_0.__parent.__init(self, ...)
+    __init = function(self, site)
+      self.site = site
+      _class_0.__parent.__init(self, self.site)
+      self.current_index = { }
     end,
     __base = _base_0,
     __name = "Indexer2Plugin",

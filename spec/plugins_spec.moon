@@ -24,14 +24,14 @@ describe "sitegen.plugins.indexer", ->
 describe "sitegen.plugins.indexer2", ->
   it "should index a page #ddd", ->
     page = factory.Page {
-      render_fn: (page) ->
-        [[
-          <h1>First header</h1>
-          <h2>Second header</h2>
-        ]]
+      render_fn: HTMLRenderer\load [[
+        $index2
+        <h1>First header</h1>
+        <h2>Second header</h2>
+      ]]
     }
 
     page.site\add_plugin "sitegen.plugins.indexer2"
     page\render!
-    assert.same [[<h1 id="first_header">First header</h1><h2 id="second_header">Second header</h2>]], flatten_html page._inner_content
+    assert.same [[<ul><li><a href="#first_header">First header</a></li><ul><li><a href="#second_header">Second header</a></li></ul></ul><h1 id="first_header">First header</h1><h2 id="second_header">Second header</h2>]], flatten_html page._inner_content
 
