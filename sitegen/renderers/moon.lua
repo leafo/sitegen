@@ -12,12 +12,16 @@ do
   local _base_0 = {
     source_ext = "moon",
     ext = "html",
-    load = function(self, source)
+    load = function(self, source, fname)
       local content_fn, meta = _class_0.__parent.__base.load(self, source)
+      local chunk_name
+      if fname then
+        chunk_name = "@" .. tostring(fname)
+      end
       local render
       render = function(page)
         local scopes = { }
-        local fn = assert(moonscript.loadstring(content_fn()))
+        local fn = assert(moonscript.loadstring(content_fn(), chunk_name))
         local context = setmetatable({ }, {
           __index = function(self, key)
             for i = #scopes, 1, -1 do

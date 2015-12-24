@@ -29,7 +29,7 @@ do
           end
           local fname = self:templates_path(tostring(name) .. "." .. tostring(renderer.source_ext))
           if self.io.exists(fname) then
-            self.template_cache[name] = renderer:load(self.io.read_file(fname))
+            self.template_cache[name] = renderer:load(self.io.read_file(fname), fname)
             break
           end
           _continue_0 = true
@@ -42,7 +42,7 @@ do
         local default = not self.template_cache[name] and self.defaults[name]
         if default then
           local HTMLRenderer = require("sitegen.renderers.html")
-          self.template_cache[name] = HTMLRenderer:load(default)
+          self.template_cache[name] = HTMLRenderer:load(default, "default.template(" .. tostring(name) .. ")")
         end
       end
       return self.template_cache[name]

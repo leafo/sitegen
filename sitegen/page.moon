@@ -32,7 +32,7 @@ class Page
        source_text = filter(filter_opts, source_text) or source_text
 
     -- extract metadata
-    @render_fn, @meta = @renderer\load source_text, @
+    @render_fn, @meta = @renderer\load source_text, @source
     @meta = @meta or {}
 
     @merge_meta filter_opts

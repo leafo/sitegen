@@ -10,12 +10,15 @@ class MoonRenderer extends Renderer
   source_ext: "moon"
   ext: "html"
 
-  load: (source) =>
+  load: (source, fname) =>
     content_fn, meta = super source
+
+    chunk_name = if fname
+      "@#{fname}"
 
     render = (page) ->
       scopes = {}
-      fn = assert moonscript.loadstring content_fn!
+      fn = assert moonscript.loadstring content_fn!, chunk_name
 
       context = setmetatable {}, {
         __index: (key) =>

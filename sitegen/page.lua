@@ -154,7 +154,7 @@ do
       if filter then
         source_text = filter(filter_opts, source_text) or source_text
       end
-      self.render_fn, self.meta = self.renderer:load(source_text, self)
+      self.render_fn, self.meta = self.renderer:load(source_text, self.source)
       self.meta = self.meta or { }
       self:merge_meta(filter_opts)
       do

@@ -6,8 +6,11 @@ class LapisRenderer extends Renderer
   source_ext: "moon"
   ext: "html"
 
-  load: (source) =>
-    fn = assert moonscript.loadstring source
+  load: (source, fname) =>
+    chunk_name = if fname
+      "@#{fname}"
+
+    fn = assert moonscript.loadstring source, chunk_name
     widget = fn!
     ((page) ->
       w = widget(:page, site: page.site)

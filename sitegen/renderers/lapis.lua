@@ -8,8 +8,12 @@ do
   local _base_0 = {
     source_ext = "moon",
     ext = "html",
-    load = function(self, source)
-      local fn = assert(moonscript.loadstring(source))
+    load = function(self, source, fname)
+      local chunk_name
+      if fname then
+        chunk_name = "@" .. tostring(fname)
+      end
+      local fn = assert(moonscript.loadstring(source, chunk_name))
       local widget = fn()
       return (function(page)
         local w = widget({

@@ -27,12 +27,12 @@ class Templates
       continue unless renderer.source_ext
       fname = @templates_path "#{name}.#{renderer.source_ext}"
       if @io.exists fname
-        @template_cache[name] = renderer\load @io.read_file fname
+        @template_cache[name] = renderer\load @io.read_file(fname), fname
         break
 
     if default = not @template_cache[name] and @defaults[name]
       HTMLRenderer = require "sitegen.renderers.html"
-      @template_cache[name] = HTMLRenderer\load(default)
+      @template_cache[name] = HTMLRenderer\load(default, "default.template(#{name})")
 
     @template_cache[name]
 
