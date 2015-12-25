@@ -93,7 +93,7 @@ slugify = (text) ->
   html = require "sitegen.html"
   text = html.strip_tags text
   text = text\gsub "[&+]", " and "
-  (text\lower!\gsub("%s+", "_")\gsub("[^%w_]", ""))
+  (text\gsub("[%s_]+", "-")\gsub("[^%w%-]+", "")\gsub("-+", "-"))\lower!
 
 flatten_args = (...) ->
   accum = {}
