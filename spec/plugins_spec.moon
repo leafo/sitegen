@@ -13,13 +13,16 @@ describe "sitegen.plugins.indexer", ->
     page = factory.Page {
       render_fn: HTMLRenderer\load [[
         $index
-        <h1>First header</h1>
+        <h2>First header</h1>
         <h2>Second header</h2>
+        <h3>Third header</h3>
+        <h2>Another first header</h3>
       ]]
     }
 
     page\render!
-    assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#second-header">Second header</a></li></ul></ul><h1 id="first-header">First header</h1><h2 id="second-header">Second header</h2>]], flatten_html page._inner_content
+    assert.same [[<ul><li><a href="#second-header">Second header</a></li><ul><li><a href="#second-header/third-header">Third header</a></li></ul><li><a href="#another-first-header">Another first header</h3></a></li><li><a href="#first-header-second-header-third-header-another-first-header">First header</h1><h2>Second header</h2><h3>Third header</h3><h2>Another first header</h3></a></li></ul><h2 id="first-header-second-header-third-header-another-first-header">First header</h1><h2>Second header</h2><h3>Third header</h3><h2>Another first header</h3></h2>]],
+      flatten_html page._inner_content
 
   it "indexes a page when passing index: true", ->
     page = factory.Page {
@@ -27,13 +30,14 @@ describe "sitegen.plugins.indexer", ->
         index: true
       }
       render_fn: -> [[
-        <h1>First header</h1>
-        <h2>Second header</h2>
+        <h2>First header</h2>
+        <h3>Second header</h3>
+        <h2>another header</h2>
       ]]
     }
 
     page\render!
-    assert.same [[<h1 id="first-header">First header</h1><h2 id="second-header">Second header</h2>]],
+    assert.same [[<h2 id="first-header">First header</h2><h3 id="first-header/second-header">Second header</h3><h2 id="another-header">another header</h2>]],
       flatten_html page._inner_content
 
   it "indexes page with anchors instead of id", ->
@@ -51,5 +55,5 @@ describe "sitegen.plugins.indexer", ->
     }
 
     page\render!
-    assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a name="second-header" href="#second-header">Second header</a></h2>]],
+    assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a name="first-header/second-header" href="#first-header/second-header">Second header</a></h2>]],
       flatten_html page._inner_content
