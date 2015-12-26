@@ -3,7 +3,7 @@ import Plugin from require "sitegen.plugin"
 import slugify from require "sitegen.common"
 import insert from table
 
-class Indexer2Plugin extends Plugin
+class IndexerPlugin extends Plugin
   tpl_helpers: { "index" }
 
   events: {

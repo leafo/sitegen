@@ -4,7 +4,7 @@ local slugify
 slugify = require("sitegen.common").slugify
 local insert
 insert = table.insert
-local Indexer2Plugin
+local IndexerPlugin
 do
   local _class_0
   local _parent_0 = Plugin
@@ -155,7 +155,7 @@ do
       self.current_index = { }
     end,
     __base = _base_0,
-    __name = "Indexer2Plugin",
+    __name = "IndexerPlugin",
     __parent = _parent_0
   }, {
     __index = function(cls, name)
@@ -179,6 +179,6 @@ do
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
-  Indexer2Plugin = _class_0
+  IndexerPlugin = _class_0
   return _class_0
 end
