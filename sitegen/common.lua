@@ -321,24 +321,43 @@ local getfenv = getfenv or function(fn)
   end
   return _G
 end
+local extend
+extend = function(t, ...)
+  assert(not getmetatable(t), "table already has metatable")
+  local other = {
+    ...
+  }
+  return setmetatable(t, {
+    __index = function(self, key)
+      for _index_0 = 1, #other do
+        local ot = other[_index_0]
+        local val = ot[key]
+        if val ~= nil then
+          return val
+        end
+      end
+    end
+  })
+end
 return {
-  timed_call = timed_call,
-  throw_error = throw_error,
-  pass_error = pass_error,
-  catch_error = catch_error,
-  get_local = get_local,
-  trim_leading_white = trim_leading_white,
-  make_list = make_list,
   bound_fn = bound_fn,
-  escape_patt = escape_patt,
+  catch_error = catch_error,
   convert_pattern = convert_pattern,
-  slugify = slugify,
-  flatten_args = flatten_args,
-  split = split,
-  trim = trim,
+  escape_patt = escape_patt,
+  extend = extend,
   fill_ignoring_pre = fill_ignoring_pre,
+  flatten_args = flatten_args,
+  get_local = get_local,
+  make_list = make_list,
+  pass_error = pass_error,
   setfenv = setfenv,
   getfenv = getfenv,
+  slugify = slugify,
+  split = split,
+  throw_error = throw_error,
+  timed_call = timed_call,
+  trim = trim,
+  trim_leading_white = trim_leading_white,
   unpack = unpack,
   OrderSet = OrderSet,
   Stack = Stack

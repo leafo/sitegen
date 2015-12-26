@@ -1,11 +1,9 @@
 local html = require("sitegen.html")
-local extend
-extend = require("moon").extend
 local Path = require("sitegen.path")
-local Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt
+local Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt, extend
 do
   local _obj_0 = require("sitegen.common")
-  Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt = _obj_0.Stack, _obj_0.fill_ignoring_pre, _obj_0.split, _obj_0.throw_error, _obj_0.pass_error, _obj_0.escape_patt
+  Stack, fill_ignoring_pre, split, throw_error, pass_error, escape_patt, extend = _obj_0.Stack, _obj_0.fill_ignoring_pre, _obj_0.split, _obj_0.throw_error, _obj_0.pass_error, _obj_0.escape_patt, _obj_0.extend
 end
 local Page
 do

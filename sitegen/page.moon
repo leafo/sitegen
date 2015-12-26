@@ -1,7 +1,5 @@
 html = require "sitegen.html"
 
-import extend from require "moon"
-
 Path = require "sitegen.path"
 
 import
@@ -11,6 +9,7 @@ import
   throw_error
   pass_error
   escape_patt
+  extend
   from require "sitegen.common"
 
 

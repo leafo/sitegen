@@ -67,5 +67,4 @@ columnize = (rows, indent=2, padding=4) ->
 
   table.concat formatted, "\n"
 
-
 { :log, :Path, :annotate, :get_site, :columnize }

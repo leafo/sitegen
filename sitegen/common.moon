@@ -202,24 +202,38 @@ getfenv = getfenv or (fn) ->
     i += 1
   _G
 
+extend = (t, ...) ->
+  assert not getmetatable(t), "table already has metatable"
+  other = {...}
+
+  setmetatable t, {
+    __index: (key) =>
+      for ot in *other
+        val = ot[key]
+        if val != nil
+          return val
+
+  }
+
 
 {
-  :timed_call
-  :throw_error
-  :pass_error
-  :catch_error
-  :get_local
-  :trim_leading_white
-  :make_list
   :bound_fn
-  :escape_patt
+  :catch_error
   :convert_pattern
-  :slugify
-  :flatten_args
-  :split
-  :trim
+  :escape_patt
+  :extend
   :fill_ignoring_pre
+  :flatten_args
+  :get_local
+  :make_list
+  :pass_error
   :setfenv, :getfenv
+  :slugify
+  :split
+  :throw_error
+  :timed_call
+  :trim
+  :trim_leading_white
   :unpack
 
   :OrderSet
