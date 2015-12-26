@@ -48,7 +48,9 @@ do
       local min_depth = opts.min_depth or 1
       local max_depth = opts.max_depth or 9
       local link_headers = opts.link_headers
-      local _slugify = opts.slugify or slugify
+      local _slugify = opts.slugify or function(h)
+        return slugify(h.title)
+      end
       local headers = { }
       local current = headers
       local push_header
@@ -86,32 +88,28 @@ do
         if not (depth >= min_depth and depth <= max_depth) then
           return 
         end
-        local title = el:inner_text()
-        local html_content = el:inner_html()
-        local slug = _slugify(title)
-        push_header(depth, {
-          title = title,
-          slug = slug,
-          html_content = html_content
-        })
+        local header = {
+          title = el:inner_text(),
+          html_content = el:inner_html()
+        }
+        header.slug = _slugify(header)
+        push_header(depth, header)
         if current.parent then
           local last_parent = current.parent[#current.parent]
-          local item = current[#current]
-          item.slug = tostring(last_parent.slug) .. "/" .. tostring(item.slug)
-          slug = item.slug
+          header.slug = tostring(last_parent.slug) .. "/" .. tostring(header.slug)
         end
         if link_headers then
           local html = require("sitegen.html")
           return el:replace_inner_html(html.build(function()
             return a({
-              name = slug,
-              href = "#" .. tostring(slug),
-              raw(el:inner_html())
+              name = header.slug,
+              href = "#" .. tostring(header.slug),
+              raw(header.html_content)
             })
           end))
         else
           return el:replace_attributes({
-            id = slug
+            id = header.slug
           })
         end
       end)
