@@ -25,7 +25,7 @@ describe "sitegen.plugins.indexer2", ->
   it "should index a page #ddd", ->
     page = factory.Page {
       render_fn: HTMLRenderer\load [[
-        $index2
+        $index
         <h1>First header</h1>
         <h2>Second header</h2>
       ]]

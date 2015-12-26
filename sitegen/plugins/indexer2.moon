@@ -7,7 +7,7 @@ import slugify from require "sitegen.common"
 import insert from table
 
 class Indexer2Plugin extends Plugin
-  tpl_helpers: { "index2" }
+  tpl_helpers: { "index" }
 
   events: {
     "page.content_rendered": (e, page, content) =>
@@ -19,7 +19,9 @@ class Indexer2Plugin extends Plugin
     @current_index = {}
 
   -- renders index from within template
-  index2: (page) =>
+  index: (page) =>
+    print "Adding index to page"
+
     unless @current_index[page]
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
