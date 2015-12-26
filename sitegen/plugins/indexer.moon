@@ -40,7 +40,7 @@ class IndexerPlugin extends Plugin
     min_depth = opts.min_depth or 1
     max_depth = opts.max_depth or 9
     link_headers = opts.link_headers
-    _slugify = opts.slugify or slugify
+    _slugify = opts.slugify or (h) -> slugify h.title
 
     headers = {}
     current = headers
@@ -71,34 +71,30 @@ class IndexerPlugin extends Plugin
       depth = tonumber depth
       return unless depth >= min_depth and depth <= max_depth
 
-      title = el\inner_text!
-      html_content = el\inner_html!
-      slug = _slugify title
-
-      push_header depth, {
-        :title
-        :slug
-        :html_content
+      header = {
+        title: el\inner_text!
+        html_content: el\inner_html!
       }
+
+      header.slug = _slugify header
+      push_header depth, header
 
       -- add hierarchy to slug now that tree is built
       if current.parent
         last_parent = current.parent[#current.parent]
-        item = current[#current]
-        item.slug = "#{last_parent.slug}/#{item.slug}"
-        slug = item.slug
+        header.slug = "#{last_parent.slug}/#{header.slug}"
 
       if link_headers
         html = require "sitegen.html"
         el\replace_inner_html html.build ->
           a {
-            name: slug
-            href: "##{slug}"
-            raw el\inner_html!
+            name: header.slug
+            href: "##{header.slug}"
+            raw header.html_content
           }
       else
         el\replace_attributes {
-          id: slug
+          id: header.slug
         }
 
     -- clean up

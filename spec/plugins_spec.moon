@@ -63,8 +63,8 @@ describe "sitegen.plugins.indexer", ->
     page = factory.Page {
       meta: {
         index: {
-          slugify: (str) ->
-            str\gsub("%W", "")\upper!
+          slugify: (header) ->
+            header.title\gsub("%W", "")\upper!
         }
       }
       render_fn: -> [[
