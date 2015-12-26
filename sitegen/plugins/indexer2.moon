@@ -20,6 +20,10 @@ class Indexer2Plugin extends Plugin
     super @site
     @current_index = {}
 
+  index_for_page: (page) =>
+    page\render!
+    @current_index[page]
+
   -- renders index from within template
   index: (page) =>
     unless @current_index[page]

@@ -25,6 +25,10 @@ do
         return page:set_content(self:parse_headers(content))
       end
     },
+    index_for_page = function(self, page)
+      page:render()
+      return self.current_index[page]
+    end,
     index = function(self, page)
       if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
