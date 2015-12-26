@@ -73,6 +73,15 @@ class Indexer2Plugin extends Plugin
       html_content = el\inner_html!
       slug = slugify text
 
+      push_header depth, text, slug, html_content
+
+      -- add hierarchy to slug now that tree is built
+      if current.parent
+        last_parent = current.parent[#current.parent]
+        item = current[#current]
+        item[2] = "#{last_parent[2]}/#{item[2]}"
+        slug = item[2]
+
       if link_headers
         html = require "sitegen.html"
         el\replace_inner_html html.build ->
@@ -85,8 +94,6 @@ class Indexer2Plugin extends Plugin
         el\replace_attributes {
           id: slug
         }
-
-      push_header depth, text, slug, html_content
 
     -- clean up
     while current.parent

@@ -87,9 +87,16 @@ do
         local text = el:inner_text()
         local html_content = el:inner_html()
         local slug = slugify(text)
+        push_header(depth, text, slug, html_content)
+        if current.parent then
+          local last_parent = current.parent[#current.parent]
+          local item = current[#current]
+          item[2] = tostring(last_parent[2]) .. "/" .. tostring(item[2])
+          slug = item[2]
+        end
         if link_headers then
           local html = require("sitegen.html")
-          el:replace_inner_html(html.build(function()
+          return el:replace_inner_html(html.build(function()
             return a({
               name = slug,
               href = "#" .. tostring(slug),
@@ -97,11 +104,10 @@ do
             })
           end))
         else
-          el:replace_attributes({
+          return el:replace_attributes({
             id = slug
           })
         end
-        return push_header(depth, text, slug, html_content)
       end)
       while current.parent do
         insert(current.parent, current)
