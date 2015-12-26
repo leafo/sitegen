@@ -55,6 +55,23 @@ do
       end
       return matched
     end,
+    pipe_callbacks = function(self, callbacks, i, event, ...)
+      local cb = callbacks[i]
+      if cb and not event.cancel then
+        return self:pipe_callbacks(callbacks, i + 1, event, cb(event, ...))
+      else
+        return ...
+      end
+    end,
+    pipe = function(self, name, ...)
+      local callbacks = self:callbacks_for(name)
+      local event = {
+        name = name,
+        cancel = false,
+        dispatch = self
+      }
+      return self:pipe_callbacks(callbacks, 1, event, ...)
+    end,
     trigger = function(self, name, ...)
       local count = 0
       local e = {

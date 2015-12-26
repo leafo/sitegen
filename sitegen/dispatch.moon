@@ -43,6 +43,24 @@ class Dispatch
 
     matched
 
+  pipe_callbacks: (callbacks, i, event, ...) =>
+    cb = callbacks[i]
+    if cb and not event.cancel
+      @pipe_callbacks callbacks, i + 1, event, cb event, ...
+    else
+      ...
+
+  pipe: (name, ...) =>
+    callbacks = @callbacks_for name
+
+    event = {
+      :name
+      cancel: false
+      dispatch: @
+    }
+
+    @pipe_callbacks callbacks, 1, event, ...
+
   trigger: (name, ...) =>
     count = 0
     e = {
