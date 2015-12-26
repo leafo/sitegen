@@ -11,6 +11,8 @@ class Indexer2Plugin extends Plugin
 
   events: {
     "page.content_rendered": (e, page, content) =>
+      return if @current_index[page] -- already added index
+      return unless page.meta.index
       page\set_content @parse_headers content
   }
 
@@ -20,8 +22,6 @@ class Indexer2Plugin extends Plugin
 
   -- renders index from within template
   index: (page) =>
-    print "Adding index to page"
-
     unless @current_index[page]
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
@@ -75,7 +75,6 @@ class Indexer2Plugin extends Plugin
       insert current.parent, current
       current = current.parent
 
-    -- print @render_index headers
     out, headers
   
   render_index: (headers) =>

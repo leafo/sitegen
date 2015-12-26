@@ -16,11 +16,16 @@ do
     },
     events = {
       ["page.content_rendered"] = function(self, e, page, content)
+        if self.current_index[page] then
+          return 
+        end
+        if not (page.meta.index) then
+          return 
+        end
         return page:set_content(self:parse_headers(content))
       end
     },
     index = function(self, page)
-      print("Adding index to page")
       if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
