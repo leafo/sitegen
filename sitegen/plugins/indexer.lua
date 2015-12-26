@@ -30,6 +30,9 @@ do
       return self.current_index[page]
     end,
     index = function(self, page)
+      if page.meta.index == false then
+        return ""
+      end
       if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
@@ -48,7 +51,7 @@ do
       local headers = { }
       local current = headers
       local push_header
-      push_header = function(i, ...)
+      push_header = function(i, header)
         i = tonumber(i)
         if not current.depth then
           current.depth = i
@@ -68,9 +71,7 @@ do
             end
           end
         end
-        return insert(current, {
-          ...
-        })
+        return insert(current, header)
       end
       local replace_html
       replace_html = require("web_sanitize.query.scan_html").replace_html
@@ -84,15 +85,19 @@ do
         if not (depth >= min_depth and depth <= max_depth) then
           return 
         end
-        local text = el:inner_text()
+        local title = el:inner_text()
         local html_content = el:inner_html()
-        local slug = slugify(text)
-        push_header(depth, text, slug, html_content)
+        local slug = slugify(title)
+        push_header(depth, {
+          title = title,
+          slug = slug,
+          html_content = html_content
+        })
         if current.parent then
           local last_parent = current.parent[#current.parent]
           local item = current[#current]
-          item[2] = tostring(last_parent[2]) .. "/" .. tostring(item[2])
-          slug = item[2]
+          item.slug = tostring(last_parent.slug) .. "/" .. tostring(item.slug)
+          slug = item.slug
         end
         if link_headers then
           local html = require("sitegen.html")
@@ -128,12 +133,12 @@ do
               if item.depth then
                 _accum_0[_len_0] = render(item)
               else
-                local title, slug, html_title
-                title, slug, html_title = item[1], item[2], item[3]
+                local title, slug, html_content
+                title, slug, html_content = item.title, item.slug, item.html_content
                 _accum_0[_len_0] = li({
                   a({
                     href = "#" .. tostring(slug),
-                    raw(html_title)
+                    raw(html_content)
                   })
                 })
               end

@@ -24,6 +24,7 @@ class IndexerPlugin extends Plugin
 
   -- renders index from within template
   index: (page) =>
+    return "" if page.meta.index == false
     unless @current_index[page]
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
