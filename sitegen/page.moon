@@ -52,6 +52,9 @@ class Page
   trigger: (event, ...) =>
     @site.events\trigger event, @, ...
 
+  pipe: (event, ...) =>
+    select 2, @site.events\pipe event, @, ...
+
   merge_meta: (tbl) =>
     for k,v in pairs tbl
       @meta[k] = v

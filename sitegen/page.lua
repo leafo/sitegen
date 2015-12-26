@@ -21,6 +21,9 @@ do
     trigger = function(self, event, ...)
       return self.site.events:trigger(event, self, ...)
     end,
+    pipe = function(self, event, ...)
+      return select(2, self.site.events:pipe(event, self, ...))
+    end,
     merge_meta = function(self, tbl)
       for k, v in pairs(tbl) do
         self.meta[k] = v

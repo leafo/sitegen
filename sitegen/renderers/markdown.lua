@@ -41,14 +41,9 @@ do
   local _base_0 = {
     source_ext = "md",
     ext = "html",
-    pre_render = { },
     render = function(self, page, md_source)
       local discount = require("discount")
-      local _list_0 = self.pre_render
-      for _index_0 = 1, #_list_0 do
-        local filter = _list_0[_index_0]
-        md_source = filter(md_source, page)
-      end
+      md_source = page:pipe("renderer.markdown.pre_render", md_source)
       local escapes
       md_source, escapes = escape_cosmo(md_source)
       local html_source = assert(discount(md_source))

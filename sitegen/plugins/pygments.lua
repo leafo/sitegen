@@ -98,18 +98,9 @@ do
       table.insert(self.site.cache.finalize, function()
         return self.site.cache:set("highlight", self.keep_cache)
       end)
-      do
-        local renderer = self.site:get_renderer("sitegen.renderers.markdown")
-        if renderer then
-          return table.insert(renderer.pre_render, (function()
-            local _base_1 = self
-            local _fn_0 = _base_1.filter
-            return function(...)
-              return _fn_0(_base_1, ...)
-            end
-          end)())
-        end
-      end
+      return self.site.events:on("renderer.markdown.pre_render", function(event, page, md_source)
+        return page, self:filter(md_source, page)
+      end)
     end,
     __base = _base_0,
     __name = "PygmentsPlugin",

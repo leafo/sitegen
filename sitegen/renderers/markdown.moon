@@ -36,14 +36,10 @@ class MarkdownRenderer extends require "sitegen.renderers.html"
   source_ext: "md"
   ext: "html"
 
-  pre_render: {}
-
   render: (page, md_source) =>
     discount = require "discount"
 
-    for filter in *@pre_render
-      md_source = filter md_source, page
-
+    md_source = page\pipe "renderer.markdown.pre_render", md_source
     md_source, escapes = escape_cosmo md_source
 
     html_source = assert discount md_source

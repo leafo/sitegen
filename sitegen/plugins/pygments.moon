@@ -86,9 +86,10 @@ class PygmentsPlugin extends Plugin
   new: (@site) =>
     @lang_cache = @site.cache\get"highlight"
     @keep_cache = CacheTable!
+
     table.insert @site.cache.finalize, ->
       @site.cache\set "highlight", @keep_cache
 
-    if renderer = @site\get_renderer "sitegen.renderers.markdown"
-      table.insert renderer.pre_render, @\filter
+    @site.events\on "renderer.markdown.pre_render", (event, page, md_source) ->
+      page, @filter md_source, page
 
