@@ -35,7 +35,7 @@ class Site
     "sitegen.plugins.feed"
     "sitegen.plugins.blog"
     "sitegen.plugins.deploy"
-    "sitegen.plugins.indexer"
+    "sitegen.plugins.indexer2"
     "sitegen.plugins.analytics"
     "sitegen.plugins.coffee_script"
     "sitegen.plugins.pygments"
