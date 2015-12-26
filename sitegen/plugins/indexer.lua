@@ -85,6 +85,7 @@ do
           return 
         end
         local text = el:inner_text()
+        local html_content = el:inner_html()
         local slug = slugify(text)
         if link_headers then
           local html = require("sitegen.html")
@@ -100,7 +101,7 @@ do
             id = slug
           })
         end
-        return push_header(depth, text, slug)
+        return push_header(depth, text, slug, html_content)
       end)
       while current.parent do
         insert(current.parent, current)
@@ -121,12 +122,12 @@ do
               if item.depth then
                 _accum_0[_len_0] = render(item)
               else
-                local title, slug
-                title, slug = item[1], item[2]
+                local title, slug, html_title
+                title, slug, html_title = item[1], item[2], item[3]
                 _accum_0[_len_0] = li({
                   a({
-                    title,
-                    href = "#" .. tostring(slug)
+                    href = "#" .. tostring(slug),
+                    raw(html_title)
                   })
                 })
               end

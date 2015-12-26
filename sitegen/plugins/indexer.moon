@@ -70,6 +70,7 @@ class Indexer2Plugin extends Plugin
       return unless depth >= min_depth and depth <= max_depth
 
       text = el\inner_text!
+      html_content = el\inner_html!
       slug = slugify text
 
       if link_headers
@@ -85,7 +86,7 @@ class Indexer2Plugin extends Plugin
           id: slug
         }
 
-      push_header depth, text, slug
+      push_header depth, text, slug, html_content
 
     -- clean up
     while current.parent
@@ -102,12 +103,12 @@ class Indexer2Plugin extends Plugin
           if item.depth
             render item
           else
-            {title, slug} = item
+            {title, slug, html_title} = item
 
             li {
               a {
-                title
                 href: "##{slug}"
+                raw html_title
               }
             }
 
