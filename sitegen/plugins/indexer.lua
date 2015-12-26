@@ -20,7 +20,9 @@ do
         if not (page.meta.index) then
           return 
         end
-        return page:set_content(self:parse_headers(content, page.meta.index))
+        local body
+        body, self.current_index[page] = self:parse_headers(content, page.meta.index)
+        return page:set_content(body)
       end
     },
     index_for_page = function(self, page)
@@ -29,7 +31,6 @@ do
     end,
     index = function(self, page)
       if not (self.current_index[page]) then
-        error("trying to render index with yield")
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
         body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source, page.meta.index)

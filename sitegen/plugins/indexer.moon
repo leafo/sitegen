@@ -10,7 +10,8 @@ class Indexer2Plugin extends Plugin
     "page.content_rendered": (e, page, content) =>
       return if @current_index[page] -- already added index
       return unless page.meta.index
-      page\set_content @parse_headers content, page.meta.index
+      body, @current_index[page] = @parse_headers content, page.meta.index
+      page\set_content body
   }
 
   new: (@site) =>
@@ -24,7 +25,6 @@ class Indexer2Plugin extends Plugin
   -- renders index from within template
   index: (page) =>
     unless @current_index[page]
-      error "trying to render index with yield"
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
 
