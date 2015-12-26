@@ -48,6 +48,12 @@ html ->
           val: "yes"
         }
 
+      it "renders unless", ->
+        assert.same "nope",
+          render '$unless{"val"}[[we have a val set]]$unless{"nope"}[[nope]]', {
+          val: "yes"
+        }
+
       it "renders each", ->
         assert.same "thing: 1, thing: 2, thing: 3, ",
           render '$each{{1,2,3}, "thing"}[[thing: $thing, ]]'
