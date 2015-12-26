@@ -43,7 +43,7 @@ class IndexerPlugin extends Plugin
     headers = {}
     current = headers
 
-    push_header = (i, ...) ->
+    push_header = (i, header) ->
       i = tonumber i
 
       if not current.depth
@@ -58,7 +58,7 @@ class IndexerPlugin extends Plugin
 
           current.depth = i if i < current.depth
 
-      insert current, {...}
+      insert current, header
 
     import replace_html from require "web_sanitize.query.scan_html"
 
@@ -69,18 +69,22 @@ class IndexerPlugin extends Plugin
       depth = tonumber depth
       return unless depth >= min_depth and depth <= max_depth
 
-      text = el\inner_text!
+      title = el\inner_text!
       html_content = el\inner_html!
-      slug = slugify text
+      slug = slugify title
 
-      push_header depth, text, slug, html_content
+      push_header depth, {
+        :title
+        :slug
+        :html_content
+      }
 
       -- add hierarchy to slug now that tree is built
       if current.parent
         last_parent = current.parent[#current.parent]
         item = current[#current]
-        item[2] = "#{last_parent[2]}/#{item[2]}"
-        slug = item[2]
+        item.slug = "#{last_parent.slug}/#{item.slug}"
+        slug = item.slug
 
       if link_headers
         html = require "sitegen.html"
@@ -110,12 +114,12 @@ class IndexerPlugin extends Plugin
           if item.depth
             render item
           else
-            {title, slug, html_title} = item
+            {:title, :slug, :html_content} = item
 
             li {
               a {
                 href: "##{slug}"
-                raw html_title
+                raw html_content
               }
             }
 
