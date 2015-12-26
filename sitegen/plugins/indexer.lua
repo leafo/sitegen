@@ -48,6 +48,7 @@ do
       local min_depth = opts.min_depth or 1
       local max_depth = opts.max_depth or 9
       local link_headers = opts.link_headers
+      local _slugify = opts.slugify or slugify
       local headers = { }
       local current = headers
       local push_header
@@ -87,7 +88,7 @@ do
         end
         local title = el:inner_text()
         local html_content = el:inner_html()
-        local slug = slugify(title)
+        local slug = _slugify(title)
         push_header(depth, {
           title = title,
           slug = slug,

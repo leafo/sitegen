@@ -57,3 +57,23 @@ describe "sitegen.plugins.indexer", ->
     page\render!
     assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a name="first-header/second-header" href="#first-header/second-header">Second header</a></h2>]],
       flatten_html page._inner_content
+
+
+  it "indexes with custom slugify", ->
+    page = factory.Page {
+      meta: {
+        index: {
+          slugify: (str) ->
+            str\gsub("%W", "")\upper!
+        }
+      }
+      render_fn: -> [[
+        <h1>First header</h1>
+        <h2>Second header</h2>
+      ]]
+    }
+
+    page\render!
+    assert.same [[<h1 id="FIRSTHEADER">First header</h1><h2 id="FIRSTHEADER/SECONDHEADER">Second header</h2>]],
+      flatten_html page._inner_content
+

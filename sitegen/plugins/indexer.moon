@@ -40,6 +40,7 @@ class IndexerPlugin extends Plugin
     min_depth = opts.min_depth or 1
     max_depth = opts.max_depth or 9
     link_headers = opts.link_headers
+    _slugify = opts.slugify or slugify
 
     headers = {}
     current = headers
@@ -72,7 +73,7 @@ class IndexerPlugin extends Plugin
 
       title = el\inner_text!
       html_content = el\inner_html!
-      slug = slugify title
+      slug = _slugify title
 
       push_header depth, {
         :title
