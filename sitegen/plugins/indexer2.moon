@@ -1,8 +1,5 @@
 import Plugin from require "sitegen.plugin"
 
-min_depth = 1
-max_depth = 9
-
 import slugify from require "sitegen.common"
 import insert from table
 
@@ -13,7 +10,7 @@ class Indexer2Plugin extends Plugin
     "page.content_rendered": (e, page, content) =>
       return if @current_index[page] -- already added index
       return unless page.meta.index
-      page\set_content @parse_headers content
+      page\set_content @parse_headers content, page.meta.index
   }
 
   new: (@site) =>
@@ -30,12 +27,18 @@ class Indexer2Plugin extends Plugin
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
 
-      body, @current_index[page] = @parse_headers page.tpl_scope.render_source
+      body, @current_index[page] = @parse_headers page.tpl_scope.render_source, page.meta.index
       coroutine.yield body
 
     @render_index @current_index[page]
 
-  parse_headers: (content) =>
+  parse_headers: (content, opts) =>
+    opts = {} unless type(opts) == "table"
+
+    min_depth = opts.min_depth or 1
+    max_depth = opts.max_depth or 9
+    link_headers = opts.link_headers
+
     headers = {}
     current = headers
 
@@ -68,9 +71,18 @@ class Indexer2Plugin extends Plugin
       text = el\inner_text!
       slug = slugify text
 
-      el\replace_atributes {
-        id: slug
-      }
+      if link_headers
+        html = require "sitegen.html"
+        el\replace_inner_html html.build ->
+          a {
+            name: slug
+            href: "##{slug}"
+            raw el\inner_html!
+          }
+      else
+        el\replace_attributes {
+          id: slug
+        }
 
       push_header depth, text, slug
 

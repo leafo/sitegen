@@ -110,7 +110,7 @@ class Page
     extend {
       generate_date: os.date!
       root: @get_root!
-    }, @meta, @site.user_vars, @plugin_template_helpers!
+    }, @plugin_template_helpers!, @meta, @site.user_vars
 
   set_content: (@_content) =>
 

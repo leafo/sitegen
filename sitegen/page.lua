@@ -112,7 +112,7 @@ do
       return extend({
         generate_date = os.date(),
         root = self:get_root()
-      }, self.meta, self.site.user_vars, self:plugin_template_helpers())
+      }, self:plugin_template_helpers(), self.meta, self.site.user_vars)
     end,
     set_content = function(self, _content)
       self._content = _content

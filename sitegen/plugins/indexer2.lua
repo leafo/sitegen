@@ -1,7 +1,5 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
-local min_depth = 1
-local max_depth = 9
 local slugify
 slugify = require("sitegen.common").slugify
 local insert
@@ -22,7 +20,7 @@ do
         if not (page.meta.index) then
           return 
         end
-        return page:set_content(self:parse_headers(content))
+        return page:set_content(self:parse_headers(content, page.meta.index))
       end
     },
     index_for_page = function(self, page)
@@ -33,12 +31,18 @@ do
       if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
-        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source)
+        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source, page.meta.index)
         coroutine.yield(body)
       end
       return self:render_index(self.current_index[page])
     end,
-    parse_headers = function(self, content)
+    parse_headers = function(self, content, opts)
+      if not (type(opts) == "table") then
+        opts = { }
+      end
+      local min_depth = opts.min_depth or 1
+      local max_depth = opts.max_depth or 9
+      local link_headers = opts.link_headers
       local headers = { }
       local current = headers
       local push_header
@@ -80,9 +84,20 @@ do
         end
         local text = el:inner_text()
         local slug = slugify(text)
-        el:replace_atributes({
-          id = slug
-        })
+        if link_headers then
+          local html = require("sitegen.html")
+          el:replace_inner_html(html.build(function()
+            return a({
+              name = slug,
+              href = "#" .. tostring(slug),
+              raw(el:inner_html())
+            })
+          end))
+        else
+          el:replace_attributes({
+            id = slug
+          })
+        end
         return push_header(depth, text, slug)
       end)
       while current.parent do
