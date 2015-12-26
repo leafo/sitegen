@@ -1,118 +1,10 @@
-require("sitegen.common")
-local html = require("sitegen.html")
-local cosmo = require("sitegen.cosmo")
-local lpeg = require("lpeg")
-local insert, concat
-do
-  local _obj_0 = table
-  insert, concat = _obj_0.insert, _obj_0.concat
-end
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
 local slugify
 slugify = require("sitegen.common").slugify
-local render_index
-render_index = function(index)
-  local yield_index
-  yield_index = function(index)
-    for _index_0 = 1, #index do
-      local item = index[_index_0]
-      if item.depth then
-        cosmo.yield({
-          _template = 2
-        })
-        yield_index(item)
-        cosmo.yield({
-          _template = 3
-        })
-      else
-        cosmo.yield({
-          name = item[1],
-          target = item[2]
-        })
-      end
-    end
-  end
-  local tpl = [==[		<ul>
-		$index[[
-			<li><a href="#$target">$name</a></li>
-		]], [[ <ul> ]] , [[ </ul> ]]
-		</ul>
-  ]==]
-  return cosmo.f(tpl)({
-    index = function()
-      return yield_index(index)
-    end
-  })
-end
-local build_from_html
-build_from_html = function(body, meta, opts)
-  if opts == nil then
-    opts = { }
-  end
-  local headers = { }
-  opts.min_depth = opts.min_depth or 1
-  opts.max_depth = opts.max_depth or 9
-  local current = headers
-  local fn
-  fn = function(body, i)
-    i = tonumber(i)
-    if i >= opts.min_depth and i <= opts.max_depth then
-      if not current.depth then
-        current.depth = i
-      else
-        if i > current.depth then
-          current = {
-            parent = current,
-            depth = i
-          }
-        else
-          while i < current.depth and current.parent do
-            insert(current.parent, current)
-            current = current.parent
-          end
-          if i < current.depth then
-            current.depth = i
-          end
-        end
-      end
-    end
-    local slug = slugify(html.decode(body))
-    insert(current, {
-      body,
-      slug
-    })
-    return concat({
-      '<h',
-      i,
-      '><a name="',
-      slug,
-      '"></a>',
-      body,
-      '</h',
-      i,
-      '>'
-    })
-  end
-  lpeg = require("lpeg")
-  local P, R, Cmt, Cs, Cg, Cb, C
-  P, R, Cmt, Cs, Cg, Cb, C = lpeg.P, lpeg.R, lpeg.Cmt, lpeg.Cs, lpeg.Cg, lpeg.Cb, lpeg.C
-  local nums = R("19")
-  local open = P("<h") * Cg(nums, "num") * ">"
-  local close = P("</h") * C(nums) * ">"
-  local close_pair = Cmt(close * Cb("num"), function(s, i, a, b)
-    return a == b
-  end)
-  local tag = open * C((1 - close_pair) ^ 0) * close
-  local patt = Cs((tag / fn + 1) ^ 0)
-  local out = patt:match(body)
-  while current.parent do
-    insert(current.parent, current)
-    current = current.parent
-  end
-  return out, headers
-end
-local IndexerPlugin
+local insert
+insert = table.insert
+local Indexer2Plugin
 do
   local _class_0
   local _parent_0 = Plugin
@@ -120,14 +12,130 @@ do
     tpl_helpers = {
       "index"
     },
+    events = {
+      ["page.content_rendered"] = function(self, e, page, content)
+        if self.current_index[page] then
+          return 
+        end
+        if not (page.meta.index) then
+          return 
+        end
+        return page:set_content(self:parse_headers(content, page.meta.index))
+      end
+    },
+    index_for_page = function(self, page)
+      page:render()
+      return self.current_index[page]
+    end,
     index = function(self, page)
       if not (self.current_index[page]) then
+        error("trying to render index with yield")
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
         local body
-        body, self.current_index[page] = build_from_html(page.tpl_scope.render_source)
+        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source, page.meta.index)
         coroutine.yield(body)
       end
-      return render_index(self.current_index[page])
+      return self:render_index(self.current_index[page])
+    end,
+    parse_headers = function(self, content, opts)
+      if not (type(opts) == "table") then
+        opts = { }
+      end
+      local min_depth = opts.min_depth or 1
+      local max_depth = opts.max_depth or 9
+      local link_headers = opts.link_headers
+      local headers = { }
+      local current = headers
+      local push_header
+      push_header = function(i, ...)
+        i = tonumber(i)
+        if not current.depth then
+          current.depth = i
+        else
+          if i > current.depth then
+            current = {
+              parent = current,
+              depth = i
+            }
+          else
+            while i < current.depth and current.parent do
+              insert(current.parent, current)
+              current = current.parent
+            end
+            if i < current.depth then
+              current.depth = i
+            end
+          end
+        end
+        return insert(current, {
+          ...
+        })
+      end
+      local replace_html
+      replace_html = require("web_sanitize.query.scan_html").replace_html
+      local out = replace_html(content, function(stack)
+        local el = stack:current()
+        local depth = el.tag:match("h(%d+)")
+        if not (depth) then
+          return 
+        end
+        depth = tonumber(depth)
+        if not (depth >= min_depth and depth <= max_depth) then
+          return 
+        end
+        local text = el:inner_text()
+        local slug = slugify(text)
+        if link_headers then
+          local html = require("sitegen.html")
+          el:replace_inner_html(html.build(function()
+            return a({
+              name = slug,
+              href = "#" .. tostring(slug),
+              raw(el:inner_html())
+            })
+          end))
+        else
+          el:replace_attributes({
+            id = slug
+          })
+        end
+        return push_header(depth, text, slug)
+      end)
+      while current.parent do
+        insert(current.parent, current)
+        current = current.parent
+      end
+      return out, headers
+    end,
+    render_index = function(self, headers)
+      local html = require("sitegen.html")
+      return html.build(function()
+        local render
+        render = function(headers)
+          return ul((function()
+            local _accum_0 = { }
+            local _len_0 = 1
+            for _index_0 = 1, #headers do
+              local item = headers[_index_0]
+              if item.depth then
+                _accum_0[_len_0] = render(item)
+              else
+                local title, slug
+                title, slug = item[1], item[2]
+                _accum_0[_len_0] = li({
+                  a({
+                    title,
+                    href = "#" .. tostring(slug)
+                  })
+                })
+              end
+              _len_0 = _len_0 + 1
+            end
+            return _accum_0
+          end)())
+        end
+        return render(headers)
+      end)
     end
   }
   _base_0.__index = _base_0
@@ -135,10 +143,11 @@ do
   _class_0 = setmetatable({
     __init = function(self, site)
       self.site = site
+      _class_0.__parent.__init(self, self.site)
       self.current_index = { }
     end,
     __base = _base_0,
-    __name = "IndexerPlugin",
+    __name = "Indexer2Plugin",
     __parent = _parent_0
   }, {
     __index = function(cls, name)
@@ -159,11 +168,9 @@ do
     end
   })
   _base_0.__class = _class_0
-  local self = _class_0
-  self.build_from_html = build_from_html
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
-  IndexerPlugin = _class_0
+  Indexer2Plugin = _class_0
   return _class_0
 end

@@ -44,7 +44,7 @@ do
       end,
       markdown = function(self, args)
         local md = self.site:get_renderer("sitegen.renderers.markdown")
-        return md:render(self, assert(args[1], "missing markdown string"))
+        return md:render(self, assert(args and args[1], "missing markdown string"))
       end,
       wrap = function(self, args)
         local tpl_name = unpack(args)

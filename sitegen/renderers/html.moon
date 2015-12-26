@@ -51,7 +51,7 @@ class HTMLRenderer extends Renderer
 
     markdown: (args) =>
       md = @site\get_renderer "sitegen.renderers.markdown"
-      md\render @, assert args[1], "missing markdown string"
+      md\render @, assert args and args[1], "missing markdown string"
 
     wrap: (args) =>
       tpl_name = unpack args

@@ -336,7 +336,7 @@ do
     "sitegen.plugins.feed",
     "sitegen.plugins.blog",
     "sitegen.plugins.deploy",
-    "sitegen.plugins.indexer2",
+    "sitegen.plugins.indexer",
     "sitegen.plugins.analytics",
     "sitegen.plugins.coffee_script",
     "sitegen.plugins.pygments",

@@ -24,6 +24,7 @@ class Indexer2Plugin extends Plugin
   -- renders index from within template
   index: (page) =>
     unless @current_index[page]
+      error "trying to render index with yield"
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
 
@@ -92,7 +93,7 @@ class Indexer2Plugin extends Plugin
       current = current.parent
 
     out, headers
-  
+
   render_index: (headers) =>
     html = require "sitegen.html"
     html.build ->
