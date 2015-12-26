@@ -47,7 +47,6 @@ build = {
     ["sitegen.plugins.deploy"] = "sitegen/plugins/deploy.lua",
     ["sitegen.plugins.dump"] = "sitegen/plugins/dump.lua",
     ["sitegen.plugins.feed"] = "sitegen/plugins/feed.lua",
-    ["sitegen.plugins.indexer2"] = "sitegen/plugins/indexer2.lua",
     ["sitegen.plugins.indexer"] = "sitegen/plugins/indexer.lua",
     ["sitegen.plugin"] = "sitegen/plugin.lua",
     ["sitegen.plugins.pygments"] = "sitegen/plugins/pygments.lua",

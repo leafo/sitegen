@@ -1,45 +1,50 @@
-
-require "sitegen.common"
-html = require "sitegen.html"
-cosmo = require "sitegen.cosmo"
-lpeg = require "lpeg"
-
-import insert, concat from table
 import Plugin from require "sitegen.plugin"
+
 import slugify from require "sitegen.common"
+import insert from table
 
-render_index = (index) ->
-  yield_index = (index) ->
-    for item in *index
-      if item.depth
-        cosmo.yield _template: 2
-        yield_index item
-        cosmo.yield _template: 3
-      else
-        cosmo.yield name: item[1], target: item[2]
+class Indexer2Plugin extends Plugin
+  tpl_helpers: { "index" }
 
-  tpl = [==[
-		<ul>
-		$index[[
-			<li><a href="#$target">$name</a></li>
-		]], [[ <ul> ]] , [[ </ul> ]]
-		</ul>
-  ]==]
+  events: {
+    "page.content_rendered": (e, page, content) =>
+      return if @current_index[page] -- already added index
+      return unless page.meta.index
+      page\set_content @parse_headers content, page.meta.index
+  }
 
-  cosmo.f(tpl) index: -> yield_index index
+  new: (@site) =>
+    super @site
+    @current_index = {}
 
--- filter to build index for headers
-build_from_html = (body, meta, opts={}) ->
-  headers = {}
+  index_for_page: (page) =>
+    page\render!
+    @current_index[page]
 
-  opts.min_depth = opts.min_depth or 1
-  opts.max_depth = opts.max_depth or 9
+  -- renders index from within template
+  index: (page) =>
+    unless @current_index[page]
+      assert page.tpl_scope.render_source,
+        "attempting to render index with no body available (are you in cosmo?)"
 
-  current = headers
-  fn = (body, i) ->
-    i = tonumber i
+      body, @current_index[page] = @parse_headers page.tpl_scope.render_source, page.meta.index
+      coroutine.yield body
 
-    if i >= opts.min_depth and i <= opts.max_depth
+    @render_index @current_index[page]
+
+  parse_headers: (content, opts) =>
+    opts = {} unless type(opts) == "table"
+
+    min_depth = opts.min_depth or 1
+    max_depth = opts.max_depth or 9
+    link_headers = opts.link_headers
+
+    headers = {}
+    current = headers
+
+    push_header = (i, ...) ->
+      i = tonumber i
+
       if not current.depth
         current.depth = i
       else
@@ -52,44 +57,61 @@ build_from_html = (body, meta, opts={}) ->
 
           current.depth = i if i < current.depth
 
-    slug = slugify html.decode body
-    insert current, {body, slug}
-    concat {
-      '<h', i, '><a name="',slug,'"></a>', body, '</h', i, '>'
-    }
+      insert current, {...}
 
-  lpeg = require "lpeg"
-  import P, R, Cmt, Cs, Cg, Cb, C from lpeg
+    import replace_html from require "web_sanitize.query.scan_html"
 
-  nums = R("19")
-  open = P"<h" * Cg(nums, "num") * ">"
+    out = replace_html content, (stack) ->
+      el = stack\current!
+      depth = el.tag\match "h(%d+)"
+      return unless depth
+      depth = tonumber depth
+      return unless depth >= min_depth and depth <= max_depth
 
-  close = P"</h" * C(nums) * ">"
-  close_pair = Cmt close * Cb("num"), (s, i, a, b) -> a == b
-  tag = open * C((1 - close_pair)^0) * close
+      text = el\inner_text!
+      slug = slugify text
 
-  patt = Cs((tag / fn + 1)^0)
-  out = patt\match(body)
+      if link_headers
+        html = require "sitegen.html"
+        el\replace_inner_html html.build ->
+          a {
+            name: slug
+            href: "##{slug}"
+            raw el\inner_html!
+          }
+      else
+        el\replace_attributes {
+          id: slug
+        }
 
-  while current.parent
-    insert current.parent, current
-    current = current.parent
+      push_header depth, text, slug
 
-  out, headers
+    -- clean up
+    while current.parent
+      insert current.parent, current
+      current = current.parent
 
-class IndexerPlugin extends Plugin
-  @build_from_html: build_from_html
+    out, headers
+  
+  render_index: (headers) =>
+    html = require "sitegen.html"
+    html.build ->
+      render = (headers) ->
+        ul for item in *headers
+          if item.depth
+            render item
+          else
+            {title, slug} = item
 
-  tpl_helpers: { "index" }
+            li {
+              a {
+                title
+                href: "##{slug}"
+              }
+            }
 
-  new: (@site) =>
-    @current_index = {}
 
-  index: (page) =>
-    unless @current_index[page]
-      assert page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)"
-      body, @current_index[page] = build_from_html page.tpl_scope.render_source
-      coroutine.yield body
+      render headers
 
-    render_index @current_index[page]
+
 
