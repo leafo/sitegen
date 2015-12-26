@@ -78,6 +78,11 @@ class HTMLRenderer extends Renderer
         cosmo.yield {}
       nil
 
+    unless: (args) =>
+      unless @tpl_scope[args[1]]
+        cosmo.yield {}
+      nil
+
     each: (args) =>
       list, name = unpack args
       if list

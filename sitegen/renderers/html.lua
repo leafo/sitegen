@@ -80,6 +80,12 @@ do
         end
         return nil
       end,
+      unless = function(self, args)
+        if not (self.tpl_scope[args[1]]) then
+          cosmo.yield({ })
+        end
+        return nil
+      end,
       each = function(self, args)
         local list, name = unpack(args)
         if list then
