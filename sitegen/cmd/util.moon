@@ -1,28 +1,13 @@
-import split, Path from require "sitegen.common"
+import split from require "sitegen.common"
 import SiteFile from require "sitegen.site_file"
+Path = require "sitegen.path"
 
 log = (...) ->
   print "->", ...
 
 get_site = -> SiteFile!\get_site!
 
-annotate = (obj, verbs) ->
-  setmetatable {}, {
-    __newindex: (name, value) =>
-      obj[name] = value
-    __index: (name) =>
-      fn =  obj[name]
-      return fn if not type(fn) == "function"
-      if verbs[name]
-        (...) ->
-          fn ...
-          first = ...
-          log verbs[name], first
-      else
-        fn
-  }
-
-Path = annotate Path, {
+Path = Path\annotate {
   mkdir: "made directory"
   write_file: "wrote"
 }
@@ -67,4 +52,4 @@ columnize = (rows, indent=2, padding=4) ->
 
   table.concat formatted, "\n"
 
-{ :log, :Path, :annotate, :get_site, :columnize }
+{ :log, :Path, :get_site, :columnize }

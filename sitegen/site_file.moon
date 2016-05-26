@@ -1,13 +1,9 @@
 lfs = require "lfs"
-
-import Path from require "sitegen.common"
-Site = require "sitegen.site"
-
 import extend, run_with_scope from require "moon"
-
 moonscript = require "moonscript.base"
 
 Path = require "sitegen.path"
+Site = require "sitegen.site"
 
 import
   throw_error

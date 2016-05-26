@@ -1,14 +1,12 @@
 local lfs = require("lfs")
-local Path
-Path = require("sitegen.common").Path
-local Site = require("sitegen.site")
 local extend, run_with_scope
 do
   local _obj_0 = require("moon")
   extend, run_with_scope = _obj_0.extend, _obj_0.run_with_scope
 end
 local moonscript = require("moonscript.base")
-Path = require("sitegen.path")
+local Path = require("sitegen.path")
+local Site = require("sitegen.site")
 local throw_error, trim, escape_patt
 do
   local _obj_0 = require("sitegen.common")

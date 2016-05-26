@@ -1,10 +1,8 @@
-local split, Path
-do
-  local _obj_0 = require("sitegen.common")
-  split, Path = _obj_0.split, _obj_0.Path
-end
+local split
+split = require("sitegen.common").split
 local SiteFile
 SiteFile = require("sitegen.site_file").SiteFile
+local Path = require("sitegen.path")
 local log
 log = function(...)
   return print("->", ...)
@@ -13,30 +11,7 @@ local get_site
 get_site = function()
   return SiteFile():get_site()
 end
-local annotate
-annotate = function(obj, verbs)
-  return setmetatable({ }, {
-    __newindex = function(self, name, value)
-      obj[name] = value
-    end,
-    __index = function(self, name)
-      local fn = obj[name]
-      if not type(fn) == "function" then
-        return fn
-      end
-      if verbs[name] then
-        return function(...)
-          fn(...)
-          local first = ...
-          return log(verbs[name], first)
-        end
-      else
-        return fn
-      end
-    end
-  })
-end
-Path = annotate(Path, {
+Path = Path:annotate({
   mkdir = "made directory",
   write_file = "wrote"
 })
@@ -111,7 +86,6 @@ end
 return {
   log = log,
   Path = Path,
-  annotate = annotate,
   get_site = get_site,
   columnize = columnize
 }
