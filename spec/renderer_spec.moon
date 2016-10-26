@@ -62,7 +62,7 @@ html ->
         assert.same "no yes ",
           render '$eq{1,2}[[yes]][[no]] $eq{2,2}[[yes]][[no]] $eq{1,2}[[yes]]'
 
-      it "renders markdown via helper #ddd", ->
+      it "renders markdown via helper", ->
         out = render [==[<h2>All Guides</h2>
 $markdown{[[
 * [Getting Started]($root/reference/getting_started.html)
@@ -120,7 +120,6 @@ $markdown{[[
 
   describe "renderers.markdown", ->
     local site, renderer
-
     before_each ->
       MarkdownRenderer = require "sitegen.renderers.markdown"
       site = factory.Site!
@@ -131,4 +130,30 @@ $markdown{[[
     it "renders preserves cosmo", ->
       assert.same "<p>yes</p>\n",
         render '$if{"val"}[[yes]]', { val: "yes" }
+
+    for {str} in *{
+      {"hello $one zone"}
+      {"hello $one{} zone"}
+      {"hello $one{1,2,3,4,5,6} zone"}
+      {"hello $one{'be string aware }'} zone"}
+      {[[hello $one{yes = "no", 5} zone]]}
+
+      -- broken, missing string parsing
+      -- {[[hello $one{"be string aware }"} zone]]}
+      -- {'hello $one{one = [[a } here]]}"} zone'}
+
+      -- broken, no support for multiline yet
+      -- {[[hello $one{
+      --   color = {
+      --     5, blue = 'okay'
+      --   }
+      -- } zone]]}
+    }
+      import escape_cosmo, unescape_cosmo from require "sitegen.renderers.markdown"
+
+      it "escapes and unescapes cosmo", ->
+        escaped = escape_cosmo str
+        assert.same escaped,
+          "hello 0000sitegen_markdown00dollar0000.1 zone"
+        assert.same str, (unescape_cosmo escape_cosmo str)
 
