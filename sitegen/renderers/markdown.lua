@@ -1,6 +1,14 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
 local dollar_temp = "0000sitegen_markdown00dollar0000"
+local simple_string
+simple_string = function(delim)
+  local P
+  P = require("lpeg").P
+  local inner = P("\\" .. tostring(delim)) + "\\\\" + (1 - P(delim))
+  inner = inner ^ 0
+  return P(delim) * inner * P(delim)
+end
 local escape_cosmo
 escape_cosmo = function(str)
   local escapes = { }
@@ -10,8 +18,9 @@ escape_cosmo = function(str)
     P, R, Cmt, Cs = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs
   end
   local counter = 0
+  local cosmo_inner = simple_string("'") + (P(1) - "}")
   local alphanum = R("az", "AZ", "09", "__")
-  local cosmo = P("$") * alphanum ^ 1 * (P("{") * (P(1) - "}") ^ 0 * P("}")) ^ -1 / function(tpl)
+  local cosmo = P("$") * alphanum ^ 1 * (P("{") * cosmo_inner ^ 0 * P("}")) ^ -1 / function(tpl)
     counter = counter + 1
     local key = tostring(dollar_temp) .. "." .. tostring(counter)
     escapes[key] = tpl
@@ -79,6 +88,9 @@ do
     end
   })
   _base_0.__class = _class_0
+  local self = _class_0
+  self.escape_cosmo = escape_cosmo
+  self.unescape_cosmo = unescape_cosmo
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end
