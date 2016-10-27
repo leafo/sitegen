@@ -16,7 +16,7 @@ before_install:
 
 install:
   - luarocks install busted
-  - luarocks install lapis
+  - ([ "$LUA" = "lua5.1" ] || [ "$LUA" = "luajit2.1" ]) && luarocks install lapis
   - luarocks make
 
 script: busted
