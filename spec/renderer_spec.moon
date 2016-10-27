@@ -139,7 +139,7 @@ $markdown{[[
       {[[hello $one{yes = "no", 5} zone]]}
 
       {[[hello $one{"be string aware }"} zone]]}
-      -- {'hello $one{one = [[a } here]]}"} zone'}
+      {'hello $one{one = [[a } here]]} zone'}
 
       -- broken, no support for multiline yet
       -- {[[hello $one{

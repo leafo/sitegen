@@ -9,6 +9,22 @@ simple_string = function(delim)
   inner = inner ^ 0
   return P(delim) * inner * P(delim)
 end
+local lua_string
+lua_string = function()
+  local P, C, Cmt, Cb, Cg
+  do
+    local _obj_0 = require("lpeg")
+    P, C, Cmt, Cb, Cg = _obj_0.P, _obj_0.C, _obj_0.Cmt, _obj_0.Cb, _obj_0.Cg
+  end
+  local check_lua_string
+  check_lua_string = function(str, pos, right, left)
+    return #left == #right
+  end
+  local string_open = P("[") * P("=") ^ 0 * "["
+  local string_close = P("]") * P("=") ^ 0 * "]"
+  local valid_close = Cmt(C(string_close) * Cb("string_open"), check_lua_string)
+  return Cg(string_open, "string_open") * (1 - valid_close) ^ 0 * string_close
+end
 local escape_cosmo
 escape_cosmo = function(str)
   local escapes = { }
@@ -18,7 +34,7 @@ escape_cosmo = function(str)
     P, R, Cmt, Cs = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs
   end
   local counter = 0
-  local cosmo_inner = simple_string("'") + (P(1) - "}")
+  local cosmo_inner = simple_string("'") + simple_string('"') + lua_string() + (P(1) - "}")
   local alphanum = R("az", "AZ", "09", "__")
   local cosmo = P("$") * alphanum ^ 1 * (P("{") * cosmo_inner ^ 0 * P("}")) ^ -1 / function(tpl)
     counter = counter + 1

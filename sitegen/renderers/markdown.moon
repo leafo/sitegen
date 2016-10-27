@@ -10,13 +10,29 @@ simple_string = (delim) ->
   inner = inner^0
   P(delim) * inner * P(delim)
 
+lua_string = ->
+  import P, C, Cmt, Cb, Cg from require "lpeg"
+  check_lua_string = (str, pos, right, left) ->
+    #left == #right
+
+  string_open = P"[" * P"="^0 * "["
+  string_close = P"]" * P"="^0 * "]"
+
+  valid_close = Cmt C(string_close) * Cb"string_open", check_lua_string
+
+  Cg(string_open, "string_open") *
+    (1 - valid_close)^0 * string_close
+
 escape_cosmo = (str) ->
   escapes = {}
   import P, R, Cmt, Cs from require "lpeg"
 
   counter = 0
 
-  cosmo_inner = simple_string("'") + simple_string('"')+ (P(1) - "}")
+  cosmo_inner = simple_string("'") +
+    simple_string('"') +
+    lua_string! +
+    (P(1) - "}")
 
   alphanum = R "az", "AZ", "09", "__"
   -- TODO: this doesn't support nesting
