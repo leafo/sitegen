@@ -16,7 +16,7 @@ escape_cosmo = (str) ->
 
   counter = 0
 
-  cosmo_inner = simple_string("'") + (P(1) - "}")
+  cosmo_inner = simple_string("'") + simple_string('"')+ (P(1) - "}")
 
   alphanum = R "az", "AZ", "09", "__"
   -- TODO: this doesn't support nesting
