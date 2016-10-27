@@ -15,6 +15,7 @@ sitegen.create =>
   add "../doc/plugins.md"
   add "../doc/creating_a_plugin.md"
   add "../doc/html_helpers.md"
+  add "../doc/renderers_markdown.md"
 
   @title = "Sitegen"
   @url = "http://leafo.net/sitegen/"
