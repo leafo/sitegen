@@ -55,8 +55,16 @@ describe "sitegen.plugins.indexer", ->
     }
 
     page\render!
-    assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a name="first-header/second-header" href="#first-header/second-header">Second header</a></h2>]],
-      flatten_html page._inner_content
+
+    valid = {v, true for v in *{
+      [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a href="#first-header" name="first-header">First header</a></h1><h2><a href="#first-header/second-header" name="first-header/second-header">Second header</a></h2>]]
+      [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a href="#first-header/second-header" name="first-header/second-header">Second header</a></h2>]]
+
+      [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a href="#first-header" name="first-header">First header</a></h1><h2><a href="#first-header/second-header" name="first-header/second-header">Second header</a></h2>]]
+      [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li></ul></ul><h1><a name="first-header" href="#first-header">First header</a></h1><h2><a name="first-header/second-header" href="#first-header/second-header">Second header</a></h2>]]
+    }}
+
+    assert.true valid[flatten_html page._inner_content]
 
 
   it "indexes with custom slugify", ->
