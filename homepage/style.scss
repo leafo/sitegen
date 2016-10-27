@@ -38,7 +38,6 @@ body {
 .navigation {
     @include border_box;
     line-height: 1.2;
-    width: 200px;
     padding: 10px;
     border: 1px solid lighten(#333, 10%);
     border-radius: 3px;
@@ -71,15 +70,6 @@ body {
         }
     }
 
-}
-
-.responsive_column {
-    max-width: $site_width;
-    padding: 0 40px;
-
-    @media (max-width: 600px) {
-        padding: 0 20px;
-    }
 }
 
 p, li {
@@ -171,18 +161,29 @@ p > code, li > code {
     }
 }
 
-.page_columns {
-    text-align: center;
-    .navigation, .responsive_column {
-        display: inline-block;
-        text-align: left;
-        vertical-align: top;
 
-        @media (max-width: 960px) {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+.page_columns {
+    margin: 0 20px;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    article {
+        max-width: 650px;
+        min-width: 0;
+        flex: 1;
+
+        margin-left: 40px;
+
+        @media (max-width: 600px) {
+            padding: 0 20px;
         }
+
+    }
+
+    navigation {
+        width: 200px;
     }
 }
 
