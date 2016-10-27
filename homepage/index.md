@@ -22,7 +22,7 @@ automatically generated headers.
 Sitegen uses the [cosmo templating language][1] to inject variables, run
 functions, and trigger actions in the body of the page as it is being created.
 
-$index
+$index{min_depth = 2}
 
 ## Install
 

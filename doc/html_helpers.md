@@ -96,11 +96,17 @@ query.
 
 ### `$eq`
 
-### `$if`
+### `$if{cond}[[subtemplate]]`
 
-### `$each`
+### `$each{items, "name"}[[subtemplate]]`
 
-### `$is_page`
+Iterates through the array `items` executing the subtemplate each time. The
+current item is assigned to `name` within the subtemplate.
+
+
+### `$is_page{query_args}[[subtemplate]]`
+
+Runs the subtemplate if if `query_args` matches the current page.
 
 
 [cosmo]: http://cosmo.luaforge.net/

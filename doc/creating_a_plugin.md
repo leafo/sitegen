@@ -6,7 +6,7 @@
 
 # Creating a Plugin
 
-$index
+$index{min_depth = 2}
 
 Much of the built in functionality in Sitegen is implemented by plugins. You
 can create your own plugins to add custom functionality to the various steps of

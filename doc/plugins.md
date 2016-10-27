@@ -6,7 +6,7 @@
 
 # Plugins
 
-$index
+$index{min_depth = 2}
 
 ## Method Types
 
