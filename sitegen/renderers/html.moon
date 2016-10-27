@@ -93,7 +93,14 @@ class HTMLRenderer extends Renderer
 
     is_page: (args) =>
       page_pattern = unpack args
-      cosmo.yield {} if @source\match page_pattern
+
+      if type(page_pattern) == "string"
+        cosmo.yield {} if @source\match page_pattern
+      else
+        import query_pages from require "sitegen.query"
+        if unpack query_pages {@}, args
+          cosmo.yield {}
+
       nil
 
     query_pages: (query) =>

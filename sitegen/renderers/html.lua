@@ -101,8 +101,18 @@ do
       end,
       is_page = function(self, args)
         local page_pattern = unpack(args)
-        if self.source:match(page_pattern) then
-          cosmo.yield({ })
+        if type(page_pattern) == "string" then
+          if self.source:match(page_pattern) then
+            cosmo.yield({ })
+          end
+        else
+          local query_pages
+          query_pages = require("sitegen.query").query_pages
+          if unpack(query_pages({
+            self
+          }, args)) then
+            cosmo.yield({ })
+          end
         end
         return nil
       end,
