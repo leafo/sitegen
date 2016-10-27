@@ -1,5 +1,6 @@
 {
   target: "doc/creating-a-plugin"
+  id: "creating_a_plugin"
   title: "Creating a plugin - Sitegen"
 }
 

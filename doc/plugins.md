@@ -1,5 +1,6 @@
 {
   target: "doc/plugins"
+  id: "plugins"
   title: "Plugins - Sitegen"
 }
 

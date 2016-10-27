@@ -1,5 +1,6 @@
 {
   target: "doc/html-helpers"
+  id: "html_helpers"
   title: "HTML Variables & Helpers"
 }
 
