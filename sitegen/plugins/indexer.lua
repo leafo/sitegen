@@ -29,14 +29,18 @@ do
       page:render()
       return self.current_index[page]
     end,
-    index = function(self, page)
+    index = function(self, page, arg)
       if page.meta.index == false then
         return ""
       end
       if not (self.current_index[page]) then
         assert(page.tpl_scope.render_source, "attempting to render index with no body available (are you in cosmo?)")
+        arg = arg or { }
+        setmetatable(arg, {
+          __index = page.meta.index
+        })
         local body
-        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source, page.meta.index)
+        body, self.current_index[page] = self:parse_headers(page.tpl_scope.render_source, arg)
         coroutine.yield(body)
       end
       return self:render_index(self.current_index[page])

@@ -23,13 +23,22 @@ class IndexerPlugin extends Plugin
     @current_index[page]
 
   -- renders index from within template
-  index: (page) =>
+  index: (page, arg) =>
+
     return "" if page.meta.index == false
+
     unless @current_index[page]
       assert page.tpl_scope.render_source,
         "attempting to render index with no body available (are you in cosmo?)"
 
-      body, @current_index[page] = @parse_headers page.tpl_scope.render_source, page.meta.index
+
+      arg or= {}
+      setmetatable arg, {
+        __index: page.meta.index
+      }
+
+      body, @current_index[page] = @parse_headers page.tpl_scope.render_source, arg
+
       coroutine.yield body
 
     @render_index @current_index[page]
