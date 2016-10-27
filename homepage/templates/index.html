@@ -18,16 +18,22 @@
     <navigation class="navigation">
       <ul>
         <li>
-          <a href="$root">Overview</a>
+          <a $is_page{id = "root"}[[class="current"]] href="$root">Overview</a>
         </li>
         <li>
-          <a href="$url_for{id = "html_helpers"}">HTML variables and helpers</a>
+          <a $is_page{id = "html_helpers"}[[class="current"]] href="$url_for{id = "html_helpers"}">HTML variables and helpers</a>
         </li>
+
         <li>
-          <a href="$url_for{id = "plugins"}">Plugins</a>
-        </li>
-        <li>
-          <a href="$url_for{id = "creating_a_plugin"}">Creating a plugin</a>
+          <strong>Plugins</strong>
+          <ul>
+            <li>
+              <a $is_page{id = "plugins"}[[class="current"]] href="$url_for{id = "plugins"}">Included plugins</a>
+            </li>
+            <li>
+              <a $is_page{id = "creating_a_plugin"}[[class="current"]] href="$url_for{id = "creating_a_plugin"}">Creating a plugin</a>
+            </li>
+          </ul>
         </li>
       </ul>
     </navigation>

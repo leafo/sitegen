@@ -1,3 +1,7 @@
+{
+  id: "root"
+}
+
 # Sitegen
 
 Sitegen assembles static webpages through a pipeline consisting of templates and

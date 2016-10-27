@@ -57,6 +57,20 @@ body {
         }
     }
 
+    strong {
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+
+    a {
+        opacity: 0.8;
+
+        &.current {
+            font-weight: bold;
+            opacity: 1.0;
+        }
+    }
+
 }
 
 .responsive_column {
