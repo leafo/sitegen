@@ -28,15 +28,17 @@ end
 local escape_cosmo
 escape_cosmo = function(str)
   local escapes = { }
-  local P, R, Cmt, Cs
+  local P, R, Cmt, Cs, V
   do
     local _obj_0 = require("lpeg")
-    P, R, Cmt, Cs = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs
+    P, R, Cmt, Cs, V = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.V
   end
   local counter = 0
-  local cosmo_inner = simple_string("'") + simple_string('"') + lua_string() + (P(1) - "}")
+  local curly = lpeg.P({
+    P("{") * (simple_string("'") + simple_string('"') + lua_string() + V(1) + (P(1) - "}")) ^ 0 * P("}")
+  })
   local alphanum = R("az", "AZ", "09", "__")
-  local cosmo = P("$") * alphanum ^ 1 * (P("{") * cosmo_inner ^ 0 * P("}")) ^ -1 / function(tpl)
+  local cosmo = P("$") * alphanum ^ 1 * (curly) ^ -1 / function(tpl)
     counter = counter + 1
     local key = tostring(dollar_temp) .. "." .. tostring(counter)
     escapes[key] = tpl

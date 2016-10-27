@@ -141,12 +141,11 @@ $markdown{[[
       {[[hello $one{"be string aware }"} zone]]}
       {'hello $one{one = [[a } here]]} zone'}
 
-      -- broken, no support for multiline yet
-      -- {[[hello $one{
-      --   color = {
-      --     5, blue = 'okay'
-      --   }
-      -- } zone]]}
+      {[[hello $one{
+        color = {
+          5, blue = 'okay'
+        }
+      } zone]]}
     }
       import escape_cosmo, unescape_cosmo from require "sitegen.renderers.markdown"
 

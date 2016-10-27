@@ -25,19 +25,22 @@ lua_string = ->
 
 escape_cosmo = (str) ->
   escapes = {}
-  import P, R, Cmt, Cs from require "lpeg"
+  import P, R, Cmt, Cs, V from require "lpeg"
 
   counter = 0
 
-  cosmo_inner = simple_string("'") +
-    simple_string('"') +
-    lua_string! +
-    (P(1) - "}")
+  curly = lpeg.P {
+    P"{" * (
+      simple_string("'") +
+      simple_string('"') +
+      lua_string! +
+      V(1) +
+      (P(1) - "}")
+    )^0 * P"}"
+  }
 
   alphanum = R "az", "AZ", "09", "__"
-  -- TODO: this doesn't support nesting
-  -- TODO: this doesn't escape the blocks
-  cosmo = P"$" * alphanum^1 * (P"{" * cosmo_inner^0 * P"}")^-1 / (tpl) ->
+  cosmo = P"$" * alphanum^1 * (curly)^-1 / (tpl) ->
     counter += 1
     key = "#{dollar_temp}.#{counter}"
     escapes[key] = tpl
