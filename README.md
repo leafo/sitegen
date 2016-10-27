@@ -1,5 +1,7 @@
 # Sitegen
 
+[![Build Status](https://travis-ci.org/leafo/sitegen.svg?branch=master)](https://travis-ci.org/leafo/sitegen)
+
 A static site generator written in [MoonScript](http://moonscript.org).
 
 <http://leafo.net/sitegen/>
