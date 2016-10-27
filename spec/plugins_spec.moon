@@ -13,7 +13,7 @@ describe "sitegen.plugins.indexer", ->
     page = factory.Page {
       render_fn: HTMLRenderer\load [[
         $index
-        <h2>First header</h1>
+        <h1>First header</h1>
         <h2>Second header</h2>
         <h3>Third header</h3>
         <h2>Another first header</h3>
@@ -21,7 +21,7 @@ describe "sitegen.plugins.indexer", ->
     }
 
     page\render!
-    assert.same [[<ul><li><a href="#second-header">Second header</a></li><ul><li><a href="#second-header/third-header">Third header</a></li></ul><li><a href="#another-first-header">Another first header</h3></a></li><li><a href="#first-header-second-header-third-header-another-first-header">First header</h1><h2>Second header</h2><h3>Third header</h3><h2>Another first header</h3></a></li></ul><h2 id="first-header-second-header-third-header-another-first-header">First header</h1><h2>Second header</h2><h3>Third header</h3><h2>Another first header</h3></h2>]],
+    assert.same [[<ul><li><a href="#first-header">First header</a></li><ul><li><a href="#first-header/second-header">Second header</a></li><ul><li><a href="#first-header/second-header/third-header">Third header</a></li></ul><li><a href="#first-header/another-first-header">Another first header</h3></a></li></ul></ul><h1 id="first-header">First header</h1><h2 id="first-header/second-header">Second header</h2><h3 id="first-header/second-header/third-header">Third header</h3><h2 id="first-header/another-first-header">Another first header</h3>]],
       flatten_html page._inner_content
 
   it "indexes a page when passing index: true", ->
