@@ -25,6 +25,7 @@ lua_string = ->
 
 escape_cosmo = (str) ->
   escapes = {}
+  lpeg = require "lpeg"
   import P, R, Cmt, Cs, V from require "lpeg"
 
   counter = 0
