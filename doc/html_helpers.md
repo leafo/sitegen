@@ -4,18 +4,19 @@
   title: "HTML Variables & Helpers"
 }
 
-# HTML &amp; Markdown Helpers
-
-Both HTML and Markdown templates and pages are passed through [cosmo][] to
-interpolate any variables or call any helper functions.
-
-For Markdown, the cosmo interpolation happens after the text is compiled to
-HTML.
-
 ## Variables
 
-Any variables set in your `site.moon` or in the header of your page can be
-accessed directly by name when prefixed with `$`:
+When a page is rendering it has access to a set of variables and helper
+functions. They can be provided in three scopes, with lowest precednece first:
+
+* Built in variables -- provided by `sitegen`
+* Site level variables -- set in `site.moon`
+* Page level variables -- set in the page
+
+
+The variables can be accessed depending on the page renderer used. In the
+[Markdown][markdown-renderer] and [HTML renderers][html-renderer], the templating language cosmo is used. You can
+access variables by prefixing them with `$`:
 
 
 ```html
@@ -111,3 +112,6 @@ Runs the subtemplate if if `query_args` matches the current page.
 
 [cosmo]: http://cosmo.luaforge.net/
 [plugins]: $root/doc/plugins.html
+[markdown-renderer]: $url_for{id="renderers.markdown"}
+[html-renderer]: $url_for{id="renderers.html"}
+
