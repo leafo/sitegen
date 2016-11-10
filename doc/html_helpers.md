@@ -4,7 +4,7 @@
   title: "HTML Variables & Helpers"
 }
 
-## Variables
+# Variables & helpers
 
 When a page is rendering it has access to a set of variables and helper
 functions. They can be provided in three scopes, with lowest precednece first:
@@ -31,8 +31,9 @@ access variables by prefixing them with `$`:
 <p>Hello!</p>
 ```
 
+$index{min_depth = 2}
 
-### Built in variables
+## Built in variables
 
 There are a few variables that are always available, here they are:
 
@@ -42,7 +43,7 @@ There are a few variables that are always available, here they are:
 [Plugins][plugins] may also introduce variables, in addition to functions, that can be accessed from a page.
 
 
-## Functions
+## Built in functions
 
 In addition to variables, there are a handful of built in functions that can be
 called from pages and templates. Cosmo provides syntax for calling functions.
@@ -92,7 +93,6 @@ $markdown{[[
 Like `$query_pages` but will throw an error unless 1 page is returned from the
 query.
 
-
 ### `$neq`
 
 ### `$eq`
@@ -104,10 +104,34 @@ query.
 Iterates through the array `items` executing the subtemplate each time. The
 current item is assigned to `name` within the subtemplate.
 
-
 ### `$is_page{query_args}[[subtemplate]]`
 
 Runs the subtemplate if if `query_args` matches the current page.
+
+## Site variables
+
+Site variables are set in `site.moon` and apply to every page rendered. If a
+page variable happens to override the same name of a site variable, it does not
+affect other pages.
+
+You can set a site variable by storing it on `self` in the site constructor
+function:
+
+```moon
+sitegen = require "sitegen"
+
+sitegen.create =>
+  @version = "1.2.3-alpha-gamma"
+  add "index.html"
+```
+
+Inside your pages you can now access the variable using the appropriate syntax:
+
+```html
+<p>Current version: <strong>$version</strong></p>
+```
+
+## Page variables
 
 
 [cosmo]: http://cosmo.luaforge.net/
