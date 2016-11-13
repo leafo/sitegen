@@ -128,8 +128,8 @@ class Page
     @_inner_content = @_content
 
     -- wrap the page in template
-    if @meta.template != false
-      @template_stack\push @meta.template or @site.config.default_template
+    if @tpl_scope.template != false
+      @template_stack\push @tpl_scope.template or @site.config.default_template
 
     while #@template_stack > 0
       tpl_name = @template_stack\pop!

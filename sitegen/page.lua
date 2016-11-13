@@ -127,8 +127,8 @@ do
       self._content = assert(self:render_fn(self), "failed to get content from renderer")
       self:trigger("page.content_rendered", self._content)
       self._inner_content = self._content
-      if self.meta.template ~= false then
-        self.template_stack:push(self.meta.template or self.site.config.default_template)
+      if self.tpl_scope.template ~= false then
+        self.template_stack:push(self.tpl_scope.template or self.site.config.default_template)
       end
       while #self.template_stack > 0 do
         local tpl_name = self.template_stack:pop()

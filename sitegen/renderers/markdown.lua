@@ -34,7 +34,7 @@ escape_cosmo = function(str)
     P, R, Cmt, Cs, V = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.V
   end
   local counter = 0
-  local curly = lpeg.P({
+  local curly = P({
     P("{") * (simple_string("'") + simple_string('"') + lua_string() + V(1) + (P(1) - "}")) ^ 0 * P("}")
   })
   local alphanum = R("az", "AZ", "09", "__")
