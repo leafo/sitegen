@@ -2,10 +2,7 @@
 .PHONY: build local install lint
 
 local: build
-	luarocks make --local
-
-install: build
-	sudo luarocks make
+	luarocks make --lua-version=5.1 --local
 
 build::
 	moonc sitegen
