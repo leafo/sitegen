@@ -22,7 +22,8 @@ do
       local callbacks = self.callbacks
       for _index_0 = 1, #parts do
         local p = parts[_index_0]
-        callbacks[p] = callbacks[p] or { }
+        local _update_0 = p
+        callbacks[_update_0] = callbacks[_update_0] or { }
         callbacks = callbacks[p]
       end
       return table.insert(callbacks, callback)
