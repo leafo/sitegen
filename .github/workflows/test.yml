@@ -6,7 +6,7 @@ jobs:
   test:
     strategy:
       matrix:
-        luaVersion: ["5.1", "luajit"]
+        luaVersion: ["5.1", "luajit", "5.2", "5.3"]
 
     runs-on: ubuntu-latest
 
@@ -21,6 +21,7 @@ jobs:
 
     - name: build
       run: |
+        luarocks install https://raw.githubusercontent.com/leafo/lua-cjson/master/lua-cjson-dev-1.rockspec
         luarocks install busted
         luarocks install moonscript
         luarocks install lapis
