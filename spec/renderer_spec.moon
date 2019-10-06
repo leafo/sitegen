@@ -120,9 +120,9 @@ $markdown{[[
       it "renders a user var", ->
         site.user_vars.hello = "zone"
         site.user_vars.world = (page, arg) ->
-          page.target
+          page.target\gsub "%d+", "XX"
 
-        assert.same "hello: zone, world: www/some_page_1.html", render "hello: $hello, world: $world{}"
+        assert.same "hello: zone, world: www/some_page_XX.html", render "hello: $hello, world: $world{}"
 
       it "renders comsmo with complex markup", ->
         site.user_vars.thing = (page, arg) ->
