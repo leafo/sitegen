@@ -107,10 +107,19 @@ class Page
     root
 
   get_tpl_scope: =>
+    user_vars_scope = {}
+    if @site.user_vars
+      -- bind the functions to the page
+      for k,v in pairs @site.user_vars
+        user_vars_scope[k] = if type(v) == "function"
+          (...) -> v @, ...
+        else
+          v
+
     extend {
       generate_date: os.date!
       root: @get_root!
-    }, @plugin_template_helpers!, @meta, @site.user_vars
+    }, @plugin_template_helpers!, @meta, user_vars_scope
 
   set_content: (@_content) =>
 

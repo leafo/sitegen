@@ -109,10 +109,22 @@ do
       return root
     end,
     get_tpl_scope = function(self)
+      local user_vars_scope = { }
+      if self.site.user_vars then
+        for k, v in pairs(self.site.user_vars) do
+          if type(v) == "function" then
+            user_vars_scope[k] = function(...)
+              return v(self, ...)
+            end
+          else
+            user_vars_scope[k] = v
+          end
+        end
+      end
       return extend({
         generate_date = os.date(),
         root = self:get_root()
-      }, self:plugin_template_helpers(), self.meta, self.site.user_vars)
+      }, self:plugin_template_helpers(), self.meta, user_vars_scope)
     end,
     set_content = function(self, _content)
       self._content = _content

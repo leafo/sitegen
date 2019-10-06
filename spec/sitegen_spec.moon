@@ -109,8 +109,6 @@ describe "sitegen", ->
 
       site\write!
 
-      read "www/index.html"
-
       assert.same [[<!DOCTYPE HTML>
 <html lang="en">
 <head>
@@ -200,5 +198,18 @@ TEMPLATE BOTTOM]], read "www/index.html"
 
       read "www/index.html"
       assert.same "<p>hello <em>world</em></p>\n", read "www/index.html"
+
+    it "builds site with user vars", ->
+      write "index.html", [[hello $world and $something{color = 'blue'}]]
+
+      site\init_from_fn =>
+        @world = "777"
+        @something = (page, arg) ->
+          "HELLO(color:#{arg.color})(target:#{page.target})"
+
+        add "index.html", template: false
+
+      site\write!
+      assert.same "hello 777 and HELLO(color:blue)(target:www/index.html)", read "www/index.html"
 
 
