@@ -117,6 +117,36 @@ $markdown{[[
 
         assert.same "B", render '$query_pages{id = "2"}[[$title]]'
 
+      it "renders a user var", ->
+        site.user_vars.hello = "zone"
+        site.user_vars.world = (page, arg) ->
+          page.target
+
+        assert.same "hello: zone, world: www/some_page_1.html", render "hello: $hello, world: $world{}"
+
+      it "renders comsmo with complex markup", ->
+        site.user_vars.thing = (page, arg) ->
+          assert.same {
+            markup: [[
+
+
+              Hello world
+              ```lua
+              world
+              ```
+            ]]
+          }, arg
+          "ok"
+
+        assert.same "ok", render [=[$thing{
+            markup = [[
+              Hello world
+              ```lua
+              world
+              ```
+            ]]
+          }]=]
+
 
   describe "renderers.markdown", ->
     local site, renderer
