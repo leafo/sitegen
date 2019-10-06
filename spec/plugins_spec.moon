@@ -85,3 +85,17 @@ describe "sitegen.plugins.indexer", ->
     assert.same [[<h1 id="FIRSTHEADER">First header</h1><h2 id="FIRSTHEADER/SECONDHEADER">Second header</h2>]],
       flatten_html page._inner_content
 
+
+describe "sitegen.plugins.syntaxhighlight", ->
+  it "syntax highlights some code", ->
+    site = factory.Site {}
+
+    sh = require("sitegen.plugins.syntaxhighlight")
+    plugin = sh site
+    out = flatten_html plugin\filter [[
+```lua
+print("hello world")
+```]]
+
+    assert.same [[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_operator">(</span><span class="sh_string">&quot;hello world&quot;</span><span class="sh_operator">)</span></code></pre>]], out
+
