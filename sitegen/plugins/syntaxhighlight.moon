@@ -1,6 +1,8 @@
 html = require "sitegen.html"
 import Plugin from require "sitegen.plugin"
 
+import trim_leading_white from require "sitegen.common"
+
 --
 -- Specify code to highlight using ````lang, eg.
 --
@@ -33,9 +35,11 @@ class SyntaxhighlightPlugin extends Plugin
 
       return html.escape code
 
-    assert syntaxhighlight.highlight_to_html lang, code, {
+    out = assert syntaxhighlight.highlight_to_html lang, code, {
       bare: true
     }
+
+    (out\gsub "\n$", "")
 
   -- checks cache and custom highlighters
   _highlight: (lang, code, page=nil) =>

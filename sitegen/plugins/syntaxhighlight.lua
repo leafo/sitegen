@@ -1,6 +1,8 @@
 local html = require("sitegen.html")
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
+local trim_leading_white
+trim_leading_white = require("sitegen.common").trim_leading_white
 local SyntaxhighlightPlugin
 do
   local _class_0
@@ -22,9 +24,10 @@ do
         end
         return html.escape(code)
       end
-      return assert(syntaxhighlight.highlight_to_html(lang, code, {
+      local out = assert(syntaxhighlight.highlight_to_html(lang, code, {
         bare = true
       }))
+      return (out:gsub("\n$", ""))
     end,
     _highlight = function(self, lang, code, page)
       if page == nil then
