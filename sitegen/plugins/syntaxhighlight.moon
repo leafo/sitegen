@@ -77,9 +77,9 @@ class SyntaxhighlightPlugin extends Plugin
       assert @_highlight(lang, body, page),
         "failed to highlight #{lang} code\n\n#{body}"
 
-    document = Cs(code_block + (nl * code_block + 1)^0)
+    document = Cs(code_block^0 * (nl * code_block + 1)^0) * -1
 
-    assert document\match text
+    assert document\match(text), "failed to parse string for syntax highlight"
 
   new: (@site) =>
     @site.events\on "renderer.markdown.pre_render",

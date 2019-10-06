@@ -77,8 +77,8 @@ do
         end
         return assert(self:_highlight(lang, body, page), "failed to highlight " .. tostring(lang) .. " code\n\n" .. tostring(body))
       end
-      local document = Cs(code_block + (nl * code_block + 1) ^ 0)
-      return assert(document:match(text))
+      local document = Cs(code_block ^ 0 * (nl * code_block + 1) ^ 0) * -1
+      return assert(document:match(text), "failed to parse string for syntax highlight")
     end
   }
   _base_0.__index = _base_0
