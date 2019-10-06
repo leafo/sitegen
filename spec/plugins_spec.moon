@@ -87,10 +87,12 @@ describe "sitegen.plugins.indexer", ->
 
 
 describe "sitegen.plugins.syntaxhighlight", ->
-  it "syntax highlights some code", ->
+  local site, sh
+  before_each ->
     site = factory.Site {}
-
     sh = require("sitegen.plugins.syntaxhighlight")
+
+  it "syntax highlights some code", ->
     plugin = sh site
     out = flatten_html plugin\filter [[
 ```lua
@@ -99,3 +101,24 @@ print("hello world")
 
     assert.same [[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_operator">(</span><span class="sh_string">&quot;hello world&quot;</span><span class="sh_operator">)</span></code></pre>]], out
 
+
+  it "doesnt highlight code inside of a cosmo template #mmm", ->
+    plugin = sh site
+    out = flatten_html plugin\filter [=[
+```lua
+print 5
+```
+
+$hello{[[
+  ```lua
+  print thing
+  ```
+]]}]=]
+
+    assert.same [=[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_number">5</span></code></pre>
+
+$hello{[[
+  ```lua
+  print thing
+  ```
+]]}]=], out

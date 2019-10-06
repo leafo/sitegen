@@ -77,7 +77,10 @@ class SyntaxhighlightPlugin extends Plugin
       assert @_highlight(lang, body, page),
         "failed to highlight #{lang} code\n\n#{body}"
 
-    document = Cs(code_block^0 * (nl * code_block + 1)^0) * -1
+    import parse_cosmo from require "sitegen.renderers.markdown"
+    cosmo_pattern = parse_cosmo!
+
+    document = Cs(code_block^0 * (nl * code_block + cosmo_pattern + 1)^0) * -1
 
     assert document\match(text), "failed to parse string for syntax highlight"
 

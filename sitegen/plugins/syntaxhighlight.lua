@@ -77,7 +77,10 @@ do
         end
         return assert(self:_highlight(lang, body, page), "failed to highlight " .. tostring(lang) .. " code\n\n" .. tostring(body))
       end
-      local document = Cs(code_block ^ 0 * (nl * code_block + 1) ^ 0) * -1
+      local parse_cosmo
+      parse_cosmo = require("sitegen.renderers.markdown").parse_cosmo
+      local cosmo_pattern = parse_cosmo()
+      local document = Cs(code_block ^ 0 * (nl * code_block + cosmo_pattern + 1) ^ 0) * -1
       return assert(document:match(text), "failed to parse string for syntax highlight")
     end
   }

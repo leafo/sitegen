@@ -25,6 +25,19 @@ lua_string = function()
   local valid_close = Cmt(C(string_close) * Cb("string_open"), check_lua_string)
   return Cg(string_open, "string_open") * (1 - valid_close) ^ 0 * string_close
 end
+local parse_cosmo
+parse_cosmo = function()
+  local P, R, Cmt, Cs, V
+  do
+    local _obj_0 = require("lpeg")
+    P, R, Cmt, Cs, V = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.V
+  end
+  local curly = P({
+    P("{") * (simple_string("'") + simple_string('"') + lua_string() + V(1) + (P(1) - "}")) ^ 0 * P("}")
+  })
+  local alphanum = R("az", "AZ", "09", "__")
+  return P("$") * alphanum ^ 1 * (curly) ^ -1
+end
 local escape_cosmo
 escape_cosmo = function(str)
   local escapes = { }
@@ -34,11 +47,7 @@ escape_cosmo = function(str)
     P, R, Cmt, Cs, V = _obj_0.P, _obj_0.R, _obj_0.Cmt, _obj_0.Cs, _obj_0.V
   end
   local counter = 0
-  local curly = P({
-    P("{") * (simple_string("'") + simple_string('"') + lua_string() + V(1) + (P(1) - "}")) ^ 0 * P("}")
-  })
-  local alphanum = R("az", "AZ", "09", "__")
-  local cosmo = P("$") * alphanum ^ 1 * (curly) ^ -1 / function(tpl)
+  local cosmo = parse_cosmo() / function(tpl)
     counter = counter + 1
     local key = tostring(dollar_temp) .. "." .. tostring(counter)
     escapes[key] = tpl
@@ -109,6 +118,7 @@ do
   local self = _class_0
   self.escape_cosmo = escape_cosmo
   self.unescape_cosmo = unescape_cosmo
+  self.parse_cosmo = parse_cosmo
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end

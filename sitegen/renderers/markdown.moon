@@ -23,12 +23,10 @@ lua_string = ->
   Cg(string_open, "string_open") *
     (1 - valid_close)^0 * string_close
 
-escape_cosmo = (str) ->
-  escapes = {}
+-- returns a pattern that parses a cosmo template. Can be used to have
+-- pre-processors ignore text that would be handled by cosmo
+parse_cosmo = ->
   import P, R, Cmt, Cs, V from require "lpeg"
-
-  counter = 0
-
   curly = P {
     P"{" * (
       simple_string("'") +
@@ -40,7 +38,15 @@ escape_cosmo = (str) ->
   }
 
   alphanum = R "az", "AZ", "09", "__"
-  cosmo = P"$" * alphanum^1 * (curly)^-1 / (tpl) ->
+  P"$" * alphanum^1 * (curly)^-1
+
+escape_cosmo = (str) ->
+  escapes = {}
+  import P, R, Cmt, Cs, V from require "lpeg"
+
+  counter = 0
+
+  cosmo = parse_cosmo! / (tpl) ->
     counter += 1
     key = "#{dollar_temp}.#{counter}"
     escapes[key] = tpl
@@ -64,6 +70,7 @@ unescape_cosmo = (str, escapes) ->
 class MarkdownRenderer extends require "sitegen.renderers.html"
   @escape_cosmo: escape_cosmo
   @unescape_cosmo: unescape_cosmo
+  @parse_cosmo: parse_cosmo
 
   source_ext: "md"
   ext: "html"
