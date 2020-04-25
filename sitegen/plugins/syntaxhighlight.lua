@@ -33,6 +33,7 @@ do
       if page == nil then
         page = nil
       end
+      code = code:gsub("\r?\n$", ""):gsub("^\r?\n", "")
       do
         local fn = self.before_highlight[lang]
         if fn then

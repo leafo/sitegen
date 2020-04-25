@@ -43,6 +43,9 @@ class SyntaxhighlightPlugin extends Plugin
 
   -- checks custom highlighters
   _highlight: (lang, code, page=nil) =>
+    -- strip extra newlines
+    code = code\gsub("\r?\n$", "")\gsub("^\r?\n", "")
+
     if fn = @before_highlight[lang]
       assert fn @, code, page
 
