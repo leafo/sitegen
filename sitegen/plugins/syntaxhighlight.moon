@@ -22,9 +22,9 @@ class SyntaxhighlightPlugin extends Plugin
     erb: "rhtml"
   }
 
-  -- highlight code with pygments
+  -- highlight code with syntaxhighlight library https://github.com/leafo/lua-syntaxhighlight
   highlight: (lang, code) =>
-    syntaxhighlight = require("syntaxhighlight")
+    syntaxhighlight = require "syntaxhighlight"
 
     lang = @language_aliases[lang] or lang
 
@@ -41,7 +41,7 @@ class SyntaxhighlightPlugin extends Plugin
 
     (out\gsub "\n$", "")
 
-  -- checks cache and custom highlighters
+  -- checks custom highlighters
   _highlight: (lang, code, page=nil) =>
     if fn = @before_highlight[lang]
       assert fn @, code, page
