@@ -57,6 +57,7 @@ class PygmentsPlugin extends Plugin
       code { raw html_code }
     }
 
+
   filter: (text, page) =>
     lpeg = require "lpeg"
     import P, R, S, Cs, Cmt, C, Cg, Cb from lpeg
@@ -79,7 +80,10 @@ class PygmentsPlugin extends Plugin
       assert @_highlight(lang, body, page),
         "failed to highlight #{lang} code\n\n#{body}"
 
-    document = Cs(code_block + (nl * code_block + 1)^0)
+    import parse_cosmo from require "sitegen.renderers.markdown"
+    cosmo_pattern = parse_cosmo!
+
+    document = Cs(code_block + (nl * code_block + cosmo_pattern + 1)^0)
 
     assert document\match text
 
