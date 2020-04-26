@@ -12,7 +12,7 @@ through the `site.moon` file, which is written in [MoonScript][2]. It describes
 all pages that need to be brought in, it can also specify configuration
 variables accessible within pages and templates. 
 
-Pages can be assigned any number of **types**, which lets your aggregate pages
+Pages can be assigned to any number of **types**, which lets you aggregate pages
 into groups. Enabling you to create blogs, among other things.
 
 Sitegen has a [plugin system][3] that lets you transform the page as it travels
@@ -56,10 +56,9 @@ but we don't have any yet.)
 $ sitegen
 ```
 
-Since our site file is empty it won't do anything except create a cache file.
+Since our site file is empty it won't do anything except creating a cache file.
 
-Sitegen works great with markdown, lets create a new page in markdown,
-`index.md`:
+Sitegen works great with markdown, so lets create a new page in markdown and call it `index.md`:
 
     Hello, and welcome to *my homepage!*
 
@@ -196,7 +195,7 @@ sitegen.create =>
 ## Next
 
 Now that you know how Sitegen works, you'll want to look over the [plugins][3]
-to learn about the additional functionality. All plugins and enabled by default
+to learn about the additional functionality. All plugins are enabled by default
 so no extra steps are required to use them.
 
 ## License
