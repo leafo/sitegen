@@ -23,6 +23,7 @@ dependencies = {
   "date",
   "ansicolors",
   "web_sanitize",
+  "syntaxhighlight",
 }
 
 build = {
