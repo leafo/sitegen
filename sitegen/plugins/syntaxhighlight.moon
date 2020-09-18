@@ -83,7 +83,10 @@ class SyntaxhighlightPlugin extends Plugin
     import parse_cosmo from require "sitegen.renderers.markdown"
     cosmo_pattern = parse_cosmo!
 
-    document = Cs(code_block^0 * (nl * code_block + cosmo_pattern + 1)^0) * -1
+    -- normally a code block must start at the beginning of a new line, but
+    -- there is no new line at the beginning of the file so we have a special
+    -- case for that
+    document = Cs(code_block^-1 * (nl * code_block + cosmo_pattern + 1)^0) * -1
 
     assert document\match(text), "failed to parse string for syntax highlight"
 

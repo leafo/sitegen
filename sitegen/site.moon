@@ -39,6 +39,7 @@ class Site
     "sitegen.plugins.analytics"
     "sitegen.plugins.coffee_script"
     "sitegen.plugins.pygments"
+    -- "sitegen.plugins.syntaxhighlight"
     "sitegen.plugins.dump"
   }
 

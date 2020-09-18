@@ -87,7 +87,7 @@ do
       local parse_cosmo
       parse_cosmo = require("sitegen.renderers.markdown").parse_cosmo
       local cosmo_pattern = parse_cosmo()
-      local document = Cs(code_block + (nl * code_block + cosmo_pattern + 1) ^ 0)
+      local document = Cs(code_block ^ -1 * (nl * code_block + cosmo_pattern + 1) ^ 0 * -1)
       return assert(document:match(text))
     end
   }
