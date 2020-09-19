@@ -102,7 +102,7 @@ print("hello world")
     assert.same [[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_operator">(</span><span class="sh_string">&quot;hello world&quot;</span><span class="sh_operator">)</span></code></pre>]], out
 
 
-  it "doesnt highlight code inside of a cosmo template #mmm", ->
+  it "doesnt highlight code inside of a cosmo template", ->
     plugin = sh site
     out = flatten_html plugin\filter [=[
 ```lua
@@ -115,7 +115,7 @@ $hello{[[
   ```
 ]]}]=]
 
-    assert.same [=[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_number">5</span></code></pre>
+    assert.same [=[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_lua_whitespace sh_whitespace"></span><span class="sh_number">5</span></code></pre>
 
 $hello{[[
   ```lua
