@@ -1,6 +1,6 @@
 # Sitegen
 
-[![Build Status](https://travis-ci.org/leafo/sitegen.svg?branch=master)](https://travis-ci.org/leafo/sitegen)
+![test](https://github.com/leafo/sitegen/workflows/test/badge.svg)
 
 A static site generator written in [MoonScript](http://moonscript.org).
 
