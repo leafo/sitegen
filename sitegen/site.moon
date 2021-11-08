@@ -137,9 +137,9 @@ class Site
     input = @io.full_path input
 
     time, name, msg, code = timed_call ->
-      tool self, input, unpack args
+      tool @, input, unpack args
 
-    if code > 0
+    if type(code) == "number" and code > 0 or code == false
       throw_error "failed to run command #{name}"
 
     status = "#{name} (#{msg})"

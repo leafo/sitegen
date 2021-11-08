@@ -141,7 +141,7 @@ do
       local time, name, msg, code = timed_call(function()
         return tool(self, input, unpack(args))
       end)
-      if code > 0 then
+      if type(code) == "number" and code > 0 or code == false then
         throw_error("failed to run command " .. tostring(name))
       end
       local status = tostring(name) .. " (" .. tostring(msg) .. ")"

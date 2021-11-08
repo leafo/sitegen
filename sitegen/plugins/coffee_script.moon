@@ -10,7 +10,7 @@ class CoffeeScriptPlugin extends Plugin
 
   compile_coffee: (fname) =>
     p = io.popen ("coffee -c -p %s")\format fname
-    p\read"*a"
+    p\read "*a"
 
   render_coffee: (page, arg) =>
     fname = unpack arg
