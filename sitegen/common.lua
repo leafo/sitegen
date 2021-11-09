@@ -91,10 +91,32 @@ split = function(str, delim)
 end
 local trim_leading_white
 trim_leading_white = function(str, leading)
+  assert(type(str) == "string", "Expecting string for trim_leading_white")
   local lines = split(str, "\n")
   if #lines > 0 then
-    local first = lines[1]
-    leading = leading or first:match("^(%s*)")
+    if not (leading) then
+      for _index_0 = 1, #lines do
+        local _continue_0 = false
+        repeat
+          do
+            local line = lines[_index_0]
+            if line:match("^%s*$") then
+              _continue_0 = true
+              break
+            end
+            leading = line:match("^(%s*)")
+            break
+          end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
+        end
+      end
+    end
+    if not (leading) then
+      return str
+    end
     for i, line in ipairs(lines) do
       lines[i] = line:match("^" .. leading .. "(.*)$") or line
     end

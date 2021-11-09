@@ -64,10 +64,19 @@ split = (str, delim) ->
   [part for part in str\gmatch "(.-)" .. escape_patt(delim)]
 
 trim_leading_white = (str, leading) ->
+  assert type(str) == "string", "Expecting string for trim_leading_white"
+
   lines = split str, "\n"
   if #lines > 0
-    first = lines[1]
-    leading = leading or first\match"^(%s*)"
+    unless leading
+      for line in *lines
+        continue if line\match "^%s*$"
+        leading = line\match"^(%s*)"
+        break
+
+    -- failed to find leading whitespace, just return original string
+    unless leading
+      return str
 
     for i, line in ipairs lines
       lines[i] = line\match("^"..leading.."(.*)$") or line
