@@ -4,10 +4,8 @@ Path = require "sitegen.path"
 
 import
   Stack
-  fill_ignoring_pre
   split
   throw_error
-  pass_error
   escape_patt
   extend
   from require "sitegen.common"
