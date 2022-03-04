@@ -6,6 +6,7 @@ import
   Stack
   split
   throw_error
+  error_context
   escape_patt
   extend
   from require "sitegen.common"
@@ -71,13 +72,14 @@ class Page
 
   -- write the file, return path to written file
   write: =>
-    content = @render!
-    assert @site.io.write_file_safe @target, content
+    error_context "#{@source} -> #{@target}", ->
+      content = @render!
+      assert @site.io.write_file_safe @target, content
 
-    source = @site.io.full_path @source
-    target = @site.io.full_path @target
+      source = @site.io.full_path @source
+      target = @site.io.full_path @target
 
-    @site.logger\render source, target
+      @site.logger\render source, target
     @target
 
   -- read the source

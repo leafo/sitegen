@@ -55,7 +55,9 @@ error_context = function(context, fn)
   if not status then
     error(debug.traceback(co, res))
   end
-  return throw_error(tostring(context) .. ": " .. tostring(res[2]))
+  if type(res) == "table" and res[1] == "error" then
+    return throw_error(tostring(context) .. ": " .. tostring(res[2]))
+  end
 end
 local get_local
 get_local = function(name, level)

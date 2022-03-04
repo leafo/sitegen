@@ -46,8 +46,8 @@ error_context = (context, fn) ->
   error debug.traceback co, res if not status
 
   -- throw it up
-  throw_error "#{context}: #{res[2]}"
-
+  if type(res) == "table" and res[1] == "error"
+    throw_error "#{context}: #{res[2]}"
 
 get_local = (name, level=4) ->
   locals = {}

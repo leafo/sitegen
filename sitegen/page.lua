@@ -1,9 +1,9 @@
 local html = require("sitegen.html")
 local Path = require("sitegen.path")
-local Stack, split, throw_error, escape_patt, extend
+local Stack, split, throw_error, error_context, escape_patt, extend
 do
   local _obj_0 = require("sitegen.common")
-  Stack, split, throw_error, escape_patt, extend = _obj_0.Stack, _obj_0.split, _obj_0.throw_error, _obj_0.escape_patt, _obj_0.extend
+  Stack, split, throw_error, error_context, escape_patt, extend = _obj_0.Stack, _obj_0.split, _obj_0.throw_error, _obj_0.error_context, _obj_0.escape_patt, _obj_0.extend
 end
 local Page
 do
@@ -48,11 +48,13 @@ do
       end)
     end,
     write = function(self)
-      local content = self:render()
-      assert(self.site.io.write_file_safe(self.target, content))
-      local source = self.site.io.full_path(self.source)
-      local target = self.site.io.full_path(self.target)
-      self.site.logger:render(source, target)
+      error_context(tostring(self.source) .. " -> " .. tostring(self.target), function()
+        local content = self:render()
+        assert(self.site.io.write_file_safe(self.target, content))
+        local source = self.site.io.full_path(self.source)
+        local target = self.site.io.full_path(self.target)
+        return self.site.logger:render(source, target)
+      end)
       return self.target
     end,
     read = function(self)
