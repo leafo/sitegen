@@ -190,7 +190,12 @@ flatten_args = function(...)
 end
 local trim
 trim = function(str)
-  return str:match("^%s*(.-)%s*$")
+  str = tostring(str)
+  if #str > 200 then
+    return str:gsub("^%s+", ""):reverse():gsub("^%s+", ""):reverse()
+  else
+    return str:match("^%s*(.-)%s*$")
+  end
 end
 local OrderSet
 do

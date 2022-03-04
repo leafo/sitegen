@@ -133,7 +133,13 @@ flatten_args = (...) ->
   accum, options
 
 
-trim = (str) -> str\match "^%s*(.-)%s*$"
+trim = (str) ->
+  str = tostring str
+
+  if #str > 200
+    str\gsub("^%s+", "")\reverse()\gsub("^%s+", "")\reverse()
+  else
+    str\match "^%s*(.-)%s*$"
 
 class OrderSet
   new: (items) =>
