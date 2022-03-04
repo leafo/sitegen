@@ -360,7 +360,9 @@ render_cosmo = function(template, context, line_offset)
   local error_preview
   if type(output_or_err) == "string" then
     local line, position = output_or_err:match("syntax error in template at line (%d+) position (%d)")
-    error_preview = highlight_line(template, tonumber(line), 5, nil, line_offset)
+    if line then
+      error_preview = highlight_line(template, tonumber(line), 5, nil, line_offset)
+    end
   end
   return throw_error("cosmo failed: " .. tostring(output_or_err) .. tostring(error_preview and "\n" .. tostring(error_preview) or ""))
 end

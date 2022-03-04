@@ -229,7 +229,8 @@ render_cosmo = (template, context, line_offset) ->
 
   error_preview = if type(output_or_err) == "string"
     line, position = output_or_err\match "syntax error in template at line (%d+) position (%d)"
-    highlight_line template, tonumber(line), 5, nil, line_offset
+    if line
+      highlight_line template, tonumber(line), 5, nil, line_offset
 
   throw_error "cosmo failed: #{output_or_err}#{error_preview and "\n#{error_preview}" or ""}"
 
