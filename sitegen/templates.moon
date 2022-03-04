@@ -2,12 +2,6 @@ import extend from require "moon"
 
 Path = require "sitegen.path"
 
-import
-  fill_ignoring_pre
-  throw_error
-  flatten_args
-  from require "sitegen.common"
-
 class Templates
   defaults: require "sitegen.default.templates"
 

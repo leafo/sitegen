@@ -1,11 +1,6 @@
 local extend
 extend = require("moon").extend
 local Path = require("sitegen.path")
-local fill_ignoring_pre, throw_error, flatten_args
-do
-  local _obj_0 = require("sitegen.common")
-  fill_ignoring_pre, throw_error, flatten_args = _obj_0.fill_ignoring_pre, _obj_0.throw_error, _obj_0.flatten_args
-end
 local Templates
 do
   local _class_0
