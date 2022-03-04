@@ -154,7 +154,15 @@ class Stack
       self[len] = nil
 
 
-highlight_line = (lines, line_no, context=2, highlight_color="%{bright}%{red}") ->
+count_lines = (text) ->
+  import P, Ct from require "lpeg"
+
+  newline = (P"\r"^-1 * P"\n")
+  pattern = Ct (newline / 1 + P(1))^0
+
+  #pattern\match(text)
+
+highlight_line = (lines, line_no, context=2, highlight_color="%{bright}%{red}", line_offset=0) ->
   assert line_no, "missing line no"
 
   import P, Cs, Ct from require "lpeg"
@@ -184,18 +192,19 @@ highlight_line = (lines, line_no, context=2, highlight_color="%{bright}%{red}") 
     max_len = math.max max_len, #tostring(tuple[1])
 
   parts = for {ln, lt} in *preview
+    display_ln = ln + line_offset
     lt = "#{lt\gsub("%s+$", "")}\n"
 
-    spacer = " "\rep 2 + max_len - #tostring(ln)
+    spacer = " "\rep 2 + max_len - #tostring(display_ln)
     if line_no == ln
-      colors"#{highlight_color}#{ln}%{reset}#{spacer}#{lt}"
+      colors"#{highlight_color}#{display_ln}%{reset}#{spacer}#{lt}"
     else
-      colors"%{yellow}#{ln}%{reset}#{spacer}#{lt}"
+      colors"%{yellow}#{display_ln}%{reset}#{spacer}#{lt}"
 
   table.concat parts
 
 -- this tries to parse the error message to make a more meaningful error message
-render_cosmo = (template, context) ->
+render_cosmo = (template, context, line_offset) ->
   cosmo = require "sitegen.cosmo"
 
   success, output_or_err = pcall ->
@@ -208,7 +217,7 @@ render_cosmo = (template, context) ->
 
   error_preview = if type(output_or_err) == "string"
     line, position = output_or_err\match "syntax error in template at line (%d+) position (%d)"
-    highlight_line template, tonumber(line), 5
+    highlight_line template, tonumber(line), 5, nil, line_offset
 
   throw_error "cosmo failed: #{output_or_err}#{error_preview and "\n#{error_preview}" or ""}"
 
@@ -240,11 +249,16 @@ fill_ignoring_pre = (text, context) ->
   document = Ct((code + other)^0)
   -- parse to parts to avoid metamethod/c-call boundary
   parts = document\match text
+
+  line_offset = 0
+
   filled = for part in *parts
     t, body = unpack part
 
     if t == "text"
-      body = render_cosmo body, context
+      body = render_cosmo body, context, line_offset
+
+    line_offset += count_lines body
 
     body
 
