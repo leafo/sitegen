@@ -259,9 +259,85 @@ do
   _base_0.__class = _class_0
   Stack = _class_0
 end
+local highlight_line
+highlight_line = function(lines, line_no, context, highlight_color)
+  if context == nil then
+    context = 2
+  end
+  if highlight_color == nil then
+    highlight_color = "%{bright}%{red}"
+  end
+  assert(line_no, "missing line no")
+  local P, Cs, Ct
+  do
+    local _obj_0 = require("lpeg")
+    P, Cs, Ct = _obj_0.P, _obj_0.Cs, _obj_0.Ct
+  end
+  local end_of_line = (P("\r") ^ -1 * P("\n")) + -1
+  local starting_line_no = math.max(1, line_no - context)
+  local num_lines = math.min(line_no - 1, context) + context + 1
+  local line = (P(1) - end_of_line) ^ 0 * end_of_line
+  local pattern = P("")
+  for k = 1, starting_line_no - 1 do
+    pattern = pattern * line
+  end
+  for i = 1, num_lines do
+    pattern = pattern * (P(-1) + line / function(l)
+      return {
+        starting_line_no + i - 1,
+        l
+      }
+    end)
+  end
+  local colors = require("ansicolors")
+  local preview = Ct(pattern):match(lines)
+  local max_len = 0
+  for _index_0 = 1, #preview do
+    local tuple = preview[_index_0]
+    max_len = math.max(max_len, #tostring(tuple[1]))
+  end
+  local parts
+  do
+    local _accum_0 = { }
+    local _len_0 = 1
+    for _index_0 = 1, #preview do
+      local _des_0 = preview[_index_0]
+      local ln, lt
+      ln, lt = _des_0[1], _des_0[2]
+      lt = tostring(lt:gsub("%s+$", "")) .. "\n"
+      local spacer = (" "):rep(2 + max_len - #tostring(ln))
+      local _value_0
+      if line_no == ln then
+        _value_0 = colors(tostring(highlight_color) .. tostring(ln) .. "%{reset}" .. tostring(spacer) .. tostring(lt))
+      else
+        _value_0 = colors("%{yellow}" .. tostring(ln) .. "%{reset}" .. tostring(spacer) .. tostring(lt))
+      end
+      _accum_0[_len_0] = _value_0
+      _len_0 = _len_0 + 1
+    end
+    parts = _accum_0
+  end
+  return table.concat(parts)
+end
+local render_cosmo
+render_cosmo = function(template, context)
+  local cosmo = require("sitegen.cosmo")
+  local success, output_or_err = pcall(function()
+    return cosmo.f(template)(context)
+  end)
+  if success then
+    return output_or_err
+  end
+  local error_fragment
+  local error_preview
+  if type(output_or_err) == "string" then
+    local line, position = output_or_err:match("syntax error in template at line (%d+) position (%d)")
+    error_preview = highlight_line(template, tonumber(line), 5)
+  end
+  return throw_error("cosmo failed: " .. tostring(output_or_err) .. tostring(error_preview and "\n" .. tostring(error_preview) or ""))
+end
 local fill_ignoring_pre
 fill_ignoring_pre = function(text, context)
-  local cosmo = require("sitegen.cosmo")
   local P, R, S, V, Ct, C
   do
     local _obj_0 = require("lpeg")
@@ -302,7 +378,7 @@ fill_ignoring_pre = function(text, context)
       local part = parts[_index_0]
       local t, body = unpack(part)
       if t == "text" then
-        body = cosmo.f(body)(context)
+        body = render_cosmo(body, context)
       end
       local _value_0 = body
       _accum_0[_len_0] = _value_0
@@ -381,6 +457,7 @@ return {
   trim = trim,
   trim_leading_white = trim_leading_white,
   unpack = unpack,
+  highlight_line = highlight_line,
   OrderSet = OrderSet,
   Stack = Stack
 }

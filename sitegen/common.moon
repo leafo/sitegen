@@ -153,10 +153,68 @@ class Stack
     with self[len]
       self[len] = nil
 
+
+highlight_line = (lines, line_no, context=2, highlight_color="%{bright}%{red}") ->
+  assert line_no, "missing line no"
+
+  import P, Cs, Ct from require "lpeg"
+
+  end_of_line = (P"\r"^-1 * P"\n") + -1
+
+  starting_line_no = math.max 1, line_no - context
+  num_lines = math.min(line_no - 1, context) + context + 1
+
+  line = (P(1) - end_of_line)^0 * end_of_line
+
+  pattern = P""
+
+  for k=1, starting_line_no - 1
+    pattern *= line
+
+  for i=1,num_lines
+    -- this is crappy short ciruit that just parses end of document over and over
+    pattern *= P(-1) + line / (l) -> {starting_line_no + i - 1, l}
+
+  colors = require "ansicolors"
+
+  preview = Ct(pattern)\match lines
+
+  max_len = 0
+  for tuple in *preview
+    max_len = math.max max_len, #tostring(tuple[1])
+
+  parts = for {ln, lt} in *preview
+    lt = "#{lt\gsub("%s+$", "")}\n"
+
+    spacer = " "\rep 2 + max_len - #tostring(ln)
+    if line_no == ln
+      colors"#{highlight_color}#{ln}%{reset}#{spacer}#{lt}"
+    else
+      colors"%{yellow}#{ln}%{reset}#{spacer}#{lt}"
+
+  table.concat parts
+
+-- this tries to parse the error message to make a more meaningful error message
+render_cosmo = (template, context) ->
+  cosmo = require "sitegen.cosmo"
+
+  success, output_or_err = pcall ->
+    cosmo.f(template) context
+
+  if success
+    return output_or_err
+
+  local error_fragment
+
+  error_preview = if type(output_or_err) == "string"
+    line, position = output_or_err\match "syntax error in template at line (%d+) position (%d)"
+    highlight_line template, tonumber(line), 5
+
+  throw_error "cosmo failed: #{output_or_err}#{error_preview and "\n#{error_preview}" or ""}"
+
 -- replace all template vars in text not contained in a
 -- code block
 fill_ignoring_pre = (text, context) ->
-  cosmo = require "sitegen.cosmo"
   import P, R, S, V, Ct, C from require "lpeg"
 
   string_patt = (delim) ->
@@ -184,7 +242,10 @@ fill_ignoring_pre = (text, context) ->
   parts = document\match text
   filled = for part in *parts
     t, body = unpack part
-    body = cosmo.f(body) context if t == "text"
+
+    if t == "text"
+      body = render_cosmo body, context
+
     body
 
   table.concat filled
@@ -244,6 +305,8 @@ extend = (t, ...) ->
   :trim
   :trim_leading_white
   :unpack
+
+  :highlight_line
 
   :OrderSet
   :Stack
