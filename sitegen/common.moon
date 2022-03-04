@@ -37,6 +37,18 @@ catch_error = (fn) ->
 
   false
 
+error_context = (context, fn) ->
+  co = coroutine.create -> fn! and nil
+
+  status, res = coroutine.resume co
+
+  -- real error
+  error debug.traceback co, res if not status
+
+  -- throw it up
+  throw_error "#{context}: #{res[2]}"
+
+
 get_local = (name, level=4) ->
   locals = {}
   names = {}
@@ -315,6 +327,7 @@ extend = (t, ...) ->
   :slugify
   :split
   :throw_error
+  :error_context
   :timed_call
   :trim
   :trim_leading_white

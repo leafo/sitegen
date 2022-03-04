@@ -46,6 +46,17 @@ catch_error = function(fn)
   end
   return false
 end
+local error_context
+error_context = function(context, fn)
+  local co = coroutine.create(function()
+    return fn() and nil
+  end)
+  local status, res = coroutine.resume(co)
+  if not status then
+    error(debug.traceback(co, res))
+  end
+  return throw_error(tostring(context) .. ": " .. tostring(res[2]))
+end
 local get_local
 get_local = function(name, level)
   if level == nil then
@@ -470,6 +481,7 @@ return {
   slugify = slugify,
   split = split,
   throw_error = throw_error,
+  error_context = error_context,
   timed_call = timed_call,
   trim = trim,
   trim_leading_white = trim_leading_white,
