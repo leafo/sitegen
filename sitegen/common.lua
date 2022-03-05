@@ -355,9 +355,17 @@ end
 local render_cosmo
 render_cosmo = function(template, context, line_offset)
   local cosmo = require("sitegen.cosmo")
-  local success, output_or_err = pcall(function()
-    return cosmo.f(template)(context)
-  end)
+  local success, output_or_err
+  if _VERSION == "Lua 5.1" and not jit then
+    local s, render_fn = pcall(function()
+      return cosmo.f(template)
+    end)
+    success, output_or_err = s, s and render_fn(context) or render_fn
+  else
+    success, output_or_err = pcall(function()
+      return cosmo.f(template)(context)
+    end)
+  end
   if success then
     return output_or_err
   end

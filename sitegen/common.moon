@@ -225,8 +225,15 @@ highlight_line = (lines, line_no, context=2, highlight_color="%{bright}%{red}", 
 render_cosmo = (template, context, line_offset) ->
   cosmo = require "sitegen.cosmo"
 
-  success, output_or_err = pcall ->
-    cosmo.f(template) context
+  -- unable to wrap cosmo rendering in a pcall due to: attempt to yield across metamethod/C-call boundary
+  success, output_or_err = if _VERSION == "Lua 5.1" and not jit
+    s, render_fn = pcall ->
+      cosmo.f template
+
+    s, s and render_fn(context) or render_fn
+  else
+    pcall ->
+      cosmo.f(template) context
 
   if success
     return output_or_err
