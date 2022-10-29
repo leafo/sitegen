@@ -4,7 +4,7 @@ needs_shell_escape = (str) ->
   not not str\match "[^%w_-]"
 
 shell_escape = (str) ->
-  str\gsub "'", "''"
+  str\gsub "'", "'\\''"
 
 local *
 

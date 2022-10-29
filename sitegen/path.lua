@@ -5,7 +5,7 @@ needs_shell_escape = function(str)
 end
 local shell_escape
 shell_escape = function(str)
-  return str:gsub("'", "''")
+  return str:gsub("'", "'\\''")
 end
 local up, exists, normalize, basepath, filename, write_file_safe, write_file, read_file, mkdir, rmdir, copy, join, _prepare_command, exec, read_exec, relative_to, annotate
 up = function(path)
