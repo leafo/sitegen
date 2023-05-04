@@ -2,6 +2,7 @@
 -- building the site incrementally in a more reliable way than watch mode
 
 import Plugin from require "sitegen.plugin"
+Path = require "sitegen.path"
 
 class TupfilePlugin extends Plugin
   command_actions: {
@@ -28,7 +29,17 @@ class TupfilePlugin extends Plugin
       source = @site.io.full_path page.source
       target = @site.io.full_path page.target
 
-      table.insert output_lines, ": #{source} |> sitegen build #{source} |> #{target}"
+      table.insert output_lines, ": #{source} |> sitegen build %f |> #{target}"
+
+    for buildset in *@site.scope.builds
+      -- TODO: the build  function might be destructive, so we need to have a
+      -- way to detect the common pattern of using a system tool to convert it
+      -- into a command within the tupfile
+      require("moon").p buildset
+
+    for path in @site.scope.copy_files\each!
+      target = Path.join @site.config.out_dir, path
+      table.insert output_lines, ": #{path} |> cp %f %o |> #{target}"
 
     print table.concat output_lines, "\n"
 

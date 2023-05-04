@@ -1,5 +1,6 @@
 local Plugin
 Plugin = require("sitegen.plugin").Plugin
+local Path = require("sitegen.path")
 local TupfilePlugin
 do
   local _class_0
@@ -24,7 +25,16 @@ do
         local page = _list_0[_index_0]
         local source = self.site.io.full_path(page.source)
         local target = self.site.io.full_path(page.target)
-        table.insert(output_lines, ": " .. tostring(source) .. " |> sitegen build " .. tostring(source) .. " |> " .. tostring(target))
+        table.insert(output_lines, ": " .. tostring(source) .. " |> sitegen build %f |> " .. tostring(target))
+      end
+      local _list_1 = self.site.scope.builds
+      for _index_0 = 1, #_list_1 do
+        local buildset = _list_1[_index_0]
+        require("moon").p(buildset)
+      end
+      for path in self.site.scope.copy_files:each() do
+        local target = Path.join(self.site.config.out_dir, path)
+        table.insert(output_lines, ": " .. tostring(path) .. " |> cp %f %o |> " .. tostring(target))
       end
       return print(table.concat(output_lines, "\n"))
     end
