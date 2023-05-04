@@ -55,6 +55,7 @@ build = {
     ["sitegen.plugins.indexer"] = "sitegen/plugins/indexer.lua",
     ["sitegen.plugins.pygments"] = "sitegen/plugins/pygments.lua",
     ["sitegen.plugins.syntaxhighlight"] = "sitegen/plugins/syntaxhighlight.lua",
+    ["sitegen.plugins.tupfile"] = "sitegen/plugins/tupfile.lua",
     ["sitegen.query"] = "sitegen/query.lua",
     ["sitegen.renderer"] = "sitegen/renderer.lua",
     ["sitegen.renderers.html"] = "sitegen/renderers/html.lua",
