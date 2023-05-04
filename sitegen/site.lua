@@ -219,7 +219,6 @@ do
       end
       self:load_pages()
       local pages = self.pages
-      local files_written = 0
       if filter_files then
         do
           local _accum_0 = { }
@@ -243,26 +242,22 @@ do
         local _len_0 = 1
         for _index_0 = 1, #pages do
           local page = pages[_index_0]
-          files_written = files_written + 1
-          local _value_0 = page:write()
-          _accum_0[_len_0] = _value_0
+          _accum_0[_len_0] = page:write()
           _len_0 = _len_0 + 1
         end
         written_files = _accum_0
       end
       if filter_files then
-        return files_written
+        return written_files
       end
       local _list_0 = self.scope.builds
       for _index_0 = 1, #_list_0 do
         local buildset = _list_0[_index_0]
-        files_written = files_written + 1
         self:run_build(buildset)
       end
       for path in self.scope.copy_files:each() do
         local target = Path.join(self.config.out_dir, path)
         table.insert(written_files, target)
-        files_written = files_written + 1
         Path.copy(path, target)
       end
       local _list_1 = self.plugins
@@ -278,11 +273,10 @@ do
           local file = _list_2[_index_0]
           table.insert(written_files, file)
         end
-        files_written = files_written + 1
         self:write_gitignore(written_files)
       end
       self.cache:write()
-      return files_written
+      return written_files
     end
   }
   _base_0.__index = _base_0
