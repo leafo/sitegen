@@ -1,8 +1,9 @@
 package = "sitegen"
-version = "dev-1"
+version = "0.1-1"
 
 source = {
-  url = "git://github.com/leafo/sitegen.git"
+  url = "git://github.com/leafo/sitegen.git",
+	branch = "v0.1"
 }
 
 description = {
@@ -24,7 +25,6 @@ dependencies = {
   "ansicolors",
   "web_sanitize",
   "syntaxhighlight",
-  "argparse"
 }
 
 build = {
@@ -33,7 +33,6 @@ build = {
     ["sitegen"] = "sitegen/init.lua",
     ["sitegen.cache"] = "sitegen/cache.lua",
     ["sitegen.cmd.actions"] = "sitegen/cmd/actions.lua",
-    ["sitegen.cmd.argparser"] = "sitegen/cmd/argparser.lua",
     ["sitegen.cmd.util"] = "sitegen/cmd/util.lua",
     ["sitegen.common"] = "sitegen/common.lua",
     ["sitegen.cosmo"] = "sitegen/cosmo.lua",

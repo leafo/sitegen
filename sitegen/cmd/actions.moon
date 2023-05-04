@@ -39,7 +39,9 @@ scope = (t={}) ->
 actions = {
   dump: -> print dump get_site!
 
-  new: (title) ->
+  new: (args) ->
+    {:title} = args
+
     if Path.exists default.sitefile
       throw_error "sitefile already exists: " .. default.sitefile
 
@@ -51,7 +53,9 @@ actions = {
     site_moon = cosmo.f(default.files.sitefile) scope{:title}
     Path.write_file default.sitefile, site_moon
 
-  page: (path, title)->
+  page: (args) ->
+    {:title, :path} = args
+
     get_site!
 
     if not title
@@ -84,47 +88,36 @@ actions = {
 
     Path.write_file full_path, cosmo.f(default.files.page) scope{:title}
 
-  build: (...) ->
-    files = {...}
+  build: (args) ->
+    files = args.input_files
     site = get_site!
 
     local filter
-    if next files
+    if files and next files
       filter = {}
       for i, fname in ipairs files
         filter[site.sitefile\relativeize fname] = true
 
     site\write filter
 
-  watch: ->
+  watch: (args) ->
     site = get_site!
     w = require "sitegen.watch"
 
     with w.Watcher site
       \loop!
 
-  help: ->
-    print "Sitegen"
-    print "usage: sitegen <action> [args]"
-    print!
-    print "Available actions:"
-
-    print!
-    print columnize {
-      {"new", "Create a new site in the current directory"}
-      {"build [input-files]", "Build (or rebuild) all pages, or only files"}
-      {"page <path> [title]", "Create a new markdown page at path"}
-      -- TODO: this should come from plugin
-      {"deploy [host] [path]", "Deploy site to host over ssh (rsync)"}
-      {"watch", "Compile pages automatically when inputs change (needs inotify)"}
-    }
-    print!
 }
 
+-- return function to be called for command line action
+-- function should take one argument, the args object returned by argparse
 find_action = (name) ->
   return actions[name] if actions[name]
-  site = get_site!
-  site\plugin_actions![name]
+
+  for action_obj, call in get_site!\plugin_actions!
+    plugin_action_name = action_obj.action or action_obj.method
+    if plugin_action_name == name
+      return call
 
 {:actions, :find_action}
 

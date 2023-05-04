@@ -9,7 +9,18 @@ do
       "deploy_to"
     },
     command_actions = {
-      "deploy"
+      {
+        method = "deploy",
+        argparser = function(command)
+          do
+            local _with_0 = command
+            _with_0:summary("Deploy previously generated site over ssh using rsync")
+            _with_0:argument("host", "Sever hostname"):args("?")
+            _with_0:argument("path", "Path on server to deploy to"):args("?")
+            return _with_0
+          end
+        end
+      }
     },
     deploy_to = function(self, host, path)
       if host == nil then
@@ -20,18 +31,20 @@ do
       end
       self.host, self.path = host, path
     end,
-    deploy = function(self)
+    deploy = function(self, args)
       local throw_error
       throw_error = require("sitegen.common").throw_error
       local log
       log = require("sitegen.cmd.util").log
-      if not (self.host) then
+      local host = args.host or self.host
+      local path = args.path or self.path
+      if not (host) then
         throw_error("need host")
       end
-      if not (self.path) then
+      if not (path) then
         throw_error("need path")
       end
-      log("uploading to:", self.host, self.path)
+      log("uploading to:", host, path)
       return self:sync()
     end,
     sync = function(self)

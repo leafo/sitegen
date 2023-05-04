@@ -55,7 +55,9 @@ local actions = {
   dump = function()
     return print(dump(get_site()))
   end,
-  new = function(title)
+  new = function(args)
+    local title
+    title = args.title
     if Path.exists(default.sitefile) then
       throw_error("sitefile already exists: " .. default.sitefile)
     end
@@ -67,7 +69,9 @@ local actions = {
     }))
     return Path.write_file(default.sitefile, site_moon)
   end,
-  page = function(path, title)
+  page = function(args)
+    local title, path
+    title, path = args.title, args.path
     get_site()
     if not title then
       title = path
@@ -117,13 +121,11 @@ local actions = {
       title = title
     })))
   end,
-  build = function(...)
-    local files = {
-      ...
-    }
+  build = function(args)
+    local files = args.input_files
     local site = get_site()
     local filter
-    if next(files) then
+    if files and next(files) then
       filter = { }
       for i, fname in ipairs(files) do
         filter[site.sitefile:relativeize(fname)] = true
@@ -131,7 +133,7 @@ local actions = {
     end
     return site:write(filter)
   end,
-  watch = function()
+  watch = function(args)
     local site = get_site()
     local w = require("sitegen.watch")
     do
@@ -139,36 +141,6 @@ local actions = {
       _with_0:loop()
       return _with_0
     end
-  end,
-  help = function()
-    print("Sitegen")
-    print("usage: sitegen <action> [args]")
-    print()
-    print("Available actions:")
-    print()
-    print(columnize({
-      {
-        "new",
-        "Create a new site in the current directory"
-      },
-      {
-        "build [input-files]",
-        "Build (or rebuild) all pages, or only files"
-      },
-      {
-        "page <path> [title]",
-        "Create a new markdown page at path"
-      },
-      {
-        "deploy [host] [path]",
-        "Deploy site to host over ssh (rsync)"
-      },
-      {
-        "watch",
-        "Compile pages automatically when inputs change (needs inotify)"
-      }
-    }))
-    return print()
   end
 }
 local find_action
@@ -176,8 +148,12 @@ find_action = function(name)
   if actions[name] then
     return actions[name]
   end
-  local site = get_site()
-  return site:plugin_actions()[name]
+  for action_obj, call in get_site():plugin_actions() do
+    local plugin_action_name = action_obj.action or action_obj.method
+    if plugin_action_name == name then
+      return call
+    end
+  end
 end
 return {
   actions = actions,

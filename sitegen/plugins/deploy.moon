@@ -2,18 +2,31 @@ import Plugin from require "sitegen.plugin"
 
 class DeployPlugin extends Plugin
   mixin_funcs: { "deploy_to" }
-  command_actions: { "deploy" }
+  command_actions: {
+    {
+      method: "deploy"
+      argparser: (command) ->
+        with command
+          \summary "Deploy previously generated site over ssh using rsync"
+
+          \argument("host", "Sever hostname")\args "?"
+          \argument("path", "Path on server to deploy to")\args "?"
+    }
+  }
 
   deploy_to: (@host=error"need host", @path=error"need path") =>
 
-  deploy: =>
+  deploy: (args) =>
     import throw_error from require "sitegen.common"
     import log from require "sitegen.cmd.util"
 
-    throw_error "need host" unless @host
-    throw_error "need path" unless @path
+    host = args.host or @host
+    path = args.path or @path
 
-    log "uploading to:", @host, @path
+    throw_error "need host" unless host
+    throw_error "need path" unless path
+
+    log "uploading to:", host, path
 
     @sync!
 

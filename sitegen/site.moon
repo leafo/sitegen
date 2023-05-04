@@ -100,14 +100,18 @@ class Site
 
     scope
 
+  -- return iterator for all the actions defined by plugins
+  -- iterator returns the action definition object, bound method to call
   plugin_actions: =>
-    actions = {}
-    for plugin in *@plugins
-      continue unless plugin.command_actions
-      for fn_name in *plugin.command_actions
-        actions[fn_name] = bound_fn plugin, fn_name
+    coroutine.wrap ->
+      for plugin in *@plugins
+        continue unless plugin.command_actions
+        for action_obj in *plugin.command_actions
+          if type(action_obj) == "string"
+            -- plain string is a action that calls method of same name
+            action_obj = { method: action_obj, action: action_obj }
 
-    actions
+          coroutine.yield action_obj, bound_fn plugin, action_obj.method
 
   init_from_fn: (fn) =>
     bound = bind_methods @scope

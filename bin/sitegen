@@ -1,19 +1,19 @@
 #!/usr/bin/env moon
 
-action = ... or "build"
-args = {...}
+default_action = "build"
+
+argparser = require "sitegen.cmd.argparser"
+
+args = argparser\parse [v for _, v in ipairs _G.arg]
 
 import find_action from require "sitegen.cmd.actions"
 import catch_error, throw_error from require "sitegen.common"
 
--- potential commands:
--- plugins: sitegen blog:post "Hello World" -- did I already do this?
-
 catch_error ->
-  fn = find_action action
+  fn = find_action args.action or default_action
   unless fn
     throw_error "unknown task: " .. action
 
-  fn unpack args, 2
+  fn args
 
 -- vim: set filetype=moon:
