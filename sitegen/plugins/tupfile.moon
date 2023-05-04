@@ -1,6 +1,8 @@
 -- This is an experimental plugin that is able to generate a tupfile for
 -- building the site incrementally in a more reliable way than watch mode
 
+-- TODO: also need to add a clean command to clean up generated files so we can easily migrate to tup where possible
+
 import Plugin from require "sitegen.plugin"
 Path = require "sitegen.path"
 
@@ -32,7 +34,7 @@ class TupfilePlugin extends Plugin
       table.insert output_lines, ": #{source} |> sitegen build %f |> #{target}"
 
     for buildset in *@site.scope.builds
-      -- TODO: the build  function might be destructive, so we need to have a
+      -- TODO: the build function might be destructive, so we need to have a
       -- way to detect the common pattern of using a system tool to convert it
       -- into a command within the tupfile
       require("moon").p buildset
