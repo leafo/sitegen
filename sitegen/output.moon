@@ -35,7 +35,8 @@ class Logger
 
   print: (...) =>
     return if @opts.silent
-    print ...
+    io.stderr\write "#{table.concat {...}, "\t"}\n"
+    io.stderr\flush!
 
 {
   :Logger

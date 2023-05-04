@@ -46,7 +46,10 @@ do
       if self.opts.silent then
         return 
       end
-      return print(...)
+      io.stderr:write(tostring(table.concat({
+        ...
+      }, "\t")) .. "\n")
+      return io.stderr:flush()
     end
   }
   _base_0.__index = _base_0
