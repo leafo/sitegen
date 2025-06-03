@@ -122,3 +122,51 @@ $hello{[[
   print thing
   ```
 ]]}]=], out
+
+
+describe "sitegen.plugins.pygments", ->
+  local site, py
+
+  before_each ->
+    site = factory.Site {}
+    py = require("sitegen.plugins.pygments")
+
+  it "syntax highlights some code", ->
+    plugin = py site
+    out = flatten_html plugin\filter [[
+```lua
+print("hello world")
+```]]
+
+    assert.same [[<pre class="highlight lang_lua"><code><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;hello world&quot;</span><span class="p">)</span></code></pre>]], out
+
+  it "doesnt highlight code inside of a cosmo template", ->
+    plugin = py site
+    out = flatten_html plugin\filter [=[
+```lua
+print 5
+```
+
+$hello{[[
+  ```lua
+  print thing
+  ```
+]]}]=]
+
+    assert.same [=[<pre class="highlight lang_lua"><code><span></span><span class="nb">print</span><span class="mi">5</span></code></pre>
+
+$hello{[[
+  ```lua
+  print thing
+  ```
+]]}]=], out
+
+  it "doesn't highlight unrecognized code languages", ->
+    plugin = py site
+    out = flatten_html plugin\filter [[
+```snickerdoodle
+this code block has an unknown label
+```]]
+
+    assert.same [[<pre class="highlight lang_snickerdoodle"><code>this code block has an unknown label
+</code></pre>]], out
