@@ -77,12 +77,14 @@ do
   local _base_0 = {
     source_ext = "md",
     ext = "html",
+    render_markdown = function(self, md_source)
+      return require("sitegen.markdown").render(md_source)
+    end,
     render = function(self, page, md_source)
-      local discount = require("discount")
       md_source = page:pipe("renderer.markdown.pre_render", md_source)
       local escapes
       md_source, escapes = escape_cosmo(md_source)
-      local html_source = assert(discount(md_source))
+      local html_source = self:render_markdown(md_source)
       html_source = unescape_cosmo(html_source, escapes)
       return _class_0.__parent.__base.render(self, page, html_source)
     end

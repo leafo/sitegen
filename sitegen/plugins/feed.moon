@@ -7,7 +7,6 @@ import
   from require "sitegen.common"
 
 html = require "sitegen.html"
-discount = require "discount"
 
 date = require "date"
 
@@ -72,7 +71,8 @@ class FeedPlugin extends Plugin
 
         entry.description = switch entry.format
           when "markdown"
-            discount entry.description
+            md_renderer = @site\get_renderer "sitegen.renderers.markdown"
+            md_renderer\render_markdown entry.description
           else
             entry.description
 

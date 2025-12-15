@@ -6,7 +6,6 @@ do
   trim_leading_white, unpack = _obj_0.trim_leading_white, _obj_0.unpack
 end
 local html = require("sitegen.html")
-local discount = require("discount")
 local date = require("date")
 local extend
 extend = require("moon").extend
@@ -98,7 +97,8 @@ do
           extend(entry, root)
           local _exp_0 = entry.format
           if "markdown" == _exp_0 then
-            entry.description = discount(entry.description)
+            local md_renderer = self.site:get_renderer("sitegen.renderers.markdown")
+            entry.description = md_renderer:render_markdown(entry.description)
           else
             entry.description = entry.description
           end

@@ -75,13 +75,15 @@ class MarkdownRenderer extends require "sitegen.renderers.html"
   source_ext: "md"
   ext: "html"
 
-  render: (page, md_source) =>
-    discount = require "discount"
+  -- Override this method to use a different markdown implementation
+  render_markdown: (md_source) =>
+    require("sitegen.markdown").render md_source
 
+  render: (page, md_source) =>
     md_source = page\pipe "renderer.markdown.pre_render", md_source
     md_source, escapes = escape_cosmo md_source
 
-    html_source = assert discount md_source
+    html_source = @render_markdown md_source
     html_source = unescape_cosmo html_source, escapes
 
     super page, html_source
