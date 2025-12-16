@@ -29,5 +29,6 @@ create = function(init_fn, site)
 end
 return {
   create_site = create_site,
-  create = create
+  create = create,
+  VERSION = "0.3"
 }

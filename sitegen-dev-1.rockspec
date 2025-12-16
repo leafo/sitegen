@@ -42,6 +42,7 @@ build = {
     ["sitegen.formatters.default"] = "sitegen/formatters/default.lua",
     ["sitegen.header"] = "sitegen/header.lua",
     ["sitegen.html"] = "sitegen/html.lua",
+    ["sitegen.markdown"] = "sitegen/markdown.lua",
     ["sitegen.output"] = "sitegen/output.lua",
     ["sitegen.page"] = "sitegen/page.lua",
     ["sitegen.path"] = "sitegen/path.lua",
