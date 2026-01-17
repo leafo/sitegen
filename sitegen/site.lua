@@ -292,7 +292,7 @@ do
       self.sitefile = assert(sitefile or SiteFile.master, "missing sitefile")
       self.logger = assert(self.sitefile.logger, "missing sitefile.logger")
       self.io = assert(self.sitefile.io, "missing sitefile.io")
-      self.templates = self:Templates(self.config.template_dir)
+      self.templates = self:Templates()
       self.scope = SiteScope(self)
       self.cache = Cache(self)
       self.events = Dispatch()

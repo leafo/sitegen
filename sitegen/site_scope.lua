@@ -15,6 +15,21 @@ do
     get = function(self, name)
       return self[name]
     end,
+    config = function(self, config_update)
+      local Site = require("sitegen.site")
+      if self.site.config == Site.config then
+        do
+          local _tbl_0 = { }
+          for k, v in pairs(self.site.config) do
+            _tbl_0[k] = v
+          end
+          self.site.config = _tbl_0
+        end
+      end
+      for k, v in pairs(config_update) do
+        self.site.config[k] = v
+      end
+    end,
     disable = function(self, thing)
       self.site[thing .. "_disabled"] = true
     end,

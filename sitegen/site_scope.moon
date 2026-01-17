@@ -21,6 +21,16 @@ class SiteScope
   set: (name, value) => self[name] = value
   get: (name) => self[name]
 
+  -- update config fields on the site object
+  config: (config_update) =>
+    Site = require "sitegen.site"
+    if @site.config == Site.config
+      -- duplicate config into instance
+      @site.config = {k,v for k,v in pairs @site.config}
+
+    for k,v in pairs config_update
+      @site.config[k] = v
+
   disable: (thing) =>
     @site[thing .. "_disabled"] = true
 

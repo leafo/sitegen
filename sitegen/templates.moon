@@ -8,10 +8,11 @@ class Templates
   new: (@site) =>
     @io = assert @site.io, "site missing io"
     @template_cache = {}
-    @search_dir = @site.config.template_dir
+    @search_dir = nil -- allow overriding the search directory
 
   templates_path: (subpath) =>
-    Path.join @search_dir, subpath
+    search_dir = @search_dir or @site.config.template_dir
+    Path.join search_dir, subpath
 
   find_by_name: (name) =>
     if @template_cache[name]

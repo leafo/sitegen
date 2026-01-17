@@ -46,6 +46,7 @@ class Site
 
   __tostring: => "<Site>"
 
+  -- TODO: config is shared across all instances, should be instance specific value
   config: {
     template_dir: "templates/"
     default_template: "index"
@@ -61,7 +62,7 @@ class Site
     @logger = assert @sitefile.logger, "missing sitefile.logger"
     @io = assert @sitefile.io, "missing sitefile.io"
 
-    @templates = @Templates @config.template_dir
+    @templates = @Templates!
 
     @scope = SiteScope self
     @cache = Cache self
