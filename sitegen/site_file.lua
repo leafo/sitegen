@@ -65,7 +65,14 @@ do
     get_site = function(self)
       if self.site_module_name then
         self.logger:notice("using module", self.site_module_name)
-        local site = require(self.site_module_name)
+        require("moonscript.base").insert_loader()
+        local site
+        do
+          local old_master = self.__class.master
+          self.__class.master = self
+          site = require(self.site_module_name)
+          self.__class.master = old_master
+        end
         assert(site, "Failed to load site from module '" .. tostring(self.site_module_name) .. "', make sure site is returned")
         site.sitefile = self
         return site

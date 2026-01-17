@@ -76,7 +76,12 @@ class SiteFile
   get_site: =>
     if @site_module_name
       @logger\notice "using module", @site_module_name
-      site = require @site_module_name
+      require("moonscript.base").insert_loader!
+      local site
+      with old_master = @@master
+        @@master = @
+        site = require @site_module_name
+        @@master = old_master
       assert site, "Failed to load site from module '#{@site_module_name}', make sure site is returned"
       site.sitefile = @
       return site

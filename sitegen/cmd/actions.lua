@@ -141,6 +141,17 @@ local actions = {
       _with_0:loop()
       return _with_0
     end
+  end,
+  render = function(args)
+    local site = get_site(args.site_module_name)
+    site.cache.disabled = true
+    local file = site.sitefile:relativeize(args.file)
+    local page = site:Page(file)
+    if args.no_template then
+      page.meta.template = false
+    end
+    local content = page:render()
+    return io.stdout:write(content)
   end
 }
 local find_action

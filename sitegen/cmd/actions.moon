@@ -107,6 +107,24 @@ actions = {
     with w.Watcher site
       \loop!
 
+  render: (args) ->
+    site = get_site args.site_module_name
+
+    -- Disable cache file I/O entirely (read and write)
+    site.cache.disabled = true
+
+    -- Create anonymous page (not registered in site file)
+    file = site.sitefile\relativeize args.file
+    page = site\Page file
+
+    -- Handle --no-template flag
+    if args.no_template
+      page.meta.template = false
+
+    -- Render and output to stdout
+    content = page\render!
+    io.stdout\write content
+
 }
 
 -- return function to be called for command line action

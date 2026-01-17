@@ -33,6 +33,11 @@ with parser\command "dump"
   \summary "Debug dump of sitefile"
   \hidden true
 
+with parser\command "render"
+  \summary "Render a single file to stdout"
+  \argument "file"
+  \flag "--no-template", "Skip template wrapping"
+
 -- attempt to insert plugin actions
 local site
 pcall -> site = SiteFile(logger_opts: { silent: true })\get_site!

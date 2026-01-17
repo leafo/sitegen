@@ -30,6 +30,12 @@ do
   _with_0:summary("Debug dump of sitefile")
   _with_0:hidden(true)
 end
+do
+  local _with_0 = parser:command("render")
+  _with_0:summary("Render a single file to stdout")
+  _with_0:argument("file")
+  _with_0:flag("--no-template", "Skip template wrapping")
+end
 local site
 pcall(function()
   site = SiteFile({

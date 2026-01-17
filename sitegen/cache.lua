@@ -67,6 +67,10 @@ do
         return 
       end
       self.loaded = true
+      if self.disabled then
+        self.cache = CacheTable()
+        return 
+      end
       if self.site.io.exists(self.fname) then
         local content = self.site.io.read_file(self.fname)
         local cache, err = unserialize(content)
@@ -84,6 +88,9 @@ do
       for _index_0 = 1, #_list_0 do
         local fn = _list_0[_index_0]
         fn(self)
+      end
+      if self.disabled then
+        return 
       end
       local text = serialize(self.cache)
       if not text then
@@ -108,6 +115,7 @@ do
       end
       self.site, self.fname = site, fname
       self.finalize = { }
+      self.disabled = false
     end,
     __base = _base_0,
     __name = "Cache"

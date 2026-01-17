@@ -30,10 +30,15 @@ class CacheTable
 class Cache
   new: (@site, @fname=".sitegen_cache") =>
     @finalize = {}
+    @disabled = false
 
   load_cache: =>
     return if @loaded
     @loaded = true
+
+    if @disabled
+      @cache = CacheTable!
+      return
 
     @cache = if @site.io.exists @fname
       content = @site.io.read_file @fname
@@ -50,6 +55,9 @@ class Cache
 
   write: =>
     fn self for fn in *@finalize
+
+    return if @disabled
+
     text = serialize @cache
     error "failed to serialize cache" if not text
     @site.io.write_file @fname, text
