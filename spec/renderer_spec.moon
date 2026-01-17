@@ -73,12 +73,14 @@ $markdown{[[
         assert.same [[<h2>All Guides</h2>
 <ul>
 <li><a href="./reference/getting_started.html">Getting Started</a>
+
 <ul>
 <li><a href="./reference/moon_getting_started.html">Getting Started With MoonScript</a></li>
 <li><a href="./reference/lua_getting_started.html">Getting Started With Lua</a></li>
 </ul>
 </li>
 </ul>
+
 ]], out
 
 
