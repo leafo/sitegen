@@ -16,5 +16,5 @@ create = (init_fn, site=Site!) ->
 {
   :create_site
   :create
-  VERSION: "0.3"
+  VERSION: "0.4"
 }
