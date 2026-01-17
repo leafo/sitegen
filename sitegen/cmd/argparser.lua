@@ -2,7 +2,7 @@ local SiteFile
 SiteFile = require("sitegen.site_file").SiteFile
 local argparse = require("argparse")
 local parser = argparse("sitegen", "MoonScript powered static site generator")
-parser:option("-m --site-module", "Load site from a Lua/MoonScript module via require"):target("site_module_name")
+parser:option("-m --site-module", "Load site from a Lua/MoonScript module via require instead of searching for a site.moon file"):target("site_module_name")
 parser:command_target("action")
 parser:require_command(false)
 do
