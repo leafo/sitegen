@@ -17,7 +17,7 @@ dependencies = {
   "cosmo", -- doesn't work with lua 5.2+
   "moonscript",
   "luasocket",
-  "lua-discount",
+  "cmark",
   "luafilesystem >= 1.5",
   "lua-cjson",
   "date",

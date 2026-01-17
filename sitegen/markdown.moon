@@ -19,7 +19,7 @@ set_backend = (name, ...) ->
 
 render = (md_source) ->
   unless renderer
-    set_backend "discount"
+    set_backend "cmark"
   renderer md_source
 
 set_renderer = (fn) ->

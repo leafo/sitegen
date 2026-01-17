@@ -24,7 +24,7 @@ end
 local render
 render = function(md_source)
   if not (renderer) then
-    set_backend("discount")
+    set_backend("cmark")
   end
   return renderer(md_source)
 end
