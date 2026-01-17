@@ -8,8 +8,13 @@ log = function(...)
   return print("->", ...)
 end
 local get_site
-get_site = function()
-  return SiteFile():get_site()
+get_site = function(site_module_name)
+  if site_module_name == nil then
+    site_module_name = nil
+  end
+  return SiteFile({
+    site_module_name = site_module_name
+  }):get_site()
 end
 Path = Path:annotate({
   mkdir = "made directory",

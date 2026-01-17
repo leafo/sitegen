@@ -52,8 +52,8 @@ scope = function(t)
   })
 end
 local actions = {
-  dump = function()
-    return print(dump(get_site()))
+  dump = function(args)
+    return print(dump(get_site(args.site_module_name)))
   end,
   new = function(args)
     local title
@@ -72,7 +72,7 @@ local actions = {
   page = function(args)
     local title, path
     title, path = args.title, args.path
-    get_site()
+    get_site(args.site_module_name)
     if not title then
       title = path
       local path_part, title_part = title:match("^(.-)([^/]+)$")
@@ -123,7 +123,7 @@ local actions = {
   end,
   build = function(args)
     local files = args.input_files
-    local site = get_site()
+    local site = get_site(args.site_module_name)
     local filter
     if files and next(files) then
       filter = { }
@@ -134,7 +134,7 @@ local actions = {
     return site:write(filter)
   end,
   watch = function(args)
-    local site = get_site()
+    local site = get_site(args.site_module_name)
     local w = require("sitegen.watch")
     do
       local _with_0 = w.Watcher(site)
@@ -144,11 +144,14 @@ local actions = {
   end
 }
 local find_action
-find_action = function(name)
+find_action = function(name, site_module_name)
+  if site_module_name == nil then
+    site_module_name = nil
+  end
   if actions[name] then
     return actions[name]
   end
-  for action_obj, call in get_site():plugin_actions() do
+  for action_obj, call in get_site(site_module_name):plugin_actions() do
     local plugin_action_name = action_obj.action or action_obj.method
     if plugin_action_name == name then
       return call

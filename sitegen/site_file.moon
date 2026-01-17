@@ -22,8 +22,12 @@ class SiteFile
   new: (opts={}) =>
     @name = opts.name or "site.moon"
     @logger = Logger opts.logger_opts
+    @site_module_name = opts.site_module_name
 
-    if opts.rel_path
+    if @site_module_name
+      @rel_path = ""
+      @make_io!
+    elseif opts.rel_path
       @rel_path = opts.rel_path
       @file_path = Path.join @rel_path, @name
       @make_io!
@@ -70,6 +74,13 @@ class SiteFile
     @io = Path\relative_to @rel_path
 
   get_site: =>
+    if @site_module_name
+      @logger\notice "using module", @site_module_name
+      site = require @site_module_name
+      assert site, "Failed to load site from module '#{@site_module_name}', make sure site is returned"
+      site.sitefile = @
+      return site
+
     @logger\notice "using", Path.join @rel_path, @name
 
     fn = assert moonscript.loadfile @file_path

@@ -63,6 +63,13 @@ do
       self.io = Path:relative_to(self.rel_path)
     end,
     get_site = function(self)
+      if self.site_module_name then
+        self.logger:notice("using module", self.site_module_name)
+        local site = require(self.site_module_name)
+        assert(site, "Failed to load site from module '" .. tostring(self.site_module_name) .. "', make sure site is returned")
+        site.sitefile = self
+        return site
+      end
       self.logger:notice("using", Path.join(self.rel_path, self.name))
       local fn = assert(moonscript.loadfile(self.file_path))
       local sitegen = require("sitegen")
@@ -92,7 +99,11 @@ do
       end
       self.name = opts.name or "site.moon"
       self.logger = Logger(opts.logger_opts)
-      if opts.rel_path then
+      self.site_module_name = opts.site_module_name
+      if self.site_module_name then
+        self.rel_path = ""
+        return self:make_io()
+      elseif opts.rel_path then
         self.rel_path = opts.rel_path
         self.file_path = Path.join(self.rel_path, self.name)
         return self:make_io()

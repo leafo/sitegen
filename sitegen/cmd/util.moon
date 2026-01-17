@@ -5,7 +5,8 @@ Path = require "sitegen.path"
 log = (...) ->
   print "->", ...
 
-get_site = -> SiteFile!\get_site!
+get_site = (site_module_name=nil) ->
+  SiteFile(site_module_name: site_module_name)\get_site!
 
 Path = Path\annotate {
   mkdir: "made directory"

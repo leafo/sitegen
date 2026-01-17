@@ -37,7 +37,7 @@ scope = (t={}) ->
   }
 
 actions = {
-  dump: -> print dump get_site!
+  dump: (args) -> print dump get_site args.site_module_name
 
   new: (args) ->
     {:title} = args
@@ -56,7 +56,7 @@ actions = {
   page: (args) ->
     {:title, :path} = args
 
-    get_site!
+    get_site args.site_module_name
 
     if not title
       title = path
@@ -90,7 +90,7 @@ actions = {
 
   build: (args) ->
     files = args.input_files
-    site = get_site!
+    site = get_site args.site_module_name
 
     local filter
     if files and next files
@@ -101,7 +101,7 @@ actions = {
     site\write filter
 
   watch: (args) ->
-    site = get_site!
+    site = get_site args.site_module_name
     w = require "sitegen.watch"
 
     with w.Watcher site
@@ -111,10 +111,10 @@ actions = {
 
 -- return function to be called for command line action
 -- function should take one argument, the args object returned by argparse
-find_action = (name) ->
+find_action = (name, site_module_name=nil) ->
   return actions[name] if actions[name]
 
-  for action_obj, call in get_site!\plugin_actions!
+  for action_obj, call in get_site(site_module_name)\plugin_actions!
     plugin_action_name = action_obj.action or action_obj.method
     if plugin_action_name == name
       return call

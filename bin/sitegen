@@ -10,7 +10,7 @@ import find_action from require "sitegen.cmd.actions"
 import catch_error, throw_error from require "sitegen.common"
 
 catch_error ->
-  fn = find_action args.action or default_action
+  fn = find_action args.action or default_action, args.site_module_name
   unless fn
     throw_error "unknown task: " .. action
 
