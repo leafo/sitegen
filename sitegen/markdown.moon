@@ -9,7 +9,10 @@ set_backend = (name, ...) ->
         assert discount md_source, unpack opts_list
     when "cmark"
       cmark = require "cmark"
-      opts or= cmark.OPT_DEFAULT
+      opts or= cmark.OPT_VALIDATE_UTF8 +
+        cmark.OPT_NORMALIZE +
+        cmark.OPT_SMART +
+        cmark.OPT_UNSAFE
 
       renderer = (md_source) ->
         document = assert cmark.parse_string md_source, opts

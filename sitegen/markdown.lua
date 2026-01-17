@@ -12,7 +12,7 @@ set_backend = function(name, ...)
     end
   elseif "cmark" == _exp_0 then
     local cmark = require("cmark")
-    local opts = opts or cmark.OPT_DEFAULT
+    local opts = opts or (cmark.OPT_VALIDATE_UTF8 + cmark.OPT_NORMALIZE + cmark.OPT_SMART + cmark.OPT_UNSAFE)
     renderer = function(md_source)
       local document = assert(cmark.parse_string(md_source, opts))
       return assert(cmark.render_html(document, opts))
