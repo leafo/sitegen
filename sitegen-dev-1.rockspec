@@ -14,7 +14,7 @@ description = {
 
 dependencies = {
   "lua >= 5.1",
-  "cosmo", -- doesn't work with lua 5.2+
+  "cosmo",
   "moonscript",
   "luasocket",
   "cmark",
