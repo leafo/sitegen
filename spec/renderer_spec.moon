@@ -149,6 +149,7 @@ $markdown{[[
 
 
   describe "renderers.markdown", ->
+    import escape_cosmo, unescape_cosmo from require "sitegen.renderers.markdown"
     local site, renderer
     before_each ->
       MarkdownRenderer = require "sitegen.renderers.markdown"
@@ -177,11 +178,16 @@ $markdown{[[
         }
       } zone]]}
     }
-      import escape_cosmo, unescape_cosmo from require "sitegen.renderers.markdown"
 
       it "escapes and unescapes cosmo", ->
         escaped = escape_cosmo str
         assert.same escaped,
-          "hello 0000sitegen_markdown00dollar0000.1 zone"
+          "hello z000sitegen_markdown00dollar0000.1 zone"
         assert.same str, (unescape_cosmo escape_cosmo str)
 
+    it "escapes and unescapes adjacent cosmo selectors", ->
+      str = "$host$request_uri"
+      escaped = escape_cosmo str
+      assert.same escaped,
+        "z000sitegen_markdown00dollar0000.1z000sitegen_markdown00dollar0000.2"
+      assert.same str, (unescape_cosmo escape_cosmo str)
