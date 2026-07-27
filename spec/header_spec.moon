@@ -40,3 +40,9 @@ test]], trim_leading_white indented
     assert.same [[hello world test test
       yeah]], trim body
 
+  it "extracts header containing close brace in string", ->
+    import extract_header from require "sitegen.header"
+    body, header = extract_header [[{title: "a}b", nested: {1, {2}}} rest of doc]]
+    assert.same {title: "a}b", nested: {1, {2}}}, header
+    assert.same "rest of doc", trim body
+
