@@ -1,6 +1,6 @@
 import concat from table
 
-json = require "cjson"
+json = require "cjson.safe"
 
 serialize = (obj) -> json.encode obj
 unserialize = (text) -> json.decode text
@@ -45,8 +45,12 @@ class Cache
 
       cache, err = unserialize content
 
-      unless cache
-        error "could not load cache `#{@fname}`, delete and try again: #{err}"
+      -- cjson can decode to non-table values, eg. `null` becomes userdata
+      unless type(cache) == "table"
+        err or= "expecting table, got #{type(cache)}"
+        @site.logger\warn "could not load cache `#{@fname}`, resetting: #{err}"
+        cache = {}
+
       cache
     else
       {}

@@ -1,6 +1,6 @@
 local concat
 concat = table.concat
-local json = require("cjson")
+local json = require("cjson.safe")
 local serialize
 serialize = function(obj)
   return json.encode(obj)
@@ -74,8 +74,10 @@ do
       if self.site.io.exists(self.fname) then
         local content = self.site.io.read_file(self.fname)
         local cache, err = unserialize(content)
-        if not (cache) then
-          error("could not load cache `" .. tostring(self.fname) .. "`, delete and try again: " .. tostring(err))
+        if not (type(cache) == "table") then
+          err = err or "expecting table, got " .. tostring(type(cache))
+          self.site.logger:warn("could not load cache `" .. tostring(self.fname) .. "`, resetting: " .. tostring(err))
+          cache = { }
         end
         self.cache = cache
       else

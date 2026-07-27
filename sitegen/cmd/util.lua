@@ -48,7 +48,7 @@ wrap_text = function(text, indent, max_width)
       end
       pos = pos + 1
       table.insert(line, word)
-      line_len = line_len + #word + 1
+      line_len = line_len + (#word + 1)
     end
     table.insert(lines, table.concat(line, " "))
   end
