@@ -16,16 +16,27 @@ import Plugin from require "sitegen.plugin"
 class PygmentsPlugin extends Plugin
   custom_highlighters: {}
   disable_indent_detect: false
+  ignore_missing_lexer: true
 
   -- highlight code with pygments
   highlight: (lang, code) =>
-    fname = os.tmpname!
+    fname, errfname = os.tmpname!, os.tmpname!
     with io.open fname, "w"
       \write code
       \close!
 
-    p = io.popen ("pygmentize -f html -l %s %s")\format lang, fname
+    p = io.popen ("pygmentize -f html -l %s %s 2>%s")\format lang, fname, errfname
     out = p\read"*a"
+
+    e = io.open errfname, "r"
+    errout = e\read"*a"
+    e\close!
+
+    if @ignore_missing_lexer and errout\match "Error: no lexer for alias"
+      if @site
+        @site.logger\warn "Failed to find syntax highlighter for: #{lang}"
+
+      return html.escape code
 
     -- get rid of the div and pre inserted by pygments
     assert out\match('^<div class="highlight"><pre>(.-)\n?</pre></div>'),

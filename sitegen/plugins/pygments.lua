@@ -12,15 +12,25 @@ do
   local _base_0 = {
     custom_highlighters = { },
     disable_indent_detect = false,
+    ignore_missing_lexer = true,
     highlight = function(self, lang, code)
-      local fname = os.tmpname()
+      local fname, errfname = os.tmpname(), os.tmpname()
       do
         local _with_0 = io.open(fname, "w")
         _with_0:write(code)
         _with_0:close()
       end
-      local p = io.popen(("pygmentize -f html -l %s %s"):format(lang, fname))
+      local p = io.popen(("pygmentize -f html -l %s %s 2>%s"):format(lang, fname, errfname))
       local out = p:read("*a")
+      local e = io.open(errfname, "r")
+      local errout = e:read("*a")
+      e:close()
+      if self.ignore_missing_lexer and errout:match("Error: no lexer for alias") then
+        if self.site then
+          self.site.logger:warn("Failed to find syntax highlighter for: " .. tostring(lang))
+        end
+        return html.escape(code)
+      end
       return assert(out:match('^<div class="highlight"><pre>(.-)\n?</pre></div>'), "Failed to parse pygmentize result, is pygments installed?")
     end,
     _highlight = function(self, lang, code, page)
