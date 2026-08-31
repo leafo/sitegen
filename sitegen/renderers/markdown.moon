@@ -1,6 +1,6 @@
 import Renderer from require "sitegen.renderer"
 
-dollar_temp = "0000sitegen_markdown00dollar0000"
+dollar_temp = "z000sitegen_markdown00dollar0000"
 
 -- a constructor for quote delimited strings
 simple_string = (delim) ->

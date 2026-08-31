@@ -1,6 +1,6 @@
 local Renderer
 Renderer = require("sitegen.renderer").Renderer
-local dollar_temp = "0000sitegen_markdown00dollar0000"
+local dollar_temp = "z000sitegen_markdown00dollar0000"
 local simple_string
 simple_string = function(delim)
   local P
