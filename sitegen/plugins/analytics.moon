@@ -1,4 +1,3 @@
-
 import Plugin from require "sitegen.plugin"
 
 class AnalyticsPlugin extends Plugin
@@ -8,16 +7,16 @@ class AnalyticsPlugin extends Plugin
     code = arg[1]
     [[<script type="text/javascript">
   if (window.location.hostname != "localhost") {
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', ']]..code..[[']);
-    _gaq.push(['_trackPageview']);
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', ']]..code..[[');
 
     (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var ga = document.createElement('script'); ga.async = true;
+      ga.src = 'https://www.googletagmanager.com/gtag/js?id=]]..code..[[';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
   }
 </script>]]
-
 

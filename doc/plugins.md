@@ -144,11 +144,11 @@ It will produce `script` tags embedded with the resulting JavaScript.
 ### Analytics
 
 Provides a template helper, `analytics`, that lets your easily embed the Google
-Analytics tracking code. Takes one argument, the account code as a string.
+Analytics tracking code. Takes one argument, the measurement ID (e.g. `G-XXXXXXXXXX`) as a string.
 
 In some page:
 
-    $analytics{[[UA-000000]]}
+    $analytics{[[G-XXXXXXXXXX]]}
 
 ### Dump
 
