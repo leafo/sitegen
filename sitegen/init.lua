@@ -30,5 +30,5 @@ end
 return {
   create_site = create_site,
   create = create,
-  VERSION = "0.5"
+  VERSION = "0.6"
 }
