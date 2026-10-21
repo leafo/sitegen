@@ -141,16 +141,20 @@ print 5
     assert.same [[<span class="sh_function">print</span> <span class="sh_number">5</span>]],
       sh\highlight "moon", "print 5"
 
-describe "sitegen.site plugins", ->
-  it "replaces pygments with syntaxhighlight", ->
-    site = factory.Site {}
-    assert.truthy site\get_plugin "sitegen.plugins.pygments"
+  it "resolves language aliases to lexers", ->
+    for {alias, lang, code} in *{
+      {"js", "javascript", "var x = 1"}
+      {"scss", "sass", ".a { b { color: red; } }"}
+    }
+      out = sh\highlight alias, code
+      assert.same sh\highlight(lang, code), out
+      assert.truthy out\match "sh_"
 
-    assert.truthy site\remove_plugin "sitegen.plugins.pygments"
+describe "sitegen.site plugins", ->
+  it "highlights with syntaxhighlight by default", ->
+    site = factory.Site {}
     plugin = site\get_plugin "sitegen.plugins.pygments"
     assert.falsy plugin
-
-    site\add_plugin "sitegen.plugins.syntaxhighlight"
 
     _, out = site.events\pipe "renderer.markdown.pre_render", {}, [[
 ```lua
@@ -160,6 +164,26 @@ print 5
     assert.same [[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_number">5</span></code></pre>]],
       flatten_html out
 
+  it "replaces syntaxhighlight with pygments", ->
+    site = factory.Site {}
+    assert.truthy site\remove_plugin "sitegen.plugins.syntaxhighlight"
+    plugin = site\get_plugin "sitegen.plugins.syntaxhighlight"
+    assert.falsy plugin
+
+    -- a custom highlighter avoids needing pygmentize installed
+    pygments = site\add_plugin "sitegen.plugins.pygments"
+    pygments.custom_highlighters = {
+      lua: (code) => "<pygments>#{code}</pygments>"
+    }
+
+    _, out = site.events\pipe "renderer.markdown.pre_render", {}, [[
+```lua
+print 5
+```]]
+
+    assert.same [[<pygments>print 5
+</pygments>]], out
+
   it "removes nothing for a plugin that isn't added", ->
     site = factory.Site {}
     removed = site\remove_plugin "sitegen.plugins.tupfile"
@@ -168,7 +192,7 @@ print 5
 describe "sitegen.plugins.pygments", ->
   it "caches custom highlighter output", ->
     site = factory.Site {}
-    plugin = site\get_plugin "sitegen.plugins.pygments"
+    plugin = site\add_plugin "sitegen.plugins.pygments"
 
     calls = 0
     plugin.custom_highlighters = {
@@ -190,3 +214,29 @@ describe "sitegen.highlight_plugin", ->
 
     assert.not.equal pygments.custom_highlighters, syntaxhighlight.custom_highlighters
     assert.not.equal HighlightPlugin.custom_highlighters, pygments.custom_highlighters
+
+  describe "warn_unused_custom_highlighters", ->
+    import HighlightPlugin from require "sitegen.highlight_plugin"
+    local pygments, site, warnings
+
+    before_each ->
+      pygments = require "sitegen.plugins.pygments"
+      pygments.custom_highlighters.cool_lang = (code) => code
+
+      site = factory.Site {}
+      warnings = {}
+      site.logger = { warn: (msg) => table.insert warnings, msg }
+
+    after_each ->
+      pygments.custom_highlighters.cool_lang = nil
+
+    it "warns about highlighters on a plugin that isn't loaded", ->
+      HighlightPlugin\warn_unused_custom_highlighters site
+      assert.same {
+        "PygmentsPlugin.custom_highlighters has highlighters for cool_lang but the plugin isn't loaded, they will not be used"
+      }, warnings
+
+    it "doesn't warn when the plugin is loaded", ->
+      site\add_plugin "sitegen.plugins.pygments"
+      HighlightPlugin\warn_unused_custom_highlighters site
+      assert.same {}, warnings

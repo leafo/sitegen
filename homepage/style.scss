@@ -112,52 +112,40 @@ p > code, li > code {
 
 
 .highlight {
-    /* builtins */
-    .nb, .cp {
-        color: #F69385; // new
+    .sh_function, .sh_library {
+        color: #F69385;
     }
 
-    /* strings */
-    .s, .s1, .s2, .se {
-        color: #F1BF8E; // new
+    .sh_string {
+        color: #F1BF8E;
     }
 
-    /* proper names, self */
-    .nc, .vc, .bp {
-        color: #99CBCA; // new
+    .sh_class, .sh_self_ref {
+        color: #99CBCA;
     }
 
-    /* true, false, nil */
-    .kc {
-        color: #B3EFE5; // new
+    .sh_constant {
+        color: #B3EFE5;
     }
 
-    /* function lit, braces, parens  */
-    .nf, .kt, .na {
-        color: #B0D89C; // new
+    .sh_fndef, .sh_symbol, .sh_attribute {
+        color: #B0D89C;
     }
 
-    /* operators */
-    .o, .si {
-        color: #F277A1; // new
+    .sh_operator, .sh_interpolation, .sh_tbl_key {
+        color: #F277A1;
     }
 
-    .nv {
-        color: #F277A1; // new
+    .sh_keyword {
+        color: #BB84B4;
     }
 
-    /* keywords */
-    .k, .kd, .nt {
-        color: #BB84B4; // new
-    }
-
-    .c1, .c2, .c {
+    .sh_comment {
         color: #929292;
     }
 
-    // numbers
-    .m, .mi, .mf, .mh {
-        color: #9D8FF2; // new
+    .sh_number {
+        color: #9D8FF2;
     }
 }
 

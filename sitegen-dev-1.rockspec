@@ -23,7 +23,7 @@ dependencies = {
   "date",
   "ansicolors",
   "web_sanitize",
-  "syntaxhighlight",
+  "syntaxhighlight >= 1.1.0",
   "argparse"
 }
 

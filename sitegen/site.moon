@@ -38,8 +38,8 @@ class Site
     "sitegen.plugins.indexer"
     "sitegen.plugins.analytics"
     "sitegen.plugins.coffee_script"
-    "sitegen.plugins.pygments"
-    -- "sitegen.plugins.syntaxhighlight"
+    "sitegen.plugins.syntaxhighlight"
+    -- "sitegen.plugins.pygments"
     -- "sitegen.plugins.tupfile"
     "sitegen.plugins.dump"
   }
@@ -128,6 +128,9 @@ class Site
     bound = bind_methods @scope
     bound = extend @plugin_scope!, bound
     run_with_scope fn, bound, @user_vars
+
+    import HighlightPlugin from require "sitegen.highlight_plugin"
+    HighlightPlugin\warn_unused_custom_highlighters @
 
   output_path_for: (path, ext=nil) =>
     if path\match"^%./"

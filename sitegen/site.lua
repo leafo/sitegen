@@ -127,7 +127,10 @@ do
     init_from_fn = function(self, fn)
       local bound = bind_methods(self.scope)
       bound = extend(self:plugin_scope(), bound)
-      return run_with_scope(fn, bound, self.user_vars)
+      run_with_scope(fn, bound, self.user_vars)
+      local HighlightPlugin
+      HighlightPlugin = require("sitegen.highlight_plugin").HighlightPlugin
+      return HighlightPlugin:warn_unused_custom_highlighters(self)
     end,
     output_path_for = function(self, path, ext)
       if ext == nil then
@@ -359,7 +362,7 @@ do
     "sitegen.plugins.indexer",
     "sitegen.plugins.analytics",
     "sitegen.plugins.coffee_script",
-    "sitegen.plugins.pygments",
+    "sitegen.plugins.syntaxhighlight",
     "sitegen.plugins.dump"
   }
   Site = _class_0

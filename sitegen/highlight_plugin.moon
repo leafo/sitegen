@@ -13,6 +13,23 @@ import trim_leading_white from require "sitegen.common"
 -- ```
 --
 class HighlightPlugin extends Plugin
+  @subclasses: {}
+
+  @__inherited: (child) =>
+    table.insert HighlightPlugin.subclasses, child
+
+  -- Highlighters registered on a plugin class that the site doesn't load are
+  -- never called, eg. on PygmentsPlugin after syntaxhighlight became the
+  -- default, so point them out instead of silently ignoring them
+  @warn_unused_custom_highlighters: (site) =>
+    for cls in *HighlightPlugin.subclasses
+      continue unless next cls.custom_highlighters
+      continue if site\get_plugin cls
+
+      langs = [lang for lang in pairs cls.custom_highlighters]
+      table.sort langs
+      site.logger\warn "#{cls.__name}.custom_highlighters has highlighters for #{table.concat langs, ", "} but the plugin isn't loaded, they will not be used"
+
   -- functions that render a language's code block in place of the default
   -- highlighted pre tag: (plugin, code, page) -> html. Subclasses define their
   -- own table so sites can register highlighters per plugin

@@ -11,7 +11,9 @@ do
     ignore_missing_lexer = true,
     language_aliases = {
       moon = "moonscript",
-      erb = "rhtml"
+      erb = "rhtml",
+      js = "javascript",
+      scss = "sass"
     },
     highlight = function(self, lang, code)
       local syntaxhighlight = require("syntaxhighlight")

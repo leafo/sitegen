@@ -101,6 +101,44 @@ do
     end
   })
   _base_0.__class = _class_0
+  local self = _class_0
+  self.subclasses = { }
+  self.__inherited = function(self, child)
+    return table.insert(HighlightPlugin.subclasses, child)
+  end
+  self.warn_unused_custom_highlighters = function(self, site)
+    local _list_0 = HighlightPlugin.subclasses
+    for _index_0 = 1, #_list_0 do
+      local _continue_0 = false
+      repeat
+        local cls = _list_0[_index_0]
+        if not (next(cls.custom_highlighters)) then
+          _continue_0 = true
+          break
+        end
+        if site:get_plugin(cls) then
+          _continue_0 = true
+          break
+        end
+        local langs
+        do
+          local _accum_0 = { }
+          local _len_0 = 1
+          for lang in pairs(cls.custom_highlighters) do
+            _accum_0[_len_0] = lang
+            _len_0 = _len_0 + 1
+          end
+          langs = _accum_0
+        end
+        table.sort(langs)
+        site.logger:warn(tostring(cls.__name) .. ".custom_highlighters has highlighters for " .. tostring(table.concat(langs, ", ")) .. " but the plugin isn't loaded, they will not be used")
+        _continue_0 = true
+      until true
+      if not _continue_0 then
+        break
+      end
+    end
+  end
   if _parent_0.__inherited then
     _parent_0.__inherited(_parent_0, _class_0)
   end

@@ -10,6 +10,8 @@ class SyntaxhighlightPlugin extends HighlightPlugin
   language_aliases: {
     moon: "moonscript"
     erb: "rhtml"
+    js: "javascript"
+    scss: "sass"
   }
 
   -- highlight code with syntaxhighlight library https://github.com/leafo/lua-syntaxhighlight
