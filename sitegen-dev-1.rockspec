@@ -41,6 +41,7 @@ build = {
     ["sitegen.dispatch"] = "sitegen/dispatch.lua",
     ["sitegen.formatters.default"] = "sitegen/formatters/default.lua",
     ["sitegen.header"] = "sitegen/header.lua",
+    ["sitegen.highlight_plugin"] = "sitegen/highlight_plugin.lua",
     ["sitegen.html"] = "sitegen/html.lua",
     ["sitegen.markdown"] = "sitegen/markdown.lua",
     ["sitegen.output"] = "sitegen/output.lua",

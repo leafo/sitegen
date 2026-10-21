@@ -34,6 +34,9 @@ class SiteScope
   disable: (thing) =>
     @site[thing .. "_disabled"] = true
 
+  add_plugin: (mod) => @site\add_plugin mod
+  remove_plugin: (mod) => @site\remove_plugin mod
+
   add_renderer: (renderer) =>
     if type(renderer) == "string"
       renderer = require renderer

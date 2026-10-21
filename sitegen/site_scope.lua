@@ -33,6 +33,12 @@ do
     disable = function(self, thing)
       self.site[thing .. "_disabled"] = true
     end,
+    add_plugin = function(self, mod)
+      return self.site:add_plugin(mod)
+    end,
+    remove_plugin = function(self, mod)
+      return self.site:remove_plugin(mod)
+    end,
     add_renderer = function(self, renderer)
       if type(renderer) == "string" then
         renderer = require(renderer)

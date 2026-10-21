@@ -115,10 +115,78 @@ $hello{[[
   ```
 ]]}]=]
 
-    assert.same [=[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_lua_whitespace sh_whitespace"></span><span class="sh_number">5</span></code></pre>
+    assert.same [=[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_number">5</span></code></pre>
 
 $hello{[[
   ```lua
   print thing
   ```
 ]]}]=], out
+
+  it "uses custom highlighter in place of default output", ->
+    plugin = sh site
+    plugin.custom_highlighters = {
+      moon: (code, page) =>
+        "<div>#{@highlight "moon", code}</div>"
+    }
+
+    out = flatten_html plugin\filter [[
+```moon
+print 5
+```]]
+
+    assert.same [[<div><span class="sh_function">print</span><span class="sh_number">5</span></div>]], out
+
+  it "highlights when called on the class", ->
+    assert.same [[<span class="sh_function">print</span> <span class="sh_number">5</span>]],
+      sh\highlight "moon", "print 5"
+
+describe "sitegen.site plugins", ->
+  it "replaces pygments with syntaxhighlight", ->
+    site = factory.Site {}
+    assert.truthy site\get_plugin "sitegen.plugins.pygments"
+
+    assert.truthy site\remove_plugin "sitegen.plugins.pygments"
+    plugin = site\get_plugin "sitegen.plugins.pygments"
+    assert.falsy plugin
+
+    site\add_plugin "sitegen.plugins.syntaxhighlight"
+
+    _, out = site.events\pipe "renderer.markdown.pre_render", {}, [[
+```lua
+print 5
+```]]
+
+    assert.same [[<pre class="highlight lang_lua"><code><span class="sh_function">print</span><span class="sh_number">5</span></code></pre>]],
+      flatten_html out
+
+  it "removes nothing for a plugin that isn't added", ->
+    site = factory.Site {}
+    removed = site\remove_plugin "sitegen.plugins.tupfile"
+    assert.falsy removed
+
+describe "sitegen.plugins.pygments", ->
+  it "caches custom highlighter output", ->
+    site = factory.Site {}
+    plugin = site\get_plugin "sitegen.plugins.pygments"
+
+    calls = 0
+    plugin.custom_highlighters = {
+      cached: (code, page) =>
+        calls += 1
+        "<div>#{code}</div>"
+    }
+
+    for i=1,2
+      assert.same "<div>cache me\n</div>", plugin\filter "```cached\ncache me\n```"
+
+    assert.same 1, calls
+
+describe "sitegen.highlight_plugin", ->
+  it "keeps custom highlighters separate for each plugin", ->
+    import HighlightPlugin from require "sitegen.highlight_plugin"
+    pygments = require "sitegen.plugins.pygments"
+    syntaxhighlight = require "sitegen.plugins.syntaxhighlight"
+
+    assert.not.equal pygments.custom_highlighters, syntaxhighlight.custom_highlighters
+    assert.not.equal HighlightPlugin.custom_highlighters, pygments.custom_highlighters

@@ -52,7 +52,20 @@ do
     end,
     add_plugin = function(self, mod)
       local p = require(mod)(self)
-      return table.insert(self.plugins, p)
+      table.insert(self.plugins, p)
+      return p
+    end,
+    remove_plugin = function(self, cls)
+      if type(cls) == "string" then
+        cls = require(cls)
+      end
+      for i, p in ipairs(self.plugins) do
+        if cls == p.__class then
+          table.remove(self.plugins, i)
+          p:detach()
+          return p
+        end
+      end
     end,
     get_plugin = function(self, cls)
       if type(cls) == "string" then

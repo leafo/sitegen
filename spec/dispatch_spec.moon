@@ -53,6 +53,24 @@ describe "sitegen.dispatch", ->
         d\off "page.wowza"
         assert.same default_structure, d.callbacks
 
+      it "removes a single callback", ->
+        d\off "page", 2
+        assert.same {
+          page: {
+            1
+            flour: {
+              3
+              zone: {
+                4
+              }
+            }
+          }
+        }, d.callbacks
+
+      it "removes a callback from a missing event", ->
+        d\off "page.wowza", 1
+        assert.same default_structure, d.callbacks
+
   describe "callbacks", ->
     it "runs two callbacks", ->
       out = {}

@@ -19,7 +19,8 @@ class Dispatch
 
     table.insert callbacks, callback
 
-  off: (name) =>
+  -- removes everything registered under name, or just callback when provided
+  off: (name, callback) =>
     parts = @_parse_name name
     last = parts[#parts]
     table.remove parts
@@ -27,8 +28,14 @@ class Dispatch
     callbacks = @callbacks
     for p in *parts
       callbacks = callbacks[p]
-    
-    callbacks[last] = nil
+
+    if callback
+      list = callbacks and callbacks[last]
+      return unless list
+      for i=#list,1,-1
+        table.remove list, i if list[i] == callback
+    else
+      callbacks[last] = nil
 
   callbacks_for: (name) =>
     -- find all the matching callbacks

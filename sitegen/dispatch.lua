@@ -28,7 +28,7 @@ do
       end
       return table.insert(callbacks, callback)
     end,
-    off = function(self, name)
+    off = function(self, name, callback)
       local parts = self:_parse_name(name)
       local last = parts[#parts]
       table.remove(parts)
@@ -37,7 +37,19 @@ do
         local p = parts[_index_0]
         callbacks = callbacks[p]
       end
-      callbacks[last] = nil
+      if callback then
+        local list = callbacks and callbacks[last]
+        if not (list) then
+          return 
+        end
+        for i = #list, 1, -1 do
+          if list[i] == callback then
+            table.remove(list, i)
+          end
+        end
+      else
+        callbacks[last] = nil
+      end
     end,
     callbacks_for = function(self, name)
       local matched = { }

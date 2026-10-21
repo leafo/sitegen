@@ -87,6 +87,15 @@ class Site
   add_plugin: (mod) =>
     p = require(mod) @
     table.insert @plugins, p
+    p
+
+  remove_plugin: (cls) =>
+    cls = require cls if type(cls) == "string"
+    for i, p in ipairs @plugins
+      if cls == p.__class
+        table.remove @plugins, i
+        p\detach!
+        return p
 
   get_plugin: (cls) =>
     cls = require cls if type(cls) == "string"
